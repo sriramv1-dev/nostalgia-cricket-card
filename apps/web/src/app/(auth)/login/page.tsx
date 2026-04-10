@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -15,7 +15,7 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const supabase = createClient()
+    const supabase = createSupabaseBrowserClient()
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
