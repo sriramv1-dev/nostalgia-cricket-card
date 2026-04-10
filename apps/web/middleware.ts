@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import type { CookieMethodsServer } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const PROTECTED_ROUTES = ['/collection', '/packs', '/trade', '/battle']
@@ -25,7 +26,7 @@ export async function middleware(request: NextRequest) {
             supabaseResponse.cookies.set(name, value, options)
           )
         },
-      },
+      } satisfies CookieMethodsServer,
     }
   )
 
