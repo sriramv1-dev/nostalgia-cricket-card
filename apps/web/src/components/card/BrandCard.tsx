@@ -59,7 +59,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           src="/images/card/action-figure.png"
           colors={colors}
           width={500}
-          height={500}
+          height={425}
           className="drop-shadow-[0_30px_50px_rgba(0,0,0,0.15)]"
         />
 

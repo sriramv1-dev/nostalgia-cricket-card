@@ -27,7 +27,7 @@ export const CardWrapper: React.FC<CardWrapperProps> = ({
 
   return (
     <div 
-      className={`relative overflow-hidden ${className}`}
+      className={`relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-xl border-2 border-[#d1c9b8] flex-shrink-0 ${className}`}
       style={{ 
         width: `${scaledWidth}px`, 
         height: `${scaledHeight}px`,
