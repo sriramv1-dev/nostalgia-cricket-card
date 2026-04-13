@@ -7,6 +7,17 @@ import { DynamicCharacter, CharacterColors } from './DynamicCharacter'
 
 interface BrandCardProps {
   colors?: CharacterColors
+  characterSrc?: string
+  showDebug?: boolean
+  width?: number
+  height?: number
+  thresholds?: {
+    padsY?: number
+    shoesY?: number
+    glovesX?: number
+    batX?: number
+    hasBat?: boolean
+  }
 }
 
 /**
@@ -16,11 +27,17 @@ interface BrandCardProps {
 export const BrandCard: React.FC<BrandCardProps> = ({
   colors = {
     cap: '#3b82f6',
+    capAccent: '#fbbf24',
     gloves: '#3b82f6',
     pads: '#3b82f6',
-    bat: '#fbbf24', // Default yellow
-    capAccent: '#fbbf24' // Default yellow
-  }
+    shoes: '#3b82f6',
+    bat: '#fbbf24'
+  },
+  characterSrc = '/images/card/pull-shot.png',
+  showDebug = false,
+  width = 500,
+  height = 425,
+  thresholds
 }) => {
   return (
     <div className="relative w-[750px] h-[1050px] overflow-hidden bg-white select-none">
@@ -54,12 +71,13 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           />
         </motion.div>
 
-        {/* Mascot / Action Figure Section (Now Dynamic) */}
         <DynamicCharacter 
-          src="/images/card/action-figure.png"
+          src={characterSrc}
           colors={colors}
-          width={500}
-          height={425}
+          thresholds={thresholds}
+          showDebugBackground={showDebug}
+          width={width}
+          height={height}
           className="drop-shadow-[0_30px_50px_rgba(0,0,0,0.15)]"
         />
 
@@ -68,9 +86,9 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="mt-12 text-center"
+          className="mt-6 text-center"
         >
-          <p className="font-display text-4xl text-slate-800 tracking-[0.2em] uppercase font-bold">
+          <p className="font-supermercado text-5xl text-slate-800 font-bold">
             Limited Edition
           </p>
           <div className="w-24 h-1 bg-slate-200 mx-auto mt-4 rounded-full" />

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Roboto_Mono } from 'next/font/google'
+import { Inter, Roboto_Mono, Supermercado_One } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
@@ -10,6 +10,12 @@ const inter = Inter({
 const robotoMono = Roboto_Mono({
   subsets: ['latin'],
   variable: '--font-roboto-mono',
+})
+
+const supermercado = Supermercado_One({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-supermercado',
 })
 
 export const metadata: Metadata = {
@@ -30,15 +36,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${robotoMono.variable} dark`}>
+    <html lang="en" className={`${inter.variable} ${robotoMono.variable} ${supermercado.variable} dark`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="bg-gray-950 text-white font-body antialiased min-h-screen">
-        <div className="max-w-md mx-auto min-h-screen relative">
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   )

@@ -9,16 +9,20 @@ import { motion, MotionProps } from 'framer-motion'
 export interface CharacterColors {
   /** Main color for the cap body. */
   cap: string
-  /** Color for the gloves. */
-  gloves: string
-  /** Color for the leg pads and feet. */
-  pads: string
-  /** Color for the bat body. */
-  bat: string
   /** Color for the underside/accent of the cap. */
   capAccent: string
-  /** Optional separate color for shoes, falling back to pads if not provided. */
-  shoes?: string
+  /** Color for the gloves. */
+  gloves: string
+  /** Color for the leg pads. */
+  pads: string
+  /** Color for the shoes. */
+  shoes: string
+  /** Color for the bat. */
+  bat?: string
+  /** Color for the ball. */
+  ball?: string
+  /** Color for the wickets. */
+  wickets?: string
 }
 
 interface DynamicCharacterProps {
@@ -38,19 +42,18 @@ interface DynamicCharacterProps {
   motionProps?: MotionProps
   /** If true, shows a white background for debugging regions. */
   showDebugBackground?: boolean
+  /** Optional spatial configuration for regional detection (X/Y thresholds). */
+  thresholds?: {
+    padsY?: number
+    shoesY?: number
+    glovesX?: number
+    batX?: number
+    hasBat?: boolean
+  }
 }
 
 /**
  * DynamicCharacter: A React component that performs real-time pixel manipulation.
- * 
- * CORE STRATEGY: 
- * 1. PURE PIXEL ACCESS: Uses HTML5 Canvas `getImageData` and `putImageData`.
- * 2. SHADE PRESERVATION (HSL Mapping): Instead of simple tints, it maps the user's 
- *    target HUE and SATURATION onto the original pixel, but preserves the original 
- *    LIGHTNESS (L) value. This ensures shading, shadows, and highlights are kept.
- * 3. SPATIAL MASKING (2D Logic): Since the PNG is a single layer, it uses X/Y 
- *    coordinates to differentiate between parts that share the same color space
- *    (e.g., distinguishing the Yellow Bat from the Yellow Cap Brim).
  */
 export const DynamicCharacter: React.FC<DynamicCharacterProps> = ({
   src,
@@ -61,6 +64,7 @@ export const DynamicCharacter: React.FC<DynamicCharacterProps> = ({
   className = '',
   motionProps,
   showDebugBackground = false,
+  thresholds = {},
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const originalImageDataRef = useRef<ImageData | null>(null)
@@ -130,15 +134,16 @@ export const DynamicCharacter: React.FC<DynamicCharacterProps> = ({
     // Convert hex targets to HSL objects once per component update
     const targetHSLs = {
       cap: rgbToHsl(hexToRgb(parts.cap)),
+      capAccent: rgbToHsl(hexToRgb(parts.capAccent)),
       gloves: rgbToHsl(hexToRgb(parts.gloves)),
       pads: rgbToHsl(hexToRgb(parts.pads)),
-      bat: rgbToHsl(hexToRgb(parts.bat)),
-      capAccent: rgbToHsl(hexToRgb(parts.capAccent)),
-      shoes: rgbToHsl(hexToRgb(parts.shoes || parts.pads)),
+      shoes: rgbToHsl(hexToRgb(parts.shoes)),
+      bat: parts.bat ? rgbToHsl(hexToRgb(parts.bat)) : null,
+      ball: parts.ball ? rgbToHsl(hexToRgb(parts.ball)) : null,
+      wickets: parts.wickets ? rgbToHsl(hexToRgb(parts.wickets)) : null,
     }
 
     const originalData = originalImageDataRef.current.data
-    // Create work array from pristine original to prevent additive math errors
     const newImageData = new ImageData(
       new Uint8ClampedArray(originalData),
       originalImageDataRef.current.width,
@@ -148,60 +153,68 @@ export const DynamicCharacter: React.FC<DynamicCharacterProps> = ({
     const canvasWidth = originalImageDataRef.current.width
     const canvasHeight = originalImageDataRef.current.height
 
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i]
-      const g = data[i + 1]
-      const b = data[i + 2]
-      const a = data[i + 3]
+    const padsY = thresholds.padsY ?? 0.62
+    const shoesY = thresholds.shoesY ?? 0.82
+    const glovesX = thresholds.glovesX ?? 0.6
+    const batX = thresholds.batX ?? 0.65
+    const hasBat = thresholds.hasBat ?? true
 
-      // Skip fully transparent pixels (Optimization)
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3]
       if (a === 0) continue
 
-      /**
-       * PART DETECTION FILTERS
-       * We use thresholds to detect "Blue" vs "Yellow" areas in the original PNG.
-       */
-      const isBlue = b > r + 20 && b > g + 20
+      // Regional Sensing Logic (Original Style)
+      const isBlue = b > r + 30 && b > g + 30
       const isYellow = r > 150 && g > 150 && b < 100
+      const isRed = r > 180 && g < 100 && b < 100
+      const isGreen = g > 180 && r < 100 && b < 100
 
-      if (isBlue || isYellow) {
-        // Spatial Coordinates for refined mapping
+      if (isBlue || isYellow || isRed || isGreen) {
         const pixelIndex = i / 4
         const px = pixelIndex % canvasWidth
         const py = Math.floor(pixelIndex / canvasWidth)
         const relX = px / canvasWidth
         const relY = py / canvasHeight
 
-        let target = targetHSLs.cap
+        let target = null
 
-        /**
-         * 2D SPATIAL MAPPING LOGIC
-         * Differentiates components based on their region in the sprite.
-         */
         if (isBlue) {
-          if (relY > 0.65) {
-            target = targetHSLs.pads   // Legs/Shoes region
-          } else if (relX > 0.6 && relY > 0.35) {
-            target = targetHSLs.gloves // Right side hands region
-          } else {
-            target = targetHSLs.cap    // Top head region
-          }
+          if (relY > shoesY) target = targetHSLs.shoes
+          else if (relY > padsY) target = targetHSLs.pads
+          else if (relX > glovesX && relY > 0.35) target = targetHSLs.gloves
+          else target = targetHSLs.cap
         } else if (isYellow) {
-          if (relX > 0.65) {
-            target = targetHSLs.bat    // Right side bat object
-          } else {
-            target = targetHSLs.capAccent // Brim of the cap region
-          }
+          if (hasBat && relX > batX) target = targetHSLs.bat
+          else target = targetHSLs.capAccent
+        } else if (isRed) {
+          target = targetHSLs.ball
+        } else if (isGreen) {
+          target = targetHSLs.wickets
         }
 
         if (target) {
-          // HSL Mapping: Lock Hue and Saturation, keep original Lightness
-          const originalHsl = rgbToHsl({ r, g, b })
-          const finalRgb = hslToRgb(target.h, target.s, originalHsl.l)
-          
-          data[i] = finalRgb.r
-          data[i + 1] = finalRgb.g
-          data[i + 2] = finalRgb.b
+          if (showDebugBackground) {
+            // Visual Debug Overlays
+            if (isBlue) {
+              if (relY > shoesY) { data[i]=255; data[i+1]=255; data[i+2]=255; }
+              else if (relY > padsY) { data[i]=0; data[i+1]=255; data[i+2]=0; }
+              else if (relX > glovesX) { data[i]=255; data[i+1]=0; data[i+2]=0; }
+              else { data[i]=0; data[i+1]=0; data[i+2]=255; }
+            } else if (isYellow) {
+              if (hasBat && relX > batX) { data[i]=255; data[i+1]=255; data[i+2]=0; }
+              else { data[i]=0; data[i+1]=255; data[i+2]=255; }
+            } else if (isRed) {
+              data[i]=255; data[i+1]=105; data[i+2]=180;
+            } else if (isGreen) {
+              data[i]=139; data[i+1]=69; data[i+2]=19;
+            }
+          } else {
+            const originalHsl = rgbToHsl({ r, g, b })
+            const finalRgb = hslToRgb(target.h, target.s, originalHsl.l)
+            data[i] = finalRgb.r
+            data[i+1] = finalRgb.g
+            data[i+2] = finalRgb.b
+          }
         }
       }
     }

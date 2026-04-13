@@ -13,6 +13,7 @@ const config: Config = {
       fontFamily: {
         display: ["'Bebas Neue'", 'cursive'],
         body: ["'Inter'", 'sans-serif'],
+        supermercado: ['var(--font-supermercado)', 'cursive'],
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.4)',

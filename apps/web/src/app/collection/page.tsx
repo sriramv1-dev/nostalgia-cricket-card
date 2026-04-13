@@ -1,6 +1,9 @@
+import { MobileContainer } from '@/components/layout/MobileContainer'
+
 export default function CollectionPage() {
   return (
-    <main className="flex flex-col min-h-screen pb-20">
+    <MobileContainer>
+      <main className="flex flex-col min-h-screen pb-20">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 py-4">
         <div className="flex items-center justify-between">
@@ -68,6 +71,6 @@ export default function CollectionPage() {
           </a>
         </div>
       </div>
-    </main>
+    </MobileContainer>
   )
 }

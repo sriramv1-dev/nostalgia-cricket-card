@@ -76,16 +76,16 @@ export default function StatCard({ stats }: { stats: PlayerStats }) {
         <div className={styles.fmtRow}>
           <div className={styles.fmtEmpty}></div>
           <div className={`${styles.fmtBubble} ${styles.fmtBubbleTest}`}>
-            <span className={styles.fmtName}>TEST</span>
-            <span className={styles.fmtCount}>{stats.matches.test}</span>
+            <div className={styles.fmtNameSide}>Test</div>
+            <div className={styles.fmtCountSide}>{stats.matches.test}</div>
           </div>
           <div className={`${styles.fmtBubble} ${styles.fmtBubbleOdi}`}>
-            <span className={styles.fmtName}>ODI</span>
-            <span className={styles.fmtCount}>{stats.matches.odi}</span>
+            <div className={styles.fmtNameSide}>ODI</div>
+            <div className={styles.fmtCountSide}>{stats.matches.odi}</div>
           </div>
           <div className={`${styles.fmtBubble} ${styles.fmtBubbleT20}`}>
-            <span className={styles.fmtName}>T20I</span>
-            <span className={styles.fmtCount}>{stats.matches.t20i}</span>
+            <div className={styles.fmtNameSide}>T20I</div>
+            <div className={styles.fmtCountSide}>{stats.matches.t20i}</div>
           </div>
         </div>
 
