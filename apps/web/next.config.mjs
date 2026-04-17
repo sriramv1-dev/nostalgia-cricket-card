@@ -1,9 +1,12 @@
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turbopack: {
-      root: __dirname,
-    },
+  turbopack: {
+    root: __dirname,
   },
   images: {
     remotePatterns: [
