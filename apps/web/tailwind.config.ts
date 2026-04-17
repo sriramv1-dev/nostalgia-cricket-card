@@ -14,6 +14,7 @@ const config: Config = {
         display: ["'Bebas Neue'", 'cursive'],
         body: ["'Inter'", 'sans-serif'],
         supermercado: ['var(--font-supermercado)', 'cursive'],
+        'roboto-mono': ['var(--font-roboto-mono)', 'monospace'],
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.4)',
