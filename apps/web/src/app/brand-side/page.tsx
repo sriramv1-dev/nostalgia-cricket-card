@@ -3,34 +3,32 @@
 import React, { useState } from "react";
 import { BrandCard } from "@/components/card/BrandCard";
 import { CardWrapper } from "@/components/card/CardWrapper";
-import { CharacterColors } from "@/components/card/DynamicCharacter";
+import { CharacterColors } from "@/components/card/LayeredCharacter";
 import { POSE_REGISTRY, PoseConfig } from "@/constants/poses";
 
 const DEFAULT_COLORS: CharacterColors = {
-  cap:       "#1e3a8a", // navy blue
-  capAccent: "#06b6d4", // cyan
-  gloves:    "#16a34a", // green
-  pads:      "#6d28d9", // purple
-  shoes:     "#f97316", // orange
-  bat:       "#c8956a", // wood tan
-  ball:      "#dc2626", // red
-  wickets:   "#c8956a", // wood tan
+  cap:       "#1e3a8a",
+  capAccent: "#06b6d4",
+  gloves:    "#16a34a",
+  pads:      "#6d28d9",
+  shoes:     "#f97316",
+  bat:       "#c8956a",
+  ball:      "#dc2626",
+  wickets:   "#c8956a",
 };
 
 export default function TestCardPage() {
-  const visiblePoses = POSE_REGISTRY.filter((p) => p.layers);
-
   const [poseColors, setPoseColors] = useState<Record<string, CharacterColors>>(
     () => {
       const initial: Record<string, CharacterColors> = {};
-      visiblePoses.forEach((pose) => {
+      POSE_REGISTRY.forEach((pose) => {
         initial[pose.src] = { ...DEFAULT_COLORS };
       });
       return initial;
     },
   );
 
-  const [selectedPose, setSelectedPose] = useState<PoseConfig>(visiblePoses[0]);
+  const [selectedPose, setSelectedPose] = useState<PoseConfig>(POSE_REGISTRY[0]);
   const currentColors = poseColors[selectedPose.src] || DEFAULT_COLORS;
 
   const updateColor = (part: keyof CharacterColors, color: string) => {
@@ -78,9 +76,6 @@ export default function TestCardPage() {
     },
   ];
 
-  const [showDebug, setShowDebug] = useState(false);
-
-  // Mapping of part keys to human-readable labels
   const PART_LABELS: Record<string, string> = {
     cap: "Cap Body",
     capAccent: "Cap Accent",
@@ -92,7 +87,6 @@ export default function TestCardPage() {
     wickets: "Wickets",
   };
 
-  // Pre-filter parts for Equipment (Blue/Specific) vs Accents (Yellow/Specific)
   const EQUIPMENT_PARTS = ["cap", "gloves", "pads", "shoes", "wickets"];
   const ACCENT_PARTS = ["capAccent", "bat", "ball"];
 
@@ -105,7 +99,7 @@ export default function TestCardPage() {
 
   return (
     <main className="min-h-screen bg-[#0d0d0d] flex flex-row items-center justify-center p-12 gap-16 overflow-x-auto">
-      {/* 1. Main Preview (Centered Card) */}
+      {/* 1. Main Preview */}
       <section className="flex-shrink-0 flex flex-col items-center gap-6">
         <div className="text-center mb-8">
           <h1 className="font-display text-4xl text-cream mb-2 tracking-[0.2em] font-bold uppercase">
@@ -119,39 +113,18 @@ export default function TestCardPage() {
         <CardWrapper scale={0.6}>
           <BrandCard
             colors={currentColors}
-            characterSrc={selectedPose.src}
             layers={selectedPose.layers}
-            showDebug={showDebug}
             width={selectedPose.width}
             height={selectedPose.height}
-            thresholds={{
-              padsY: selectedPose.padsThresholdY,
-              shoesY: selectedPose.shoesThresholdY,
-              glovesX: selectedPose.glovesThresholdX,
-              batX: selectedPose.batThresholdX,
-              hasBat: selectedPose.parts.includes("bat"),
-            }}
           />
         </CardWrapper>
 
-        <div className="flex items-center gap-4 mt-8">
-          <button
-            onClick={() => setShowDebug(!showDebug)}
-            className={`px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
-              showDebug
-                ? "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]"
-                : "bg-zinc-800 text-zinc-400"
-            }`}
-          >
-            {showDebug ? "Debug: ON" : "Debug: OFF"}
-          </button>
-          <span className="text-zinc-700 text-[10px] font-mono tracking-widest uppercase border border-zinc-800 px-4 py-2 rounded-full">
-            {selectedPose.width} x {selectedPose.height} px (Pose Size)
-          </span>
-        </div>
+        <span className="text-zinc-700 text-[10px] font-mono tracking-widest uppercase border border-zinc-800 px-4 py-2 rounded-full mt-8">
+          {selectedPose.width} x {selectedPose.height} px
+        </span>
       </section>
 
-      {/* 2. Control Panel (Outside of Card) */}
+      {/* 2. Control Panel */}
       <section className="flex-shrink-0 w-[450px] flex flex-col gap-8 bg-zinc-900/40 p-8 rounded-[2rem] border border-zinc-800/50 backdrop-blur-xl shadow-2xl overflow-y-auto max-h-[90vh]">
         <div className="space-y-1">
           <h2 className="text-white text-sm font-bold uppercase tracking-widest font-display">
@@ -163,13 +136,13 @@ export default function TestCardPage() {
         </div>
 
         <div className="flex flex-col gap-6">
-          {/* Pose Selection Group */}
+          {/* Pose Selection */}
           <div className="space-y-4">
             <h3 className="text-zinc-600 text-[9px] uppercase font-bold tracking-[0.2em] border-b border-zinc-800 pb-2">
               Character Pose
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              {visiblePoses.map((pose) => (
+              {POSE_REGISTRY.map((pose) => (
                 <button
                   key={pose.src}
                   onClick={() => setSelectedPose(pose)}
@@ -188,18 +161,14 @@ export default function TestCardPage() {
             </div>
           </div>
 
-          {/* Dynamic Equipment Group */}
+          {/* Equipment */}
           <div className="space-y-4">
             <h3 className="text-zinc-600 text-[9px] uppercase font-bold tracking-[0.2em] border-b border-zinc-800 pb-2">
               Equipment
             </h3>
-
             {visibleEquipment.length > 0 ? (
               visibleEquipment.map((part) => (
-                <div
-                  key={part}
-                  className="flex items-center justify-between group"
-                >
+                <div key={part} className="flex items-center justify-between group">
                   <span className="text-zinc-400 text-xs font-medium uppercase tracking-wider group-hover:text-white transition-colors">
                     {PART_LABELS[part]}
                   </span>
@@ -207,34 +176,25 @@ export default function TestCardPage() {
                     type="color"
                     value={(currentColors as any)[part] || "#3b82f6"}
                     onInput={(e) =>
-                      updateColor(
-                        part as keyof CharacterColors,
-                        (e.target as HTMLInputElement).value,
-                      )
+                      updateColor(part as keyof CharacterColors, (e.target as HTMLInputElement).value)
                     }
                     className="w-10 h-10 bg-transparent border-none cursor-pointer rounded-lg overflow-hidden"
                   />
                 </div>
               ))
             ) : (
-              <p className="text-[10px] text-zinc-700 italic">
-                No Equipment detected
-              </p>
+              <p className="text-[10px] text-zinc-700 italic">No Equipment detected</p>
             )}
           </div>
 
-          {/* Dynamic Accents Group */}
+          {/* Accents */}
           <div className="space-y-4 pt-4">
             <h3 className="text-zinc-600 text-[9px] uppercase font-bold tracking-[0.2em] border-b border-zinc-800 pb-2">
               Accents & Items
             </h3>
-
             {visibleAccents.length > 0 ? (
               visibleAccents.map((part) => (
-                <div
-                  key={part}
-                  className="flex items-center justify-between group"
-                >
+                <div key={part} className="flex items-center justify-between group">
                   <span className="text-zinc-100 text-xs font-bold uppercase tracking-wider group-hover:text-white transition-colors">
                     {PART_LABELS[part]}
                   </span>
@@ -242,23 +202,19 @@ export default function TestCardPage() {
                     type="color"
                     value={(currentColors as any)[part] || "#fbbf24"}
                     onInput={(e) =>
-                      updateColor(
-                        part as keyof CharacterColors,
-                        (e.target as HTMLInputElement).value,
-                      )
+                      updateColor(part as keyof CharacterColors, (e.target as HTMLInputElement).value)
                     }
                     className={`w-10 h-10 bg-transparent border-none cursor-pointer rounded-lg overflow-hidden ${part === "bat" || part === "ball" ? "shadow-[0_0_15px_rgba(251,191,36,0.3)]" : ""}`}
                   />
                 </div>
               ))
             ) : (
-              <p className="text-[10px] text-zinc-700 italic">
-                No Accents detected
-              </p>
+              <p className="text-[10px] text-zinc-700 italic">No Accents detected</p>
             )}
           </div>
         </div>
 
+        {/* Presets */}
         <div className="pt-6 border-t border-zinc-800">
           <h3 className="text-zinc-500 text-[9px] uppercase font-bold tracking-widest mb-4">
             Style Presets
@@ -275,7 +231,7 @@ export default function TestCardPage() {
                       cap: p.cap,
                       gloves: p.gloves,
                       pads: p.pads,
-                      shoes: p.pads, // Default shoes to pads on preset
+                      shoes: p.pads,
                       bat: p.bat,
                       capAccent: p.capAccent,
                     },
