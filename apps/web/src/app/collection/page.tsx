@@ -71,6 +71,7 @@ export default function CollectionPage() {
           </a>
         </div>
       </div>
+      </main>
     </MobileContainer>
   )
 }
