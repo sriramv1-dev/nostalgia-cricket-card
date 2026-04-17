@@ -47,6 +47,7 @@ export default function TestCardPage() {
       cap: "#1e3a8a",
       gloves: "#1e3a8a",
       pads: "#1e3a8a",
+      shoes: "#1e3a8a",
       bat: "#fbbf24",
       capAccent: "#ef4444",
     },
@@ -55,6 +56,7 @@ export default function TestCardPage() {
       cap: "#f43f5e",
       gloves: "#10b981",
       pads: "#f59e0b",
+      shoes: "#06b6d4",
       bat: "#8b5cf6",
       capAccent: "#ffffff",
     },
@@ -63,6 +65,7 @@ export default function TestCardPage() {
       cap: "#18181b",
       gloves: "#18181b",
       pads: "#18181b",
+      shoes: "#18181b",
       bat: "#ffffff",
       capAccent: "#3b82f6",
     },
@@ -71,6 +74,7 @@ export default function TestCardPage() {
       cap: "#ea580c",
       gloves: "#ea580c",
       pads: "#ea580c",
+      shoes: "#ea580c",
       bat: "#fde047",
       capAccent: "#fde047",
     },
@@ -98,7 +102,7 @@ export default function TestCardPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#0d0d0d] flex flex-row items-center justify-center p-12 gap-16 overflow-x-auto">
+    <main className="min-h-screen bg-zinc-950 flex flex-row items-center justify-center p-12 gap-16 overflow-x-auto">
       {/* 1. Main Preview */}
       <section className="flex-shrink-0 flex flex-col items-center gap-6">
         <div className="text-center mb-8">
@@ -174,7 +178,7 @@ export default function TestCardPage() {
                   </span>
                   <input
                     type="color"
-                    value={(currentColors as any)[part] || "#3b82f6"}
+                    value={currentColors[part as keyof CharacterColors] || "#3b82f6"}
                     onInput={(e) =>
                       updateColor(part as keyof CharacterColors, (e.target as HTMLInputElement).value)
                     }
@@ -200,7 +204,7 @@ export default function TestCardPage() {
                   </span>
                   <input
                     type="color"
-                    value={(currentColors as any)[part] || "#fbbf24"}
+                    value={currentColors[part as keyof CharacterColors] || "#fbbf24"}
                     onInput={(e) =>
                       updateColor(part as keyof CharacterColors, (e.target as HTMLInputElement).value)
                     }
@@ -231,7 +235,7 @@ export default function TestCardPage() {
                       cap: p.cap,
                       gloves: p.gloves,
                       pads: p.pads,
-                      shoes: p.pads,
+                      shoes: p.shoes,
                       bat: p.bat,
                       capAccent: p.capAccent,
                     },

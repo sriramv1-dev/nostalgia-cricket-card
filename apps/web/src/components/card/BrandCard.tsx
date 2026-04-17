@@ -32,7 +32,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
   return (
     <div className="relative w-[750px] h-[1050px] overflow-hidden bg-white select-none">
       {/* 1. Base Texture */}
-      <div className="absolute inset-0 opacity-[0.15] bg-retro-grain pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.25] bg-retro-grain pointer-events-none" />
 
       {/* 2. Style Accents: Concentric Ring Accents */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
