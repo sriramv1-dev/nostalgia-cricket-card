@@ -1,26 +1,12 @@
-import { CharacterColors } from '@/components/card/DynamicCharacter'
-import { LayeredCharacterSources } from '@/components/card/LayeredCharacter'
+import { CharacterColors, LayeredCharacterSources } from '@/components/card/LayeredCharacter'
 
 export interface PoseConfig {
   src: string
   label: string
   width: number
   height: number
-  /** List of parts that are actually visible and colorable in this pose. */
   parts: (keyof CharacterColors)[]
-  /**
-   * When present, this pose uses LayeredCharacter (pre-split PNG layers)
-   * instead of the canvas-based DynamicCharacter.
-   */
-  layers?: LayeredCharacterSources
-  /** Custom Y-threshold for detecting pads vs cap. */
-  padsThresholdY?: number
-  /** Custom Y-threshold for detecting shoes vs pads. */
-  shoesThresholdY?: number
-  /** Custom X-threshold for detecting gloves vs cap. */
-  glovesThresholdX?: number
-  /** Custom X-threshold for detecting bat vs cap accent. */
-  batThresholdX?: number
+  layers: LayeredCharacterSources
 }
 
 const BATTING_PARTS: (keyof CharacterColors)[] = ['cap', 'capAccent', 'bat', 'gloves', 'pads', 'shoes']
@@ -30,40 +16,12 @@ const KEEPING_PARTS:  (keyof CharacterColors)[] = ['cap', 'capAccent', 'gloves',
 const KEEPING2_PARTS: (keyof CharacterColors)[] = ['cap', 'capAccent', 'gloves', 'pads', 'shoes', 'wickets']
 
 export const POSE_REGISTRY: PoseConfig[] = [
-  { 
-    label: 'Pull Shot', 
-    src: '/images/card/pull-shot.png',
-    width: 500,
-    height: 425,
-    parts: BATTING_PARTS,
-    // Aggressive thresholds to capture the low crouch of the Pull Shot
-    padsThresholdY: 0.48,
-    shoesThresholdY: 0.85,
-    glovesThresholdX: 0.78
-  },
-  { 
-    label: 'Fast Ball', 
-    src: '/images/card/fast-ball.png',
-    width: 450,
-    height: 400,
-    parts: BOWLING_PARTS,
-    padsThresholdY: 0.6
-  },
-  { 
-    label: 'Spin Ball', 
-    src: '/images/card/spin-ball.png',
-    width: 450,
-    height: 450,
-    parts: BOWLING_PARTS,
-    padsThresholdY: 0.6
-  },
   {
     label: 'Keeping 1',
-    src: '/images/card/keeping-1.png',
+    src: '/images/card/keeping1/keeping1-body-base.png',
     width: 1760,
     height: 2410,
     parts: KEEPING_PARTS,
-    glovesThresholdX: 0.4,
     layers: {
       base:       '/images/card/keeping1/keeping1-body-base.png',
       cap:        '/images/card/keeping1/keeping1-cap.png',
@@ -77,7 +35,7 @@ export const POSE_REGISTRY: PoseConfig[] = [
   },
   {
     label: 'Keeping 2',
-    src: '/images/card/keeping-2.png',
+    src: '/images/card/keeping2/keeping2-body.png',
     width: 730,
     height: 1000,
     parts: KEEPING2_PARTS,
@@ -93,7 +51,7 @@ export const POSE_REGISTRY: PoseConfig[] = [
   },
   {
     label: 'Scoop',
-    src: '/images/card/scoop.png',
+    src: '/images/card/scoop-shot/scoop-base.png',
     width: 880,
     height: 1205,
     parts: SCOOP_PARTS,
@@ -108,25 +66,97 @@ export const POSE_REGISTRY: PoseConfig[] = [
       ball:       '/images/card/scoop-shot/scoop-ball.png',
     },
   },
-  { 
-    label: 'Shot X', 
-    src: '/images/card/shot-x.png',
-    width: 525,
-    height: 450,
-    parts: BATTING_PARTS
+  {
+    label: 'Sweep Shot',
+    src: '/images/card/sweep-shot/sweep-body.png',
+    width: 1080,
+    height: 1350,
+    parts: BATTING_PARTS,
+    layers: {
+      base:       '/images/card/sweep-shot/sweep-body.png',
+      cap:        '/images/card/sweep-shot/sweep-cap.png',
+      capAccent:  '/images/card/sweep-shot/sweep-cap-accent.png',
+      gloves:     '/images/card/sweep-shot/sweep-gloves.png',
+      pads:       '/images/card/sweep-shot/sweep-pads.png',
+      shoes:      '/images/card/sweep-shot/sweep-shoes.png',
+      bat:        '/images/card/sweep-shot/sweep-bat.png',
+    },
   },
-  { 
-    label: 'Shot XX', 
-    src: '/images/card/shot-xx.png',
-    width: 450,
-    height: 450,
-    parts: BATTING_PARTS
+  {
+    label: 'Loft Shot',
+    src: '/images/card/loft-shot/loft-body.png',
+    width: 1080,
+    height: 1350,
+    parts: BATTING_PARTS,
+    layers: {
+      base:       '/images/card/loft-shot/loft-body.png',
+      cap:        '/images/card/loft-shot/loft-cap.png',
+      capAccent:  '/images/card/loft-shot/loft-cap-accent.png',
+      gloves:     '/images/card/loft-shot/loft-gloves.png',
+      pads:       '/images/card/loft-shot/loft-pads.png',
+      shoes:      '/images/card/loft-shot/loft-shoes.png',
+      bat:        '/images/card/loft-shot/loft-bat-body.png',
+      batOutline: '/images/card/loft-shot/loft-bat-outline.png',
+    },
   },
-  { 
-    label: 'Shot Z', 
-    src: '/images/card/shot-z.png',
-    width: 425,
-    height: 425,
-    parts: BATTING_PARTS
-  }
+  {
+    label: 'Spin',
+    src: '/images/card/spin-masks/spin-body.png',
+    width: 1253,
+    height: 1244,
+    parts: BOWLING_PARTS,
+    layers: {
+      base:      '/images/card/spin-masks/spin-body.png',
+      cap:       '/images/card/spin-masks/spin-cap.png',
+      capAccent: '/images/card/spin-masks/spin-cap-accent.png',
+      ball:      '/images/card/spin-masks/spin-ball.png',
+      shoes:     '/images/card/spin-masks/spin-shoes.png',
+    },
+  },
+  {
+    label: 'Pace',
+    src: '/images/card/pace-masks/pace-body.png',
+    width: 1444,
+    height: 1270,
+    parts: BOWLING_PARTS,
+    layers: {
+      base:      '/images/card/pace-masks/pace-body.png',
+      cap:       '/images/card/pace-masks/pace-cap.png',
+      capAccent: '/images/card/pace-masks/pace-cap-accent.png',
+      ball:      '/images/card/pace-masks/pace-ball.png',
+      shoes:     '/images/card/pace-masks/pace-shoes.png',
+    },
+  },
+  {
+    label: 'Uppercut',
+    src: '/images/card/uppercut-shot/uppercut-body.png',
+    width: 880,
+    height: 1205,
+    parts: BATTING_PARTS,
+    layers: {
+      base:       '/images/card/uppercut-shot/uppercut-body.png',
+      cap:        '/images/card/uppercut-shot/uppercut-cap.png',
+      capAccent:  '/images/card/uppercut-shot/uppercut-cap-accent.png',
+      gloves:     '/images/card/uppercut-shot/uppercut-gloves.png',
+      pads:       '/images/card/uppercut-shot/uppercut-pads.png',
+      shoes:      '/images/card/uppercut-shot/uppercut-shoes.png',
+      bat:        '/images/card/uppercut-shot/uppercut-bat.png',
+    },
+  },
+  {
+    label: 'Alpha Shot',
+    src: '/images/card/alpha-shot/alpha-body.png',
+    width: 1553,
+    height: 2129,
+    parts: BATTING_PARTS,
+    layers: {
+      base:       '/images/card/alpha-shot/alpha-body.png',
+      cap:        '/images/card/alpha-shot/alpha-cap.png',
+      capAccent:  '/images/card/alpha-shot/alpha-cap-accent.png',
+      gloves:     '/images/card/alpha-shot/alpha-gloves.png',
+      pads:       '/images/card/alpha-shot/alpha-pads.png',
+      shoes:      '/images/card/alpha-shot/alpha-shoes.png',
+      bat:        '/images/card/alpha-shot/alpha-bat.png',
+    },
+  },
 ]

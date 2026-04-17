@@ -3,24 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { DynamicCharacter, CharacterColors } from "./DynamicCharacter";
-import { LayeredCharacter, LayeredCharacterSources } from "./LayeredCharacter";
+import { CharacterColors, LayeredCharacter, LayeredCharacterSources } from "./LayeredCharacter";
 
 interface BrandCardProps {
   colors?: CharacterColors;
-  characterSrc?: string;
-  /** When provided, renders LayeredCharacter instead of DynamicCharacter. */
-  layers?: LayeredCharacterSources;
-  showDebug?: boolean;
+  layers: LayeredCharacterSources;
   width?: number;
   height?: number;
-  thresholds?: {
-    padsY?: number;
-    shoesY?: number;
-    glovesX?: number;
-    batX?: number;
-    hasBat?: boolean;
-  };
 }
 
 /**
@@ -36,12 +25,9 @@ export const BrandCard: React.FC<BrandCardProps> = ({
     shoes: "#3b82f6",
     bat: "#fbbf24",
   },
-  characterSrc = "/images/card/pull-shot.png",
   layers,
-  showDebug = false,
   width = 500,
   height = 425,
-  thresholds,
 }) => {
   return (
     <div className="relative w-[750px] h-[1050px] overflow-hidden bg-white select-none">
@@ -54,30 +40,18 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         <div className="absolute w-[800px] h-[800px] border-[1px] border-slate-50 rounded-full" />
       </div>
 
-      {/* 3. Character — absolutely centered so it never affects logo/tagline layout */}
+      {/* 3. Character */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        {layers ? (
-          <LayeredCharacter
-            sources={layers}
-            colors={colors}
-            width={width}
-            height={height}
-            className="drop-shadow-[0_30px_50px_rgba(0,0,0,0.15)]"
-          />
-        ) : (
-          <DynamicCharacter
-            src={characterSrc}
-            colors={colors}
-            thresholds={thresholds}
-            showDebugBackground={showDebug}
-            width={width}
-            height={height}
-            className="drop-shadow-[0_30px_50px_rgba(0,0,0,0.15)]"
-          />
-        )}
+        <LayeredCharacter
+          sources={layers}
+          colors={colors}
+          width={width}
+          height={height}
+          className="drop-shadow-[0_30px_50px_rgba(0,0,0,0.15)]"
+        />
       </div>
 
-      {/* 4. Logo + Tagline — in their own layer above the character */}
+      {/* 4. Logo + Tagline */}
       <div className="relative z-20 w-full h-full flex flex-col items-center justify-between p-12 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -107,7 +81,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         </motion.div>
       </div>
 
-      {/* 4. Border Frame */}
+      {/* 5. Border Frame */}
       <div className="absolute inset-0 border-[16px] border-slate-50/50 pointer-events-none" />
       <div className="absolute inset-[16px] border-[1px] border-slate-100 pointer-events-none rounded-[2px]" />
     </div>

@@ -3,7 +3,16 @@
 import React from "react";
 import Image from "next/image";
 import { motion, MotionProps } from "framer-motion";
-import { CharacterColors } from "./DynamicCharacter";
+export interface CharacterColors {
+  cap: string
+  capAccent: string
+  gloves: string
+  pads: string
+  shoes: string
+  bat?: string
+  ball?: string
+  wickets?: string
+}
 
 export interface LayeredCharacterSources {
   /** Base layer — skin, hair, jersey body (no tint applied). */
@@ -14,6 +23,7 @@ export interface LayeredCharacterSources {
   pads?: string;
   shoes?: string;
   bat?: string;
+  batOutline?: string;
   ball?: string;
   wickets?: string;
 }
@@ -60,6 +70,7 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
   if (sources.pads) coloredLayers.push({ src: sources.pads, color: colors.pads });
   if (sources.shoes) coloredLayers.push({ src: sources.shoes, color: colors.shoes });
   if (sources.bat && colors.bat) coloredLayers.push({ src: sources.bat, color: colors.bat });
+  if (sources.batOutline && colors.bat) coloredLayers.push({ src: sources.batOutline, color: colors.bat });
   if (sources.ball && colors.ball) coloredLayers.push({ src: sources.ball, color: colors.ball });
   if (sources.wickets && colors.wickets) coloredLayers.push({ src: sources.wickets, color: colors.wickets });
 
