@@ -5,8 +5,10 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { CharacterColors, LayeredCharacter, LayeredCharacterSources } from "./LayeredCharacter";
 
+type PartialCharacterColors = Partial<CharacterColors>
+
 interface BrandCardProps {
-  colors?: CharacterColors;
+  colors?: PartialCharacterColors;
   layers: LayeredCharacterSources;
   width?: number;
   height?: number;
@@ -17,14 +19,7 @@ interface BrandCardProps {
  * Dimensions: 750x1050px
  */
 export const BrandCard: React.FC<BrandCardProps> = ({
-  colors = {
-    cap: "#3b82f6",
-    capAccent: "#fbbf24",
-    gloves: "#3b82f6",
-    pads: "#3b82f6",
-    shoes: "#3b82f6",
-    bat: "#fbbf24",
-  },
+  colors = {},
   layers,
   width = 500,
   height = 425,

@@ -8,6 +8,7 @@ export interface PlayerFilters {
 
 export interface PlayerWithFormatFilter extends PlayerFilters {
   format?: CricketFormat
+  search?: string
 }
 
 export interface PlayerWithFormatStats {

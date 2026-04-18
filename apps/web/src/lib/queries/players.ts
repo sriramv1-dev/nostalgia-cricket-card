@@ -18,7 +18,7 @@ function toQueryError(error: unknown): { message: string; code?: string } {
 export async function fetchPlayersWithFormatStats(
   filters: PlayerWithFormatFilter = {}
 ): Promise<QueryResult<PlayerWithFormatStats[]>> {
-  const { country, role, isActive, format = 'odi' } = filters
+  const { country, role, isActive, format = 'odi', search } = filters
   const supabase = await createSupabaseServerClient()
 
   let playersQuery = supabase
@@ -29,6 +29,7 @@ export async function fetchPlayersWithFormatStats(
   if (country !== undefined) playersQuery = playersQuery.eq('country', country)
   if (role !== undefined) playersQuery = playersQuery.eq('role', role)
   if (isActive !== undefined) playersQuery = playersQuery.eq('is_active', isActive)
+  if (search !== undefined) playersQuery = playersQuery.ilike('name', `%${search}%`)
 
   const { data: players, error: playersError } = await playersQuery
 
