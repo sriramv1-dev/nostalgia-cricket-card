@@ -30,7 +30,7 @@ export interface LayeredCharacterSources {
 
 interface LayeredCharacterProps {
   sources: LayeredCharacterSources;
-  colors: CharacterColors;
+  colors: Partial<CharacterColors>;
   /** Visual width in the unscaled 750×1050 coordinate space. */
   width?: number;
   /** Visual height in the unscaled 750×1050 coordinate space. */
@@ -62,17 +62,17 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
 }) => {
   const activeMotion = motionProps ?? defaultMotion;
 
-  const coloredLayers: Array<{ src: string; color: string }> = [];
+  const coloredLayers: Array<{ src: string; color: string | undefined }> = [];
 
   if (sources.cap) coloredLayers.push({ src: sources.cap, color: colors.cap });
   if (sources.capAccent) coloredLayers.push({ src: sources.capAccent, color: colors.capAccent });
   if (sources.gloves) coloredLayers.push({ src: sources.gloves, color: colors.gloves });
   if (sources.pads) coloredLayers.push({ src: sources.pads, color: colors.pads });
   if (sources.shoes) coloredLayers.push({ src: sources.shoes, color: colors.shoes });
-  if (sources.bat && colors.bat) coloredLayers.push({ src: sources.bat, color: colors.bat });
-  if (sources.batOutline && colors.bat) coloredLayers.push({ src: sources.batOutline, color: colors.bat });
-  if (sources.ball && colors.ball) coloredLayers.push({ src: sources.ball, color: colors.ball });
-  if (sources.wickets && colors.wickets) coloredLayers.push({ src: sources.wickets, color: colors.wickets });
+  if (sources.bat) coloredLayers.push({ src: sources.bat, color: colors.bat });
+  if (sources.batOutline) coloredLayers.push({ src: sources.batOutline, color: colors.bat });
+  if (sources.ball) coloredLayers.push({ src: sources.ball, color: colors.ball });
+  if (sources.wickets) coloredLayers.push({ src: sources.wickets, color: colors.wickets });
 
   return (
     <div className={`relative ${className}`} style={{ width, height }}>
@@ -117,21 +117,23 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
                   alt=""
                   className="absolute inset-0 w-full h-full object-contain select-none"
                 />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundColor: color,
-                    mixBlendMode: "color",
-                    WebkitMaskImage: `url(${src})`,
-                    maskImage: `url(${src})`,
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskPosition: "center",
-                    maskPosition: "center",
-                  }}
-                />
+                {color && (
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundColor: color,
+                      mixBlendMode: "color",
+                      WebkitMaskImage: `url(${src})`,
+                      maskImage: `url(${src})`,
+                      WebkitMaskSize: "contain",
+                      maskSize: "contain",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskPosition: "center",
+                      maskPosition: "center",
+                    }}
+                  />
+                )}
               </div>
             ))}
           </motion.div>
