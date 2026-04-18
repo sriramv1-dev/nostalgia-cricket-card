@@ -63,6 +63,8 @@ export const BrandCard: React.FC<BrandCardProps> = ({
             src="/images/card/logo-no-bg.png"
             alt="Big Nostalgia"
             fill
+            sizes="500px"
+            unoptimized
             className="object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.1)]"
             priority
           />
