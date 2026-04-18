@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, MotionProps } from "framer-motion";
+import { motion, AnimatePresence, MotionProps } from "framer-motion";
 export interface CharacterColors {
   cap: string
   capAccent: string
@@ -75,56 +75,64 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
   if (sources.wickets && colors.wickets) coloredLayers.push({ src: sources.wickets, color: colors.wickets });
 
   return (
-    <motion.div
-      className={`relative ${className}`}
-      style={{ width, height }}
-      {...activeMotion}
-    >
-      {/* Base layer — rendered as a normal image, no tint */}
-      <Image
-        src={sources.base}
-        alt="Character base"
-        fill
-        className="object-contain pointer-events-none select-none"
-        priority
-      />
-
-      {/* Colored layers — render original image for full detail, then apply a
-          color-blend overlay so hue/saturation shifts while luminance (shadows,
-          highlights, gradients) is preserved from the source PNG. */}
-      {coloredLayers.map(({ src, color }) => (
-        <div
-          key={src}
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          style={{ isolation: "isolate" }}
+    <div className={`relative ${className}`} style={{ width, height }}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={sources.base}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          {/* Original layer at full quality */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt=""
-            className="absolute inset-0 w-full h-full object-contain select-none"
-          />
-          {/* Color overlay — masked to this layer's alpha shape, blends only
-              hue + saturation so all shading detail survives */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundColor: color,
-              mixBlendMode: "color",
-              WebkitMaskImage: `url(${src})`,
-              maskImage: `url(${src})`,
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-            }}
-          />
-        </div>
-      ))}
-    </motion.div>
+          <motion.div className="relative w-full h-full" {...activeMotion}>
+            {/* Base layer — rendered as a normal image, no tint */}
+            <Image
+              src={sources.base}
+              alt="Character base"
+              fill
+              sizes={`${width}px`}
+              unoptimized
+              className="object-contain pointer-events-none select-none"
+              priority
+            />
+
+            {/* Colored layers — render original image for full detail, then apply a
+                color-blend overlay so hue/saturation shifts while luminance (shadows,
+                highlights, gradients) is preserved from the source PNG. */}
+            {coloredLayers.map(({ src, color }) => (
+              <div
+                key={src}
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{ isolation: "isolate" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-contain select-none"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundColor: color,
+                    mixBlendMode: "color",
+                    WebkitMaskImage: `url(${src})`,
+                    maskImage: `url(${src})`,
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                  }}
+                />
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 };
