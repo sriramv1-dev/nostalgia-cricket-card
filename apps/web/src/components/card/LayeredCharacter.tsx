@@ -80,10 +80,14 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
         <motion.div
           key={sources.base}
           className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          initial={{ opacity: 0, scale: 0.75, filter: "blur(8px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 1.15, filter: "blur(12px)" }}
+          transition={{
+            opacity: { duration: 0.25, ease: "easeInOut" },
+            scale: { type: "spring", stiffness: 300, damping: 22 },
+            filter: { duration: 0.25, ease: "easeInOut" },
+          }}
         >
           <motion.div className="relative w-full h-full" {...activeMotion}>
             {/* Base layer — rendered as a normal image, no tint */}
