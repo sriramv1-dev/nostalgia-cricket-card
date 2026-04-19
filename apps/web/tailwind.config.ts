@@ -11,9 +11,10 @@ const config: Config = {
         cream: '#fdf8f0',
       },
       fontFamily: {
-        display: ["'Bebas Neue'", 'cursive'],
-        body: ["'Inter'", 'sans-serif'],
-        supermercado: ['var(--font-supermercado)', 'cursive'],
+        display: ['var(--font-sour-gummy)', 'sans-serif'],
+        body: ['var(--font-inconsolata)', 'monospace'],
+        inconsolata: ['var(--font-inconsolata)', 'monospace'],
+        fredoka: ['var(--font-fredoka)', 'sans-serif'],
         'roboto-mono': ['var(--font-roboto-mono)', 'monospace'],
       },
       boxShadow: {

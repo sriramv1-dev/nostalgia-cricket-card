@@ -1,36 +1,40 @@
-import Link from 'next/link'
-import { MobileContainer } from '@/components/layout/MobileContainer'
+import Link from "next/link";
+import { MobileContainer } from "@/components/layout/MobileContainer";
 
 const features = [
   {
-    icon: '🃏',
-    title: 'Collect',
-    description: 'Build your collection of legendary 90s cricketers. From common to legendary rarity.',
-    href: '/collection',
-    color: 'border-blue-400/30 bg-blue-400/5',
+    icon: "🃏",
+    title: "Collect",
+    description:
+      "Build your collection of legendary 90s cricketers. From common to legendary rarity.",
+    href: "/collection",
+    color: "border-blue-400/30 bg-blue-400/5",
   },
   {
-    icon: '📦',
-    title: 'Packs',
-    description: 'Open packs to discover new players. Every pack is a mystery waiting to be revealed.',
-    href: '/packs',
-    color: 'border-gold/30 bg-gold/5',
+    icon: "📦",
+    title: "Packs",
+    description:
+      "Open packs to discover new players. Every pack is a mystery waiting to be revealed.",
+    href: "/packs",
+    color: "border-gold/30 bg-gold/5",
   },
   {
-    icon: '🔄',
-    title: 'Trade',
-    description: 'Trade cards with other collectors. Complete your collection through smart swaps.',
-    href: '/trade',
-    color: 'border-green-400/30 bg-green-400/5',
+    icon: "🔄",
+    title: "Trade",
+    description:
+      "Trade cards with other collectors. Complete your collection through smart swaps.",
+    href: "/trade",
+    color: "border-green-400/30 bg-green-400/5",
   },
   {
-    icon: '⚔️',
-    title: 'Battle',
-    description: 'Pit your best players against rivals. Stats decide who reigns supreme.',
-    href: '/battle',
-    color: 'border-brand/30 bg-brand/5',
+    icon: "⚔️",
+    title: "Battle",
+    description:
+      "Pit your best players against rivals. Stats decide who reigns supreme.",
+    href: "/battle",
+    color: "border-brand/30 bg-brand/5",
   },
-]
+];
 
 export default function HomePage() {
   return (
@@ -40,10 +44,10 @@ export default function HomePage() {
         <section className="relative flex flex-col items-center justify-center px-6 pt-16 pb-10 text-center overflow-hidden">
           {/* Background decorative elements */}
           <div
-            className="absolute inset-0 opacity-5"
+            className="absolute inset-0 opacity-5 pointer-events-none"
             style={{
               backgroundImage:
-                'radial-gradient(circle at 50% 0%, #e63946 0%, transparent 60%)',
+                "radial-gradient(circle at 50% 0%, #e63946 0%, transparent 60%)",
             }}
           />
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand via-gold to-pitch" />
@@ -71,13 +75,14 @@ export default function HomePage() {
             Relive the 90s. Collect legends.
           </p>
           <p className="text-gray-500 text-sm mb-8 max-w-xs">
-            Inspired by Big Babol Pocket Cricket — the cards you traded on the playground.
+            Inspired by Big Babol Pocket Cricket — the cards you traded on the
+            playground.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-3 w-full max-w-xs">
             <Link
-              href="/collection"
+              href="/players"
               className="w-full bg-brand hover:bg-red-600 text-white font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 shadow-lg shadow-brand/20 text-center"
             >
               Start Collecting
@@ -99,7 +104,9 @@ export default function HomePage() {
         {/* Divider */}
         <div className="flex items-center gap-3 px-6 py-2">
           <div className="flex-1 h-px bg-gray-800" />
-          <span className="text-gray-600 text-xs font-medium uppercase tracking-widest">Four Pillars</span>
+          <span className="text-gray-600 text-xs font-medium uppercase tracking-widest">
+            Four Pillars
+          </span>
           <div className="flex-1 h-px bg-gray-800" />
         </div>
 
@@ -136,5 +143,5 @@ export default function HomePage() {
         </footer>
       </main>
     </MobileContainer>
-  )
+  );
 }

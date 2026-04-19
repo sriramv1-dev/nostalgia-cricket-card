@@ -46,7 +46,7 @@ export default async function PlayerDetailPage({
   return (
     <main className="bg-zinc-950 min-h-screen">
       {/* Top bar */}
-      <div className="px-8 pt-8 flex items-center gap-6">
+      <div className="px-8 pt-4 flex items-center gap-6">
         <Link
           href="/players"
           className="text-zinc-500 hover:text-zinc-300 text-sm font-mono tracking-wider transition-colors flex-shrink-0"
@@ -67,9 +67,9 @@ export default async function PlayerDetailPage({
         <div className="flex-shrink-0 w-20" />
       </div>
 
-      <div className="px-8 py-8">
+      <div className="px-8 py-4">
         {/* View tabs */}
-        <div className="flex gap-2 mb-8 justify-center mt-6">
+        <div className="flex gap-2 mb-4 justify-center mt-2">
           {(["card", "table"] as const).map((v) => (
             <Link
               key={v}
@@ -112,7 +112,7 @@ export default async function PlayerDetailPage({
         ) : (
           <div className="max-w-3xl mx-auto">
             <div className="rounded-2xl overflow-hidden border border-zinc-800">
-              <StatsGrid stats={playerStats} theme="dark" />
+              <StatsGrid stats={playerStats} theme="dark" variant="page" />
             </div>
           </div>
         )}

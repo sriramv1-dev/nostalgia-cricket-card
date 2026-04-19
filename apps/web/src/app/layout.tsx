@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Roboto_Mono, Supermercado_One } from 'next/font/google'
+import { Inter, Roboto_Mono, Fredoka, Sour_Gummy, Inconsolata } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
@@ -12,10 +12,22 @@ const robotoMono = Roboto_Mono({
   variable: '--font-roboto-mono',
 })
 
-const supermercado = Supermercado_One({
+const inconsolata = Inconsolata({
   subsets: ['latin'],
-  weight: '400',
-  variable: '--font-supermercado',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inconsolata',
+})
+
+const sourGummy = Sour_Gummy({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '900'],
+  variable: '--font-sour-gummy',
+})
+
+const fredoka = Fredoka({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-fredoka',
 })
 
 export const metadata: Metadata = {
@@ -36,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${robotoMono.variable} ${supermercado.variable} dark`}>
+    <html lang="en" className={`${inter.variable} ${robotoMono.variable} ${fredoka.variable} ${sourGummy.variable} ${inconsolata.variable} dark`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

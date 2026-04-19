@@ -71,7 +71,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           transition={{ delay: 0.5, duration: 1 }}
           className="text-center"
         >
-          <p className="font-supermercado text-5xl text-slate-800 font-bold">
+          <p className="font-fredoka text-5xl text-slate-800 font-bold">
             Limited Edition
           </p>
           <div className="w-24 h-1 bg-slate-200 mx-auto mt-4 rounded-full" />
