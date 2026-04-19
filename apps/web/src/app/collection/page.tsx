@@ -1,12 +1,9 @@
-import { MobileContainer } from '@/components/layout/MobileContainer'
-
 export default function CollectionPage() {
   return (
-    <MobileContainer>
-      <main className="flex flex-col min-h-screen pb-20">
+    <main className="flex flex-col min-h-screen pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 md:px-8 lg:px-12 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="font-display text-3xl text-cream tracking-wider">YOUR COLLECTION</h1>
             <p className="text-gray-500 text-xs">0 cards collected</p>
@@ -19,33 +16,33 @@ export default function CollectionPage() {
       </div>
 
       {/* Filter bar */}
-      <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none">
-        {['All', 'Legendary', 'Rare', 'Uncommon', 'Common'].map((filter) => (
-          <button
-            key={filter}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              filter === 'All'
-                ? 'bg-brand text-white'
-                : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-600'
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
+      <div className="px-4 md:px-8 lg:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex gap-2 py-3 overflow-x-auto scrollbar-none">
+          {['All', 'Legendary', 'Rare', 'Uncommon', 'Common'].map((filter) => (
+            <button
+              key={filter}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                filter === 'All'
+                  ? 'bg-brand text-white'
+                  : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-600'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Loading skeleton grid */}
-      <div className="px-4 pt-2">
-        <div className="grid grid-cols-2 gap-3">
+      {/* Card grid */}
+      <div className="px-4 md:px-8 lg:px-12 pt-2 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
               className="rounded-2xl bg-gray-900/60 border border-gray-800 overflow-hidden animate-pulse"
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              {/* Card image skeleton */}
               <div className="w-full aspect-[3/4] bg-gray-800" />
-              {/* Card info skeleton */}
               <div className="p-3 space-y-2">
                 <div className="h-3.5 bg-gray-800 rounded-full w-3/4" />
                 <div className="h-2.5 bg-gray-800 rounded-full w-1/2" />
@@ -71,7 +68,6 @@ export default function CollectionPage() {
           </a>
         </div>
       </div>
-      </main>
-    </MobileContainer>
+    </main>
   )
 }
