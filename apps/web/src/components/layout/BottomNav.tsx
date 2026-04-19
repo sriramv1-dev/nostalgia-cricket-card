@@ -6,6 +6,25 @@ import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
   {
+    href: '/',
+    label: 'Home',
+    icon: (active: boolean) => (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
+      </svg>
+    ),
+  },
+  {
     href: '/collection',
     label: 'Collect',
     icon: (active: boolean) => (
@@ -110,7 +129,9 @@ export function BottomNav() {
       <div className="relative flex items-stretch">
         {NAV_ITEMS.map((item) => {
           const isActive =
-            pathname === item.href || pathname.startsWith(item.href + '/')
+            item.href === '/'
+              ? pathname === '/'
+              : pathname === item.href || pathname.startsWith(item.href + '/')
 
           return (
             <Link

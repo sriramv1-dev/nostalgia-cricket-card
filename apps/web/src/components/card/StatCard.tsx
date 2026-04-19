@@ -71,7 +71,7 @@ export default function StatCard({ stats }: { stats: PlayerStats }) {
       {/* MIDDLE ZONE */}
       <div className={styles.middleZone}></div>
 
-      <StatsGrid stats={stats} theme="light" />
+      <StatsGrid stats={stats} theme="light" variant="card" />
     </div>
   )
 }
