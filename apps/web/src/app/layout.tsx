@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
-import { Inter, Roboto_Mono, Fredoka, Sour_Gummy, Inconsolata } from 'next/font/google'
+import { Inter, Roboto_Mono, Fredoka, Sour_Gummy, Inconsolata, Nunito } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+})
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-nunito',
 })
 
 const robotoMono = Roboto_Mono({
@@ -48,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${robotoMono.variable} ${fredoka.variable} ${sourGummy.variable} ${inconsolata.variable} dark`}>
+    <html lang="en" className={`${inter.variable} ${nunito.variable} ${robotoMono.variable} ${fredoka.variable} ${sourGummy.variable} ${inconsolata.variable} dark`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
