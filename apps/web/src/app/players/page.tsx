@@ -1,10 +1,10 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { fetchPlayersWithFormatStats, fetchCountries } from '@/lib/queries/players'
 import type { PlayerWithFormatFilter } from '@/lib/queries/types'
 import type { PlayerRole, PlayerRow, PlayerStatsRow } from '@/types/database.types'
 import { CountrySelect } from './CountrySelect'
+import { PlayerCard } from './PlayerCard'
 
 type SearchParams = Promise<{
   country?: string
@@ -33,32 +33,7 @@ function buildUrl(p: {
   return qs ? `/players?${qs}` : '/players'
 }
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .map((n) => n[0] ?? '')
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-}
 
-function HeadlineStat({
-  player,
-  stats,
-}: {
-  player: PlayerRow
-  stats: PlayerStatsRow | null
-}) {
-  const showBowling = player.role === 'bowler' || player.role === 'allrounder'
-  const val = showBowling ? (stats?.bowl_wickets ?? '-') : (stats?.bat_runs ?? '-')
-  const unit = showBowling ? 'wkts' : 'runs'
-
-  return (
-    <div className="font-display text-2xl text-brand">
-      {val} <span className="text-xs text-zinc-500 font-sans">{unit}</span>
-    </div>
-  )
-}
 
 const pillBase = 'px-3 py-1 rounded-full text-xs uppercase tracking-wider font-medium transition-colors'
 const pillActive = 'bg-brand text-white'
@@ -180,39 +155,7 @@ export default async function PlayersPage({
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
           {players.map(({ player, stats }) => (
-            <Link
-              key={player.id}
-              href={`/players/${player.id}`}
-              className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all hover:scale-[1.02]"
-            >
-              {/* Photo */}
-              <div className="relative h-48 w-full bg-zinc-800">
-                <Image
-                  src={player.photo_url ?? '/images/card/player-placeholder.svg'}
-                  alt={player.name}
-                  fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-
-              {/* Info */}
-              <div className="p-4 flex flex-col gap-2">
-                <p className="font-display text-xl text-cream tracking-wide leading-tight">
-                  {player.name}
-                </p>
-                <div className="flex gap-1 flex-wrap">
-                  <span className="px-2 py-0.5 bg-zinc-800 text-zinc-400 text-[10px] uppercase tracking-wider rounded-full">
-                    {player.country}
-                  </span>
-                  <span className="px-2 py-0.5 bg-zinc-800 text-zinc-400 text-[10px] uppercase tracking-wider rounded-full capitalize">
-                    {player.role}
-                  </span>
-                </div>
-                <HeadlineStat player={player} stats={stats} />
-              </div>
-            </Link>
+            <PlayerCard key={player.id} player={player} stats={stats} />
           ))}
         </div>
       )}

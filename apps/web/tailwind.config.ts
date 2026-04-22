@@ -15,6 +15,7 @@ const config: Config = {
         body: ['var(--font-inconsolata)', 'monospace'],
         inconsolata: ['var(--font-inconsolata)', 'monospace'],
         fredoka: ['var(--font-fredoka)', 'sans-serif'],
+        nunito: ['var(--font-nunito)', 'sans-serif'],
         'roboto-mono': ['var(--font-roboto-mono)', 'monospace'],
       },
       boxShadow: {
