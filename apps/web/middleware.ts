@@ -1,10 +1,29 @@
 import { createServerClient } from '@supabase/ssr'
 import type { CookieMethodsServer } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { verifyAdminToken, ADMIN_COOKIE_NAME } from '@/lib/admin/session'
 
 const PROTECTED_ROUTES = ['/collection', '/packs', '/trade', '/battle']
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Admin routes use cookie-based auth, independent of Supabase
+  if (pathname.startsWith('/admin')) {
+    if (pathname !== '/admin/login') {
+      const token = request.cookies.get(ADMIN_COOKIE_NAME)?.value
+      const secret = process.env.ADMIN_COOKIE_SECRET ?? ''
+      const valid = token ? await verifyAdminToken(token, secret) : false
+
+      if (!valid) {
+        const loginUrl = request.nextUrl.clone()
+        loginUrl.pathname = '/admin/login'
+        return NextResponse.redirect(loginUrl)
+      }
+    }
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -35,7 +54,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
   const isProtected = PROTECTED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + '/')
   )
