@@ -1,10 +1,9 @@
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { fetchPlayersWithFormatStats, fetchCountries } from '@/lib/queries/players'
 import type { PlayerWithFormatFilter } from '@/lib/queries/types'
 import type { PlayerRole, PlayerRow, PlayerStatsRow } from '@/types/database.types'
 import { CountrySelect } from './CountrySelect'
-import { PlayerCard } from './PlayerCard'
+import { CricketCard } from '@/components/card/CricketCard'
 
 type SearchParams = Promise<{
   country?: string
@@ -99,6 +98,7 @@ export default async function PlayersPage({
         {search && (
           <Link
             href={clearSearchUrl}
+            aria-label="Clear search"
             className="bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-2 rounded-xl text-sm hover:text-zinc-200 transition-colors"
           >
             ×
@@ -110,13 +110,7 @@ export default async function PlayersPage({
       <div className="flex flex-wrap gap-3 items-center mb-6">
         {/* Country select */}
         {countries.length > 0 && (
-          <Suspense fallback={
-            <select className="bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg px-3 py-2 text-xs uppercase tracking-wider">
-              <option>All Countries</option>
-            </select>
-          }>
-            <CountrySelect countries={countries} selected={country} />
-          </Suspense>
+          <CountrySelect countries={countries} selected={country} />
         )}
 
         {/* Role pills */}
@@ -141,21 +135,26 @@ export default async function PlayersPage({
 
       {/* Grid */}
       {players.length === 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-          <div className="col-span-4 text-zinc-600 text-center py-24 flex flex-col items-center gap-4">
-            <p>No players found.</p>
-            <Link
-              href="/players"
-              className="text-xs uppercase tracking-wider border border-zinc-800 px-4 py-2 rounded-full hover:border-zinc-600 hover:text-zinc-400 transition-colors"
-            >
-              Reset filters
-            </Link>
-          </div>
+        <div className="text-zinc-600 text-center py-24 flex flex-col items-center gap-4 mt-8">
+          <p>No players found.</p>
+          <Link
+            href="/players"
+            className="text-xs uppercase tracking-wider border border-zinc-800 px-4 py-2 rounded-full hover:border-zinc-600 hover:text-zinc-400 transition-colors"
+          >
+            Reset filters
+          </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
           {players.map(({ player, stats }) => (
-            <PlayerCard key={player.id} player={player} stats={stats} />
+            <div
+              key={player.id}
+              style={{ width: '250px', height: '350px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}
+            >
+              <div style={{ width: '750px', height: '1050px', transform: 'scale(0.333)', transformOrigin: 'top left' }}>
+                <CricketCard player={player} stats={stats} variant="player" />
+              </div>
+            </div>
           ))}
         </div>
       )}

@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, MotionProps } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import type { MotionProps } from "framer-motion";
 export interface CharacterColors {
   cap: string
   capAccent: string
@@ -26,6 +27,7 @@ export interface LayeredCharacterSources {
   batOutline?: string;
   ball?: string;
   wickets?: string;
+  scale?: number;
 }
 
 interface LayeredCharacterProps {
@@ -36,7 +38,7 @@ interface LayeredCharacterProps {
   /** Visual height in the unscaled 750×1050 coordinate space. */
   height?: number;
   className?: string;
-  motionProps?: MotionProps;
+  animate?: boolean;
 }
 
 const defaultMotion: MotionProps = {
@@ -58,9 +60,9 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
   width = 500,
   height = 425,
   className = "",
-  motionProps,
+  animate = true,
 }) => {
-  const activeMotion = motionProps ?? defaultMotion;
+  const characterScale = sources.scale ?? 1.0;
 
   const coloredLayers: Array<{ src: string; color: string | undefined }> = [];
 
@@ -89,54 +91,91 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
             filter: { duration: 0.25, ease: "easeInOut" },
           }}
         >
-          <motion.div className="relative w-full h-full" {...activeMotion}>
-            {/* Base layer — rendered as a normal image, no tint */}
-            <Image
-              src={sources.base}
-              alt="Character base"
-              fill
-              sizes={`${width}px`}
-              unoptimized
-              className="object-contain pointer-events-none select-none"
-              priority
-            />
-
-            {/* Colored layers — render original image for full detail, then apply a
-                color-blend overlay so hue/saturation shifts while luminance (shadows,
-                highlights, gradients) is preserved from the source PNG. */}
-            {coloredLayers.map(({ src, color }) => (
-              <div
-                key={src}
-                aria-hidden
-                className="absolute inset-0 pointer-events-none"
-                style={{ isolation: "isolate" }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-contain select-none"
+          {(() => {
+            const layers = (
+              <>
+                {/* Base layer — rendered as a normal image, no tint */}
+                <Image
+                  src={sources.base}
+                  alt="Character base"
+                  fill
+                  sizes={`${width}px`}
+                  unoptimized
+                  className="object-contain pointer-events-none select-none"
+                  priority
                 />
-                {color && (
+                {/* Colored layers — render original image for full detail, then apply a
+                    color-blend overlay so hue/saturation shifts while luminance (shadows,
+                    highlights, gradients) is preserved from the source PNG. */}
+                {coloredLayers.map(({ src, color }) => (
                   <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundColor: color,
-                      mixBlendMode: "color",
-                      WebkitMaskImage: `url(${src})`,
-                      maskImage: `url(${src})`,
-                      WebkitMaskSize: "contain",
-                      maskSize: "contain",
-                      WebkitMaskRepeat: "no-repeat",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskPosition: "center",
-                      maskPosition: "center",
-                    }}
-                  />
-                )}
+                    key={src}
+                    aria-hidden
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ isolation: "isolate" }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-contain select-none"
+                    />
+                    {color && (
+                      <>
+                        {/* multiply pass — tints light/white pixels with the target colour */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backgroundColor: color,
+                            mixBlendMode: "multiply",
+                            WebkitMaskImage: `url(${src})`,
+                            maskImage: `url(${src})`,
+                            WebkitMaskSize: "contain",
+                            maskSize: "contain",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskPosition: "center",
+                            maskPosition: "center",
+                            opacity: 0.85,
+                          }}
+                        />
+                        {/* color pass — shifts hue on mid-tone pixels */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backgroundColor: color,
+                            mixBlendMode: "color",
+                            WebkitMaskImage: `url(${src})`,
+                            maskImage: `url(${src})`,
+                            WebkitMaskSize: "contain",
+                            maskSize: "contain",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskPosition: "center",
+                            maskPosition: "center",
+                            opacity: 0.6,
+                          }}
+                        />
+                      </>
+                    )}
+                  </div>
+                ))}
+              </>
+            );
+            return animate ? (
+              <motion.div
+                className="relative w-full h-full"
+                {...defaultMotion}
+                style={{ scale: characterScale }}
+              >
+                {layers}
+              </motion.div>
+            ) : (
+              <div className="relative w-full h-full" style={{ scale: characterScale }}>
+                {layers}
               </div>
-            ))}
-          </motion.div>
+            );
+          })()}
         </motion.div>
       </AnimatePresence>
     </div>

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { BrandCard } from "@/components/card/BrandCard";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { LayeredCharacter, CharacterColors } from "@/components/card/LayeredCharacter";
 import { CardWrapper } from "@/components/card/CardWrapper";
-import { CharacterColors } from "@/components/card/LayeredCharacter";
 import { POSE_REGISTRY, PoseConfig } from "@/constants/poses";
 
 const DEFAULT_COLORS: CharacterColors = {
@@ -115,12 +116,42 @@ export default function TestCardPage() {
         </div>
 
         <CardWrapper scale={0.6}>
-          <BrandCard
-            colors={currentColors}
-            layers={selectedPose.layers}
-            width={selectedPose.width}
-            height={selectedPose.height}
-          />
+          <div className="relative w-[750px] h-[1050px] overflow-hidden bg-white select-none">
+            <div className="absolute inset-0 opacity-[0.25] bg-retro-grain pointer-events-none" />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[600px] h-[600px] border-[2px] border-slate-100 rounded-full" />
+              <div className="absolute w-[800px] h-[800px] border-[1px] border-slate-50 rounded-full" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <LayeredCharacter
+                sources={selectedPose.layers}
+                colors={currentColors}
+                width={selectedPose.width}
+                height={selectedPose.height}
+                className="drop-shadow-[0_30px_50px_rgba(0,0,0,0.15)]"
+              />
+            </div>
+            <div className="relative z-20 w-full h-full flex flex-col items-center justify-between p-12 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative w-[500px] h-[150px]"
+              >
+                <Image
+                  src="/images/card/logo-no-bg.png"
+                  alt="Big Nostalgia"
+                  fill
+                  sizes="500px"
+                  unoptimized
+                  className="object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.1)]"
+                  priority
+                />
+              </motion.div>
+            </div>
+            <div className="absolute inset-0 border-[16px] border-slate-50/50 pointer-events-none" />
+            <div className="absolute inset-[16px] border-[1px] border-slate-100 pointer-events-none rounded-[2px]" />
+          </div>
         </CardWrapper>
 
         <span className="text-zinc-700 text-[10px] font-mono tracking-widest uppercase border border-zinc-800 px-4 py-2 rounded-full mt-8">
