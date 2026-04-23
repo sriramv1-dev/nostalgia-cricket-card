@@ -1,48 +1,6 @@
 import Image from 'next/image'
 import type { PlayerRow } from '@/types/database.types'
-
-interface RoleConfig {
-  dir: string
-  prefix: string
-  parts: string[]
-}
-
-const ROLE_CONFIGS: Record<string, RoleConfig> = {
-  bowler: {
-    dir: '/images/card/pace-masks',
-    prefix: 'pace',
-    parts: ['body', 'ball', 'cap', 'cap-accent', 'shoes']
-  },
-  keeper: {
-    dir: '/images/card/keeping1',
-    prefix: 'keeping1',
-    parts: ['body-base', 'ball', 'cap', 'cap-accent', 'gloves', 'pads', 'shoes', 'wickets']
-  },
-  allrounder: {
-    dir: '/images/card/uppercut-shot',
-    prefix: 'uppercut',
-    parts: ['body', 'bat', 'cap', 'cap-accent', 'gloves', 'pads', 'shoes']
-  },
-  batter: {
-    dir: '/images/card/alpha-shot',
-    prefix: 'alpha',
-    parts: ['body', 'bat', 'cap', 'cap-accent', 'gloves', 'pads', 'shoes']
-  }
-}
-
-function getPlayerImageScale(role: string): string {
-  switch (role) {
-    case 'keeper':
-      return 'scale-[1.5]'
-    case 'batter':
-      return 'scale-[1.5]'
-    case 'allrounder':
-      return 'scale-[1.5]'
-    case 'bowler':
-    default:
-      return 'scale-[1.0]'
-  }
-}
+import { ROLE_CONFIGS, getScaleClass } from '@/constants/characters'
 
 interface PlayerActionImageProps {
   player: PlayerRow
@@ -53,7 +11,7 @@ export function PlayerActionImage({ player }: PlayerActionImageProps) {
 
   return (
     <div className="relative flex-1 w-full my-2 px-4">
-      <div className={`relative w-full h-full transition-transform ${getPlayerImageScale(player.role)}`}>
+      <div className={`relative w-full h-full transition-transform ${getScaleClass(player.role)}`}>
         {config.parts.map((part) => (
           <Image
             key={part}

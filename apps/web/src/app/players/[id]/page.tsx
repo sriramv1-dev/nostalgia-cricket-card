@@ -2,18 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchPlayerById } from "@/lib/queries/players";
 import { playerToStatCard } from "@/lib/adapters/playerToStatCard";
-import StatCard from "@/components/card/StatCard";
-import { BrandCard } from "@/components/card/BrandCard";
-import { CardWrapper } from "@/components/card/CardWrapper";
+import { CricketCard } from "@/components/card/CricketCard";
 import { StatsGrid } from "@/components/card/StatsGrid";
-import { POSE_REGISTRY } from "@/constants/poses";
+import StatCard from "@/components/card/StatCard";
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ view?: string }>;
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-
-const ALPHA_POSE = POSE_REGISTRY.find((p) => p.label === "Alpha Shot")!;
 
 export default async function PlayerDetailPage({
   params,
@@ -37,7 +33,8 @@ export default async function PlayerDetailPage({
     );
   }
 
-  const { player } = result.data;
+  const { player, stats } = result.data;
+  const odiStats = stats.odi;
   const playerStats = playerToStatCard(
     result.data,
     player.external_id,
@@ -92,21 +89,55 @@ export default async function PlayerDetailPage({
               <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono">
                 Stat Card
               </p>
-              <CardWrapper scale={0.5}>
-                <StatCard stats={playerStats} />
-              </CardWrapper>
+              <div
+                style={{
+                  width: "375px",
+                  height: "525px",
+                  overflow: "hidden",
+                  position: "relative",
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    width: "750px",
+                    height: "1050px",
+                    transform: "scale(0.5)",
+                    transformOrigin: "top left",
+                  }}
+                >
+                  <StatCard stats={playerStats} />
+                </div>
+              </div>
             </div>
             <div className="flex flex-col items-center gap-3">
               <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono">
                 Brand Card
               </p>
-              <CardWrapper scale={0.5}>
-                <BrandCard
-                  layers={ALPHA_POSE.layers}
-                  width={ALPHA_POSE.width}
-                  height={ALPHA_POSE.height}
-                />
-              </CardWrapper>
+              <div
+                style={{
+                  width: "375px",
+                  height: "525px",
+                  overflow: "hidden",
+                  position: "relative",
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    width: "750px",
+                    height: "1050px",
+                    transform: "scale(0.5)",
+                    transformOrigin: "top left",
+                  }}
+                >
+                  <CricketCard
+                    player={player}
+                    stats={odiStats}
+                    variant="brand"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         ) : (

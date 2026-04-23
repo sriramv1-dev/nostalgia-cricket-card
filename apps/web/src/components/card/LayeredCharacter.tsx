@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, MotionProps } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import type { MotionProps } from "framer-motion";
 export interface CharacterColors {
   cap: string
   capAccent: string
@@ -26,6 +27,7 @@ export interface LayeredCharacterSources {
   batOutline?: string;
   ball?: string;
   wickets?: string;
+  scale?: number;
 }
 
 interface LayeredCharacterProps {
@@ -36,7 +38,7 @@ interface LayeredCharacterProps {
   /** Visual height in the unscaled 750×1050 coordinate space. */
   height?: number;
   className?: string;
-  motionProps?: MotionProps;
+  animate?: boolean;
 }
 
 const defaultMotion: MotionProps = {
@@ -58,9 +60,10 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
   width = 500,
   height = 425,
   className = "",
-  motionProps,
+  animate = true,
 }) => {
-  const activeMotion = motionProps ?? defaultMotion;
+  const characterScale = sources.scale ?? 1.0;
+  const Wrapper: React.ElementType = animate ? motion.div : 'div';
 
   const coloredLayers: Array<{ src: string; color: string | undefined }> = [];
 
@@ -89,7 +92,11 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
             filter: { duration: 0.25, ease: "easeInOut" },
           }}
         >
-          <motion.div className="relative w-full h-full" {...activeMotion}>
+          <Wrapper
+            className="relative w-full h-full"
+            {...(animate ? defaultMotion : {})}
+            style={{ scale: characterScale }}
+          >
             {/* Base layer — rendered as a normal image, no tint */}
             <Image
               src={sources.base}
@@ -118,25 +125,46 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
                   className="absolute inset-0 w-full h-full object-contain select-none"
                 />
                 {color && (
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundColor: color,
-                      mixBlendMode: "color",
-                      WebkitMaskImage: `url(${src})`,
-                      maskImage: `url(${src})`,
-                      WebkitMaskSize: "contain",
-                      maskSize: "contain",
-                      WebkitMaskRepeat: "no-repeat",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskPosition: "center",
-                      maskPosition: "center",
-                    }}
-                  />
+                  <>
+                    {/* multiply pass — tints light/white pixels with the target colour */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundColor: color,
+                        mixBlendMode: "multiply",
+                        WebkitMaskImage: `url(${src})`,
+                        maskImage: `url(${src})`,
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                        opacity: 0.85,
+                      }}
+                    />
+                    {/* color pass — shifts hue on mid-tone pixels */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundColor: color,
+                        mixBlendMode: "color",
+                        WebkitMaskImage: `url(${src})`,
+                        maskImage: `url(${src})`,
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                        opacity: 0.6,
+                      }}
+                    />
+                  </>
                 )}
               </div>
             ))}
-          </motion.div>
+          </Wrapper>
         </motion.div>
       </AnimatePresence>
     </div>
