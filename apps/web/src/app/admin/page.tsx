@@ -1,12 +1,12 @@
-import { createSupabaseServiceClient } from '@/lib/supabase/server'
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 
 export default async function AdminQueuePage() {
-  const supabase = createSupabaseServiceClient()
+  const supabase = createSupabaseServiceClient();
   const { data: players, error } = await supabase
-    .from('players')
-    .select('*')
-    .eq('is_active', false)
-    .order('created_at', { ascending: false })
+    .from("players")
+    .select("*")
+    .eq("is_active", false)
+    .order("created_at", { ascending: false });
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-10">
@@ -23,7 +23,9 @@ export default async function AdminQueuePage() {
       </div>
 
       {error && (
-        <p className="text-red-400 text-sm">Failed to load queue: {error.message}</p>
+        <p className="text-red-400 text-sm">
+          Failed to load queue: {error.message}
+        </p>
       )}
 
       {!error && (!players || players.length === 0) && (
@@ -32,7 +34,7 @@ export default async function AdminQueuePage() {
 
       {players && players.length > 0 && (
         <div className="flex flex-col gap-3">
-          {players.map(player => (
+          {players.map((player) => (
             <div
               key={player.id}
               className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-xl px-5 py-4"
@@ -51,5 +53,5 @@ export default async function AdminQueuePage() {
         </div>
       )}
     </main>
-  )
+  );
 }

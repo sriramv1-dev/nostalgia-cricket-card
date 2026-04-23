@@ -5,14 +5,14 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { MotionProps } from "framer-motion";
 export interface CharacterColors {
-  cap: string
-  capAccent: string
-  gloves: string
-  pads: string
-  shoes: string
-  bat?: string
-  ball?: string
-  wickets?: string
+  cap: string;
+  capAccent: string;
+  gloves: string;
+  pads: string;
+  shoes: string;
+  bat?: string;
+  ball?: string;
+  wickets?: string;
 }
 
 export interface LayeredCharacterSources {
@@ -67,14 +67,21 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
   const coloredLayers: Array<{ src: string; color: string | undefined }> = [];
 
   if (sources.cap) coloredLayers.push({ src: sources.cap, color: colors.cap });
-  if (sources.capAccent) coloredLayers.push({ src: sources.capAccent, color: colors.capAccent });
-  if (sources.gloves) coloredLayers.push({ src: sources.gloves, color: colors.gloves });
-  if (sources.pads) coloredLayers.push({ src: sources.pads, color: colors.pads });
-  if (sources.shoes) coloredLayers.push({ src: sources.shoes, color: colors.shoes });
+  if (sources.capAccent)
+    coloredLayers.push({ src: sources.capAccent, color: colors.capAccent });
+  if (sources.gloves)
+    coloredLayers.push({ src: sources.gloves, color: colors.gloves });
+  if (sources.pads)
+    coloredLayers.push({ src: sources.pads, color: colors.pads });
+  if (sources.shoes)
+    coloredLayers.push({ src: sources.shoes, color: colors.shoes });
   if (sources.bat) coloredLayers.push({ src: sources.bat, color: colors.bat });
-  if (sources.batOutline) coloredLayers.push({ src: sources.batOutline, color: colors.bat });
-  if (sources.ball) coloredLayers.push({ src: sources.ball, color: colors.ball });
-  if (sources.wickets) coloredLayers.push({ src: sources.wickets, color: colors.wickets });
+  if (sources.batOutline)
+    coloredLayers.push({ src: sources.batOutline, color: colors.bat });
+  if (sources.ball)
+    coloredLayers.push({ src: sources.ball, color: colors.ball });
+  if (sources.wickets)
+    coloredLayers.push({ src: sources.wickets, color: colors.wickets });
 
   return (
     <div className={`relative ${className}`} style={{ width, height }}>
@@ -171,7 +178,10 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
                 {layers}
               </motion.div>
             ) : (
-              <div className="relative w-full h-full" style={{ scale: characterScale }}>
+              <div
+                className="relative w-full h-full"
+                style={{ scale: characterScale }}
+              >
                 {layers}
               </div>
             );

@@ -4,8 +4,12 @@ export default function BattlePage() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 py-4">
         <div>
-          <h1 className="font-display text-3xl text-cream tracking-wider">BATTLE ARENA</h1>
-          <p className="text-gray-500 text-xs">Challenge players to card battles</p>
+          <h1 className="font-display text-3xl text-cream tracking-wider">
+            BATTLE ARENA
+          </h1>
+          <p className="text-gray-500 text-xs">
+            Challenge players to card battles
+          </p>
         </div>
       </div>
 
@@ -22,7 +26,8 @@ export default function BattlePage() {
           </p>
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-3">
             <p className="text-gray-500 text-xs">
-              Coming soon: stat-based battles with dice rolls and live commentary.
+              Coming soon: stat-based battles with dice rolls and live
+              commentary.
             </p>
           </div>
         </div>
@@ -35,25 +40,27 @@ export default function BattlePage() {
           <div className="space-y-3">
             {[
               {
-                icon: '🃏',
-                text: 'Pick your best card from your collection',
+                icon: "🃏",
+                text: "Pick your best card from your collection",
               },
               {
-                icon: '🎲',
-                text: 'Stats + dice rolls determine each round',
+                icon: "🎲",
+                text: "Stats + dice rolls determine each round",
               },
               {
-                icon: '🏆',
-                text: 'Best of 5 rounds wins the battle',
+                icon: "🏆",
+                text: "Best of 5 rounds wins the battle",
               },
               {
-                icon: '🪙',
-                text: 'Winners earn coins and XP',
+                icon: "🪙",
+                text: "Winners earn coins and XP",
               },
             ].map((item) => (
               <div key={item.text} className="flex items-start gap-3">
                 <span className="text-lg">{item.icon}</span>
-                <p className="text-gray-500 text-xs leading-relaxed">{item.text}</p>
+                <p className="text-gray-500 text-xs leading-relaxed">
+                  {item.text}
+                </p>
               </div>
             ))}
           </div>
@@ -66,19 +73,24 @@ export default function BattlePage() {
           </h3>
           <div className="space-y-2">
             {[
-              { role: 'Batsman vs Bowler', stat: 'Batting Avg vs Economy' },
-              { role: 'Bowler vs Batsman', stat: 'Bowling Avg vs Strike Rate' },
-              { role: 'Allrounder vs Any', stat: 'Combined rating advantage' },
-              { role: 'Keeper vs Any', stat: 'Catches bonus applies' },
+              { role: "Batsman vs Bowler", stat: "Batting Avg vs Economy" },
+              { role: "Bowler vs Batsman", stat: "Bowling Avg vs Strike Rate" },
+              { role: "Allrounder vs Any", stat: "Combined rating advantage" },
+              { role: "Keeper vs Any", stat: "Catches bonus applies" },
             ].map((item) => (
-              <div key={item.role} className="flex items-start justify-between gap-2">
+              <div
+                key={item.role}
+                className="flex items-start justify-between gap-2"
+              >
                 <span className="text-gray-500 text-xs">{item.role}</span>
-                <span className="text-gray-600 text-xs text-right shrink-0">{item.stat}</span>
+                <span className="text-gray-600 text-xs text-right shrink-0">
+                  {item.stat}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </div>
     </main>
-  )
+  );
 }

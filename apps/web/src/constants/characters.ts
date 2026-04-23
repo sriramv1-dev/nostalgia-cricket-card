@@ -55,7 +55,7 @@ export function getCharacterSources(role: string): CharacterSources {
       };
     case "keeper":
       return {
-        scale: 1.35,
+        scale: 1.5,
         base: "/images/card/keeping1/keeping1-body-base.png",
         cap: "/images/card/keeping1/keeping1-cap.png",
         capAccent: "/images/card/keeping1/keeping1-cap-accent.png",

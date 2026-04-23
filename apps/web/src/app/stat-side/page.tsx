@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import React from 'react'
-import StatCard, { PlayerStats } from '@/components/card/StatCard'
-import { CardWrapper } from '@/components/card/CardWrapper'
+import React from "react";
+import StatCard, { PlayerStats } from "@/components/card/StatCard";
+import { CardWrapper } from "@/components/card/CardWrapper";
 
 const KALLIS_DATA: PlayerStats = {
   info: {
-    number: '042',
-    rarity: 'LEGEND',
-    name: 'Jacques Kallis',
-    country: '🇿🇦 South Africa',
-    role: 'Allrounder',
-    image: '/images/players/kallis.jpg',
+    number: "042",
+    rarity: "LEGEND",
+    name: "Jacques Kallis",
+    country: "🇿🇦 South Africa",
+    role: "Allrounder",
+    image: "/images/players/kallis.jpg",
   },
   matches: { test: 166, odi: 328, t20i: 25 },
   batting: {
@@ -26,7 +26,7 @@ const KALLIS_DATA: PlayerStats = {
   },
   bowling: {
     wickets: { test: 292, odi: 273, t20i: 12 },
-    bestBowl: { test: '6/54', odi: '5/30', t20i: '4/15' },
+    bestBowl: { test: "6/54", odi: "5/30", t20i: "4/15" },
     avg: { test: 32.6, odi: 31.8, t20i: 27.8 },
     economy: { test: 2.83, odi: 4.84, t20i: 7.24 },
     fourWkts: { test: 7, odi: 2, t20i: 1 },
@@ -37,14 +37,18 @@ const KALLIS_DATA: PlayerStats = {
     runOuts: { test: 5, odi: 15, t20i: 2 },
     stumpings: { test: 0, odi: 0, t20i: 0 },
   },
-}
+};
 
 export default function StatSidePage() {
   return (
     <main className="min-h-screen bg-[#0a0f1e] flex flex-col items-center justify-center p-8 gap-8">
       <div className="text-center mb-4">
-        <h1 className="text-white text-3xl font-bold tracking-tight mb-2 uppercase font-mono">Stat Side Preview</h1>
-        <p className="text-zinc-500 text-sm uppercase tracking-[0.3em] font-mono">HTML v7 → React Conversion</p>
+        <h1 className="text-white text-3xl font-bold tracking-tight mb-2 uppercase font-mono">
+          Stat Side Preview
+        </h1>
+        <p className="text-zinc-500 text-sm uppercase tracking-[0.3em] font-mono">
+          HTML v7 → React Conversion
+        </p>
       </div>
 
       <CardWrapper scale={0.45}>
@@ -56,5 +60,5 @@ export default function StatSidePage() {
         <p>Dynamic Data Mapping Enabled</p>
       </footer>
     </main>
-  )
+  );
 }
