@@ -63,7 +63,6 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
   animate = true,
 }) => {
   const characterScale = sources.scale ?? 1.0;
-  const Wrapper: React.ElementType = animate ? motion.div : 'div';
 
   const coloredLayers: Array<{ src: string; color: string | undefined }> = [];
 
@@ -92,79 +91,91 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
             filter: { duration: 0.25, ease: "easeInOut" },
           }}
         >
-          <Wrapper
-            className="relative w-full h-full"
-            {...(animate ? defaultMotion : {})}
-            style={{ scale: characterScale }}
-          >
-            {/* Base layer — rendered as a normal image, no tint */}
-            <Image
-              src={sources.base}
-              alt="Character base"
-              fill
-              sizes={`${width}px`}
-              unoptimized
-              className="object-contain pointer-events-none select-none"
-              priority
-            />
-
-            {/* Colored layers — render original image for full detail, then apply a
-                color-blend overlay so hue/saturation shifts while luminance (shadows,
-                highlights, gradients) is preserved from the source PNG. */}
-            {coloredLayers.map(({ src, color }) => (
-              <div
-                key={src}
-                aria-hidden
-                className="absolute inset-0 pointer-events-none"
-                style={{ isolation: "isolate" }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-contain select-none"
+          {(() => {
+            const layers = (
+              <>
+                {/* Base layer — rendered as a normal image, no tint */}
+                <Image
+                  src={sources.base}
+                  alt="Character base"
+                  fill
+                  sizes={`${width}px`}
+                  unoptimized
+                  className="object-contain pointer-events-none select-none"
+                  priority
                 />
-                {color && (
-                  <>
-                    {/* multiply pass — tints light/white pixels with the target colour */}
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundColor: color,
-                        mixBlendMode: "multiply",
-                        WebkitMaskImage: `url(${src})`,
-                        maskImage: `url(${src})`,
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                        opacity: 0.85,
-                      }}
+                {/* Colored layers — render original image for full detail, then apply a
+                    color-blend overlay so hue/saturation shifts while luminance (shadows,
+                    highlights, gradients) is preserved from the source PNG. */}
+                {coloredLayers.map(({ src, color }) => (
+                  <div
+                    key={src}
+                    aria-hidden
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ isolation: "isolate" }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-contain select-none"
                     />
-                    {/* color pass — shifts hue on mid-tone pixels */}
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundColor: color,
-                        mixBlendMode: "color",
-                        WebkitMaskImage: `url(${src})`,
-                        maskImage: `url(${src})`,
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                        opacity: 0.6,
-                      }}
-                    />
-                  </>
-                )}
+                    {color && (
+                      <>
+                        {/* multiply pass — tints light/white pixels with the target colour */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backgroundColor: color,
+                            mixBlendMode: "multiply",
+                            WebkitMaskImage: `url(${src})`,
+                            maskImage: `url(${src})`,
+                            WebkitMaskSize: "contain",
+                            maskSize: "contain",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskPosition: "center",
+                            maskPosition: "center",
+                            opacity: 0.85,
+                          }}
+                        />
+                        {/* color pass — shifts hue on mid-tone pixels */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backgroundColor: color,
+                            mixBlendMode: "color",
+                            WebkitMaskImage: `url(${src})`,
+                            maskImage: `url(${src})`,
+                            WebkitMaskSize: "contain",
+                            maskSize: "contain",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskPosition: "center",
+                            maskPosition: "center",
+                            opacity: 0.6,
+                          }}
+                        />
+                      </>
+                    )}
+                  </div>
+                ))}
+              </>
+            );
+            return animate ? (
+              <motion.div
+                className="relative w-full h-full"
+                {...defaultMotion}
+                style={{ scale: characterScale }}
+              >
+                {layers}
+              </motion.div>
+            ) : (
+              <div className="relative w-full h-full" style={{ scale: characterScale }}>
+                {layers}
               </div>
-            ))}
-          </Wrapper>
+            );
+          })()}
         </motion.div>
       </AnimatePresence>
     </div>
