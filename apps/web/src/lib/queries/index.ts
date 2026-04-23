@@ -3,7 +3,7 @@ export {
   fetchPlayerById,
   fetchPlayerByExternalId,
   fetchCountries,
-} from './players'
+} from "./players";
 
 export type {
   PlayerFilters,
@@ -12,4 +12,4 @@ export type {
   PlayerWithAllStats,
   QueryResult,
   QueryError,
-} from './types'
+} from "./types";

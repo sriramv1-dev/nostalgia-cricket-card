@@ -5,7 +5,9 @@ export default function CollectionPage() {
       <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 md:px-8 lg:px-12 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl text-cream tracking-wider">YOUR COLLECTION</h1>
+            <h1 className="font-display text-3xl text-cream tracking-wider">
+              YOUR COLLECTION
+            </h1>
             <p className="text-gray-500 text-xs">0 cards collected</p>
           </div>
           <div className="flex items-center gap-1.5 bg-gray-900 border border-gold/20 rounded-full px-3 py-1.5">
@@ -18,13 +20,13 @@ export default function CollectionPage() {
       {/* Filter bar */}
       <div className="px-4 md:px-8 lg:px-12 max-w-7xl mx-auto w-full">
         <div className="flex gap-2 py-3 overflow-x-auto scrollbar-none">
-          {['All', 'Legendary', 'Rare', 'Uncommon', 'Common'].map((filter) => (
+          {["All", "Legendary", "Rare", "Uncommon", "Common"].map((filter) => (
             <button
               key={filter}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                filter === 'All'
-                  ? 'bg-brand text-white'
-                  : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-600'
+                filter === "All"
+                  ? "bg-brand text-white"
+                  : "bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-600"
               }`}
             >
               {filter}
@@ -69,5 +71,5 @@ export default function CollectionPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { fetchPlayerById } from "@/lib/queries/players";
 import { playerToStatCard } from "@/lib/adapters/playerToStatCard";
 import { CricketCard } from "@/components/card/CricketCard";
+import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { StatsGrid } from "@/components/card/StatsGrid";
 import StatCard from "@/components/card/StatCard";
 
@@ -38,7 +39,7 @@ export default async function PlayerDetailPage({
   const playerStats = playerToStatCard(
     result.data,
     player.external_id,
-    "Legend",
+    "Legend"
   );
   return (
     <main className="bg-zinc-950 min-h-screen">
@@ -114,30 +115,9 @@ export default async function PlayerDetailPage({
               <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono">
                 Brand Card
               </p>
-              <div
-                style={{
-                  width: "375px",
-                  height: "525px",
-                  overflow: "hidden",
-                  position: "relative",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    width: "750px",
-                    height: "1050px",
-                    transform: "scale(0.5)",
-                    transformOrigin: "top left",
-                  }}
-                >
-                  <CricketCard
-                    player={player}
-                    stats={odiStats}
-                    variant="brand"
-                  />
-                </div>
-              </div>
+              <CardScaleWrapper scale="detail">
+                <CricketCard player={player} stats={odiStats} variant="brand" />
+              </CardScaleWrapper>
             </div>
           </div>
         ) : (

@@ -1,15 +1,15 @@
-import type { PlayerWithAllStats } from '@/lib/queries/types'
-import type { Rarity } from '@/types'
+import type { PlayerWithAllStats } from "@/lib/queries/types";
+import type { Rarity } from "@/types";
 
 // ── Card generation ───────────────────────────────────────────────────────────
 
 export function buildFlavourTextPrompt(
   data: PlayerWithAllStats,
-  rarity: Rarity,
+  rarity: Rarity
 ): string {
-  const { player, stats } = data
-  const t = stats.test
-  const o = stats.odi
+  const { player, stats } = data;
+  const t = stats.test;
+  const o = stats.odi;
 
   return `You are writing flavour text for a nostalgic cricket trading card.
 
@@ -20,76 +20,83 @@ Rarity: ${rarity}
 Era: unknown
 
 Career highlights:
-- Test: ${t?.bat_runs ?? '-'} runs, ${t?.bat_100s ?? '-'} centuries, ${t?.bowl_wickets ?? '-'} wickets
-- ODI: ${o?.bat_runs ?? '-'} runs, ${o?.bat_100s ?? '-'} centuries, ${o?.bowl_wickets ?? '-'} wickets
+- Test: ${t?.bat_runs ?? "-"} runs, ${t?.bat_100s ?? "-"} centuries, ${t?.bowl_wickets ?? "-"} wickets
+- ODI: ${o?.bat_runs ?? "-"} runs, ${o?.bat_100s ?? "-"} centuries, ${o?.bowl_wickets ?? "-"} wickets
 
-Write a single evocative sentence (max 20 words) that captures this player's legend — the kind of line printed at the bottom of a collector card. No statistics, just atmosphere and myth.`
+Write a single evocative sentence (max 20 words) that captures this player's legend — the kind of line printed at the bottom of a collector card. No statistics, just atmosphere and myth.`;
 }
 
 export function buildSpecialAbilityPrompt(
   data: PlayerWithAllStats,
-  rarity: Rarity,
+  rarity: Rarity
 ): string {
-  const { player, stats } = data
-  const t = stats.test
-  const o = stats.odi
-  const p = stats.t20i
+  const { player, stats } = data;
+  const t = stats.test;
+  const o = stats.odi;
+  const p = stats.t20i;
 
-  const isBatsman = player.role === 'batter' || player.role === 'keeper'
-  const isBowler = player.role === 'bowler'
+  const isBatsman = player.role === "batter" || player.role === "keeper";
+  const isBowler = player.role === "bowler";
 
   const dominantStat = isBatsman
-    ? `Batting avg: Test ${t?.bat_average ?? '-'}, ODI ${o?.bat_average ?? '-'}, T20I ${p?.bat_average ?? '-'}`
+    ? `Batting avg: Test ${t?.bat_average ?? "-"}, ODI ${o?.bat_average ?? "-"}, T20I ${p?.bat_average ?? "-"}`
     : isBowler
-      ? `Bowling avg: Test ${t?.bowl_average ?? '-'}, ODI ${o?.bowl_average ?? '-'}, T20I ${p?.bowl_average ?? '-'}`
-      : `Batting avg: ${t?.bat_average ?? '-'} / Bowling avg: ${t?.bowl_average ?? '-'}`
+      ? `Bowling avg: Test ${t?.bowl_average ?? "-"}, ODI ${o?.bowl_average ?? "-"}, T20I ${p?.bowl_average ?? "-"}`
+      : `Batting avg: ${t?.bat_average ?? "-"} / Bowling avg: ${t?.bowl_average ?? "-"}`;
 
   return `You are designing a special ability for a nostalgic cricket trading card game.
 
 Player: ${player.name}
 Role: ${player.role}
-Rarity: ${rarity} (${rarity === 'legendary' ? 'most powerful, game-changing' : rarity === 'rare' ? 'strong, match-winning' : rarity === 'uncommon' ? 'solid, reliable' : 'basic'})
+Rarity: ${rarity} (${rarity === "legendary" ? "most powerful, game-changing" : rarity === "rare" ? "strong, match-winning" : rarity === "uncommon" ? "solid, reliable" : "basic"})
 ${dominantStat}
 
 Return ONLY a JSON object with two fields:
 - "name": a short ability name (2–4 words, title case)
 - "description": one sentence describing the in-game effect (max 20 words, present tense)
 
-Example: {"name": "Golden Arm", "description": "Reduces opponent's batting average by 10 for one round."}`
+Example: {"name": "Golden Arm", "description": "Reduces opponent's batting average by 10 for one round."}`;
 }
 
 // ── Battle commentary ─────────────────────────────────────────────────────────
 
 export interface BattleContext {
-  player1Name: string
-  player2Name: string
-  player1Roll: number
-  player2Roll: number
-  round: number
-  totalRounds: number
+  player1Name: string;
+  player2Name: string;
+  player1Roll: number;
+  player2Roll: number;
+  round: number;
+  totalRounds: number;
 }
 
 export function buildBattleCommentaryPrompt(ctx: BattleContext): string {
-  const { player1Name, player2Name, player1Roll, player2Roll, round, totalRounds } = ctx
-  const winner = player1Roll > player2Roll ? player1Name : player2Name
-  const loser = player1Roll > player2Roll ? player2Name : player1Name
-  const margin = Math.abs(player1Roll - player2Roll)
-  const isTie = player1Roll === player2Roll
+  const {
+    player1Name,
+    player2Name,
+    player1Roll,
+    player2Roll,
+    round,
+    totalRounds,
+  } = ctx;
+  const winner = player1Roll > player2Roll ? player1Name : player2Name;
+  const loser = player1Roll > player2Roll ? player2Name : player1Name;
+  const margin = Math.abs(player1Roll - player2Roll);
+  const isTie = player1Roll === player2Roll;
 
   return `You are a passionate cricket commentator writing punchy card-battle commentary.
 
 Round ${round} of ${totalRounds}:
 - ${player1Name} rolled ${player1Roll}
 - ${player2Name} rolled ${player2Roll}
-${isTie ? '- Result: Tie!' : `- Winner: ${winner} by ${margin} points`}
+${isTie ? "- Result: Tie!" : `- Winner: ${winner} by ${margin} points`}
 
 Write exactly one sentence of live commentary (max 18 words). ${
     isTie
-      ? 'Reflect the dramatic deadlock.'
+      ? "Reflect the dramatic deadlock."
       : margin > 30
         ? `Emphasise ${winner}'s dominance over ${loser}.`
         : `Capture the close contest between them.`
-  } Use cricket language. No emojis.`
+  } Use cricket language. No emojis.`;
 }
 
 // ── Player stats lookup ───────────────────────────────────────────────────────
@@ -148,16 +155,16 @@ Rules:
 - bowl_best format must be "W/R" e.g. "6/54" or null
 - bat_highest is an integer (ignore * for not out)
 - Omit a format entirely by setting it to null if all stats for that format are null
-`.trim()
+`.trim();
 }
 
 // ── Player bio ────────────────────────────────────────────────────────────────
 
 export function buildPlayerBioPrompt(data: PlayerWithAllStats): string {
-  const { player, stats } = data
-  const t = stats.test
-  const o = stats.odi
-  const p = stats.t20i
+  const { player, stats } = data;
+  const t = stats.test;
+  const o = stats.odi;
+  const p = stats.t20i;
 
   return `Write a 2-sentence nostalgic biography for a cricket trading card.
 
@@ -167,9 +174,9 @@ Role: ${player.role}
 Era: unknown
 
 Stats snapshot:
-- Test: ${t?.bat_runs ?? '-'} runs, ${t?.bat_100s ?? '-'} 100s, ${t?.bowl_wickets ?? '-'} wickets
-- ODI: ${o?.bat_runs ?? '-'} runs, ${o?.bat_100s ?? '-'} 100s, ${o?.bowl_wickets ?? '-'} wickets
-- T20I: ${p?.bat_runs ?? '-'} runs, ${p?.bowl_wickets ?? '-'} wickets
+- Test: ${t?.bat_runs ?? "-"} runs, ${t?.bat_100s ?? "-"} 100s, ${t?.bowl_wickets ?? "-"} wickets
+- ODI: ${o?.bat_runs ?? "-"} runs, ${o?.bat_100s ?? "-"} 100s, ${o?.bowl_wickets ?? "-"} wickets
+- T20I: ${p?.bat_runs ?? "-"} runs, ${p?.bowl_wickets ?? "-"} wickets
 
-Tone: warm, reverent, like a collector recalling a golden era. No bullet points.`
+Tone: warm, reverent, like a collector recalling a golden era. No bullet points.`;
 }

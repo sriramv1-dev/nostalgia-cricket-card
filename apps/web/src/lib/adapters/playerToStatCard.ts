@@ -1,33 +1,33 @@
-import type { PlayerWithAllStats } from '@/lib/queries/types'
-import type { PlayerStats, StatValue } from '@/components/card/StatCard'
+import type { PlayerWithAllStats } from "@/lib/queries/types";
+import type { PlayerStats, StatValue } from "@/components/card/StatCard";
 
 function sv(
   a: number | string | null | undefined,
   b: number | string | null | undefined,
-  c: number | string | null | undefined,
+  c: number | string | null | undefined
 ): StatValue {
-  return { test: a ?? '-', odi: b ?? '-', t20i: c ?? '-' }
+  return { test: a ?? "-", odi: b ?? "-", t20i: c ?? "-" };
 }
 
 function cap(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1)
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export function playerToStatCard(
   data: PlayerWithAllStats,
   cardNumber: string,
-  rarity: string,
+  rarity: string
 ): PlayerStats {
-  const { player, stats } = data
-  const t = stats.test
-  const o = stats.odi
-  const p = stats.t20i
+  const { player, stats } = data;
+  const t = stats.test;
+  const o = stats.odi;
+  const p = stats.t20i;
 
-  const KALLIS_ID = 'c6806b06-0903-498e-82d5-9b5cbd0e0f7c'
+  const KALLIS_ID = "c6806b06-0903-498e-82d5-9b5cbd0e0f7c";
   const image =
     player.id === KALLIS_ID
-      ? '/images/players/kallis.jpg'
-      : (player.photo_url ?? '/images/card/player-placeholder.svg')
+      ? "/images/players/kallis.jpg"
+      : (player.photo_url ?? "/images/card/player-placeholder.svg");
 
   return {
     info: {
@@ -62,5 +62,5 @@ export function playerToStatCard(
       runOuts: sv(t?.field_runouts, o?.field_runouts, p?.field_runouts),
       stumpings: sv(t?.field_stumpings, o?.field_stumpings, p?.field_stumpings),
     },
-  }
+  };
 }

@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   {
-    href: '/',
-    label: 'Home',
+    href: "/",
+    label: "Home",
     icon: (active: boolean) => (
       <svg
         width="22"
         height="22"
         viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
+        fill={active ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
@@ -25,14 +25,14 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: '/collection',
-    label: 'Collect',
+    href: "/collection",
+    label: "Collect",
     icon: (active: boolean) => (
       <svg
         width="22"
         height="22"
         viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
+        fill={active ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
@@ -47,14 +47,14 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: '/packs',
-    label: 'Packs',
+    href: "/packs",
+    label: "Packs",
     icon: (active: boolean) => (
       <svg
         width="22"
         height="22"
         viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
+        fill={active ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
@@ -68,8 +68,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: '/trade',
-    label: 'Trade',
+    href: "/trade",
+    label: "Trade",
     icon: (active: boolean) => (
       <svg
         width="22"
@@ -94,8 +94,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: '/battle',
-    label: 'Battle',
+    href: "/battle",
+    label: "Battle",
     icon: (active: boolean) => (
       <svg
         width="22"
@@ -116,10 +116,10 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
-]
+];
 
 export function BottomNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto">
@@ -129,19 +129,19 @@ export function BottomNav() {
       <div className="relative flex items-stretch">
         {NAV_ITEMS.map((item) => {
           const isActive =
-            item.href === '/'
-              ? pathname === '/'
-              : pathname === item.href || pathname.startsWith(item.href + '/')
+            item.href === "/"
+              ? pathname === "/"
+              : pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                'flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 transition-colors duration-150',
+                "flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 transition-colors duration-150",
                 isActive
-                  ? 'text-brand'
-                  : 'text-gray-600 hover:text-gray-400 active:text-gray-300',
+                  ? "text-brand"
+                  : "text-gray-600 hover:text-gray-400 active:text-gray-300"
               )}
             >
               {/* Active indicator dot */}
@@ -153,16 +153,16 @@ export function BottomNav() {
 
               <span
                 className={cn(
-                  'text-[10px] font-semibold uppercase tracking-wider leading-none',
-                  isActive ? 'text-brand' : 'text-gray-600',
+                  "text-[10px] font-semibold uppercase tracking-wider leading-none",
+                  isActive ? "text-brand" : "text-gray-600"
                 )}
               >
                 {item.label}
               </span>
             </Link>
-          )
+          );
         })}
       </div>
     </nav>
-  )
+  );
 }

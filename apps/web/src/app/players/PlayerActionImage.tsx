@@ -1,13 +1,13 @@
-import Image from 'next/image'
-import type { PlayerRow } from '@/types/database.types'
-import { ROLE_CONFIGS } from '@/constants/characters'
+import Image from "next/image";
+import type { PlayerRow } from "@/types/database.types";
+import { ROLE_CONFIGS } from "@/constants/characters";
 
 interface PlayerActionImageProps {
-  player: PlayerRow
+  player: PlayerRow;
 }
 
 export function PlayerActionImage({ player }: PlayerActionImageProps) {
-  const config = ROLE_CONFIGS[player.role] || ROLE_CONFIGS.batter
+  const config = ROLE_CONFIGS[player.role] || ROLE_CONFIGS.batter;
 
   return (
     <div className="relative flex-1 w-full my-2 px-4">
@@ -24,5 +24,5 @@ export function PlayerActionImage({ player }: PlayerActionImageProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }

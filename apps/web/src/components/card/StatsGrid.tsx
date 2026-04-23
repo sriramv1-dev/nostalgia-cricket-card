@@ -211,7 +211,11 @@ const SplitRow = ({
 
 // ─── StatsGrid ────────────────────────────────────────────────────────────────
 
-export const StatsGrid = ({ stats, theme, variant = "page" }: StatsGridProps) => {
+export const StatsGrid = ({
+  stats,
+  theme,
+  variant = "page",
+}: StatsGridProps) => {
   const t = tokens[theme];
   const v = variantTokens[variant];
 
@@ -270,27 +274,61 @@ export const StatsGrid = ({ stats, theme, variant = "page" }: StatsGridProps) =>
       <div
         className={`rounded-[10px] p-[2.5px] flex flex-col gap-[1.5px] ${t.secBat}`}
       >
-        <StatRow label="Runs" values={stats.batting.runs} labelClass={t.labelBat} t={t} v={v} />
-        <StatRow label="Not Outs" values={stats.batting.notOuts} labelClass={t.labelBat} t={t} v={v} />
-        <StatRow label="High Score" values={stats.batting.highScore} labelClass={t.labelBat} t={t} v={v} />
-        <StatRow label="Bat. Avg" values={stats.batting.avg} labelClass={t.labelBat} t={t} v={v} />
-        <SplitRow
-          lbl1="50s" lbl2="100s"
-          splitLabelClass={t.splitLabelBat}
-          borderClass="border-[#ea580c]"
-          val1Test={stats.batting.halfCenturies.test} val2Test={stats.batting.centuries.test}
-          val1Odi={stats.batting.halfCenturies.odi} val2Odi={stats.batting.centuries.odi}
-          val1T20={stats.batting.halfCenturies.t20i} val2T20={stats.batting.centuries.t20i}
-          t={t} v={v}
+        <StatRow
+          label="Runs"
+          values={stats.batting.runs}
+          labelClass={t.labelBat}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Not Outs"
+          values={stats.batting.notOuts}
+          labelClass={t.labelBat}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="High Score"
+          values={stats.batting.highScore}
+          labelClass={t.labelBat}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Bat. Avg"
+          values={stats.batting.avg}
+          labelClass={t.labelBat}
+          t={t}
+          v={v}
         />
         <SplitRow
-          lbl1="4s" lbl2="6s"
+          lbl1="50s"
+          lbl2="100s"
           splitLabelClass={t.splitLabelBat}
           borderClass="border-[#ea580c]"
-          val1Test={stats.batting.fours.test} val2Test={stats.batting.sixes.test}
-          val1Odi={stats.batting.fours.odi} val2Odi={stats.batting.sixes.odi}
-          val1T20={stats.batting.fours.t20i} val2T20={stats.batting.sixes.t20i}
-          t={t} v={v}
+          val1Test={stats.batting.halfCenturies.test}
+          val2Test={stats.batting.centuries.test}
+          val1Odi={stats.batting.halfCenturies.odi}
+          val2Odi={stats.batting.centuries.odi}
+          val1T20={stats.batting.halfCenturies.t20i}
+          val2T20={stats.batting.centuries.t20i}
+          t={t}
+          v={v}
+        />
+        <SplitRow
+          lbl1="4s"
+          lbl2="6s"
+          splitLabelClass={t.splitLabelBat}
+          borderClass="border-[#ea580c]"
+          val1Test={stats.batting.fours.test}
+          val2Test={stats.batting.sixes.test}
+          val1Odi={stats.batting.fours.odi}
+          val2Odi={stats.batting.sixes.odi}
+          val1T20={stats.batting.fours.t20i}
+          val2T20={stats.batting.sixes.t20i}
+          t={t}
+          v={v}
         />
       </div>
 
@@ -298,18 +336,47 @@ export const StatsGrid = ({ stats, theme, variant = "page" }: StatsGridProps) =>
       <div
         className={`rounded-[10px] p-[2.5px] flex flex-col gap-[1.5px] ${t.secBwl}`}
       >
-        <StatRow label="Wickets" values={stats.bowling.wickets} labelClass={t.labelBwl} t={t} v={v} />
-        <StatRow label="Best Bowl" values={stats.bowling.bestBowl} labelClass={t.labelBwl} t={t} v={v} />
-        <StatRow label="Bowl Avg" values={stats.bowling.avg} labelClass={t.labelBwl} t={t} v={v} />
-        <StatRow label="Economy" values={stats.bowling.economy} labelClass={t.labelBwl} t={t} v={v} />
+        <StatRow
+          label="Wickets"
+          values={stats.bowling.wickets}
+          labelClass={t.labelBwl}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Best Bowl"
+          values={stats.bowling.bestBowl}
+          labelClass={t.labelBwl}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Bowl Avg"
+          values={stats.bowling.avg}
+          labelClass={t.labelBwl}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Economy"
+          values={stats.bowling.economy}
+          labelClass={t.labelBwl}
+          t={t}
+          v={v}
+        />
         <SplitRow
-          lbl1="4W" lbl2="5W"
+          lbl1="4W"
+          lbl2="5W"
           splitLabelClass={t.splitLabelBwl}
           borderClass="border-[#7c3aed]"
-          val1Test={stats.bowling.fourWkts.test} val2Test={stats.bowling.fiveWkts.test}
-          val1Odi={stats.bowling.fourWkts.odi} val2Odi={stats.bowling.fiveWkts.odi}
-          val1T20={stats.bowling.fourWkts.t20i} val2T20={stats.bowling.fiveWkts.t20i}
-          t={t} v={v}
+          val1Test={stats.bowling.fourWkts.test}
+          val2Test={stats.bowling.fiveWkts.test}
+          val1Odi={stats.bowling.fourWkts.odi}
+          val2Odi={stats.bowling.fiveWkts.odi}
+          val1T20={stats.bowling.fourWkts.t20i}
+          val2T20={stats.bowling.fiveWkts.t20i}
+          t={t}
+          v={v}
         />
       </div>
 
@@ -317,9 +384,27 @@ export const StatsGrid = ({ stats, theme, variant = "page" }: StatsGridProps) =>
       <div
         className={`rounded-[10px] p-[2.5px] flex flex-col gap-[1.5px] ${t.secFld}`}
       >
-        <StatRow label="Catches" values={stats.fielding.catches} labelClass={t.labelFld} t={t} v={v} />
-        <StatRow label="Run Outs" values={stats.fielding.runOuts} labelClass={t.labelFld} t={t} v={v} />
-        <StatRow label="Stumpings" values={stats.fielding.stumpings} labelClass={t.labelFld} t={t} v={v} />
+        <StatRow
+          label="Catches"
+          values={stats.fielding.catches}
+          labelClass={t.labelFld}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Run Outs"
+          values={stats.fielding.runOuts}
+          labelClass={t.labelFld}
+          t={t}
+          v={v}
+        />
+        <StatRow
+          label="Stumpings"
+          values={stats.fielding.stumpings}
+          labelClass={t.labelFld}
+          t={t}
+          v={v}
+        />
       </div>
     </div>
   );

@@ -1,46 +1,46 @@
-import Image from 'next/image'
-import styles from './StatCard.module.css'
-import { StatsGrid } from './StatsGrid'
+import Image from "next/image";
+import styles from "./StatCard.module.css";
+import { StatsGrid } from "./StatsGrid";
 
 export interface StatValue {
-  test: string | number
-  odi: string | number
-  t20i: string | number
+  test: string | number;
+  odi: string | number;
+  t20i: string | number;
 }
 
 export interface PlayerStats {
   info: {
-    number: string
-    rarity: string
-    name: string
-    country: string
-    role: string
-    image: string
-  }
-  matches: StatValue
+    number: string;
+    rarity: string;
+    name: string;
+    country: string;
+    role: string;
+    image: string;
+  };
+  matches: StatValue;
   batting: {
-    runs: StatValue
-    notOuts: StatValue
-    highScore: StatValue
-    avg: StatValue
-    halfCenturies: StatValue
-    centuries: StatValue
-    fours: StatValue
-    sixes: StatValue
-  }
+    runs: StatValue;
+    notOuts: StatValue;
+    highScore: StatValue;
+    avg: StatValue;
+    halfCenturies: StatValue;
+    centuries: StatValue;
+    fours: StatValue;
+    sixes: StatValue;
+  };
   bowling: {
-    wickets: StatValue
-    bestBowl: StatValue
-    avg: StatValue
-    economy: StatValue
-    fourWkts: StatValue
-    fiveWkts: StatValue
-  }
+    wickets: StatValue;
+    bestBowl: StatValue;
+    avg: StatValue;
+    economy: StatValue;
+    fourWkts: StatValue;
+    fiveWkts: StatValue;
+  };
   fielding: {
-    catches: StatValue
-    runOuts: StatValue
-    stumpings: StatValue
-  }
+    catches: StatValue;
+    runOuts: StatValue;
+    stumpings: StatValue;
+  };
 }
 
 export default function StatCard({ stats }: { stats: PlayerStats }) {
@@ -48,9 +48,9 @@ export default function StatCard({ stats }: { stats: PlayerStats }) {
     <div className={styles.statCard}>
       {/* PHOTO AREA */}
       <div className={styles.photoArea}>
-        <Image 
-          src={stats.info.image} 
-          alt={stats.info.name} 
+        <Image
+          src={stats.info.image}
+          alt={stats.info.name}
           fill
           priority
           sizes="750px"
@@ -73,5 +73,5 @@ export default function StatCard({ stats }: { stats: PlayerStats }) {
 
       <StatsGrid stats={stats} theme="light" variant="card" />
     </div>
-  )
+  );
 }

@@ -3,19 +3,22 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { LayeredCharacter, CharacterColors } from "@/components/card/LayeredCharacter";
+import {
+  LayeredCharacter,
+  CharacterColors,
+} from "@/components/card/LayeredCharacter";
 import { CardWrapper } from "@/components/card/CardWrapper";
 import { POSE_REGISTRY, PoseConfig } from "@/constants/poses";
 
 const DEFAULT_COLORS: CharacterColors = {
-  cap:       "#1e3a8a",
+  cap: "#1e3a8a",
   capAccent: "#06b6d4",
-  gloves:    "#16a34a",
-  pads:      "#6d28d9",
-  shoes:     "#f97316",
-  bat:       "#c8956a",
-  ball:      "#dc2626",
-  wickets:   "#c8956a",
+  gloves: "#16a34a",
+  pads: "#6d28d9",
+  shoes: "#f97316",
+  bat: "#c8956a",
+  ball: "#dc2626",
+  wickets: "#c8956a",
 };
 
 export default function TestCardPage() {
@@ -26,10 +29,12 @@ export default function TestCardPage() {
         initial[pose.src] = { ...DEFAULT_COLORS };
       });
       return initial;
-    },
+    }
   );
 
-  const [selectedPose, setSelectedPose] = useState<PoseConfig>(POSE_REGISTRY[0]);
+  const [selectedPose, setSelectedPose] = useState<PoseConfig>(
+    POSE_REGISTRY[0]
+  );
   const currentColors = poseColors[selectedPose.src] || DEFAULT_COLORS;
 
   const updateColor = (part: keyof CharacterColors, color: string) => {
@@ -96,10 +101,10 @@ export default function TestCardPage() {
   const ACCENT_PARTS = ["capAccent", "bat", "ball"];
 
   const visibleEquipment = selectedPose.parts.filter((p) =>
-    EQUIPMENT_PARTS.includes(p),
+    EQUIPMENT_PARTS.includes(p)
   );
   const visibleAccents = selectedPose.parts.filter((p) =>
-    ACCENT_PARTS.includes(p),
+    ACCENT_PARTS.includes(p)
   );
 
   return (
@@ -203,22 +208,32 @@ export default function TestCardPage() {
             </h3>
             {visibleEquipment.length > 0 ? (
               visibleEquipment.map((part) => (
-                <div key={part} className="flex items-center justify-between group">
+                <div
+                  key={part}
+                  className="flex items-center justify-between group"
+                >
                   <span className="text-zinc-400 text-xs font-medium uppercase tracking-wider group-hover:text-white transition-colors">
                     {PART_LABELS[part]}
                   </span>
                   <input
                     type="color"
-                    value={currentColors[part as keyof CharacterColors] || "#3b82f6"}
+                    value={
+                      currentColors[part as keyof CharacterColors] || "#3b82f6"
+                    }
                     onInput={(e) =>
-                      updateColor(part as keyof CharacterColors, (e.target as HTMLInputElement).value)
+                      updateColor(
+                        part as keyof CharacterColors,
+                        (e.target as HTMLInputElement).value
+                      )
                     }
                     className="w-10 h-10 bg-transparent border-none cursor-pointer rounded-lg overflow-hidden"
                   />
                 </div>
               ))
             ) : (
-              <p className="text-[10px] text-zinc-700 italic">No Equipment detected</p>
+              <p className="text-[10px] text-zinc-700 italic">
+                No Equipment detected
+              </p>
             )}
           </div>
 
@@ -229,22 +244,32 @@ export default function TestCardPage() {
             </h3>
             {visibleAccents.length > 0 ? (
               visibleAccents.map((part) => (
-                <div key={part} className="flex items-center justify-between group">
+                <div
+                  key={part}
+                  className="flex items-center justify-between group"
+                >
                   <span className="text-zinc-100 text-xs font-bold uppercase tracking-wider group-hover:text-white transition-colors">
                     {PART_LABELS[part]}
                   </span>
                   <input
                     type="color"
-                    value={currentColors[part as keyof CharacterColors] || "#fbbf24"}
+                    value={
+                      currentColors[part as keyof CharacterColors] || "#fbbf24"
+                    }
                     onInput={(e) =>
-                      updateColor(part as keyof CharacterColors, (e.target as HTMLInputElement).value)
+                      updateColor(
+                        part as keyof CharacterColors,
+                        (e.target as HTMLInputElement).value
+                      )
                     }
                     className={`w-10 h-10 bg-transparent border-none cursor-pointer rounded-lg overflow-hidden ${part === "bat" || part === "ball" ? "shadow-[0_0_15px_rgba(251,191,36,0.3)]" : ""}`}
                   />
                 </div>
               ))
             ) : (
-              <p className="text-[10px] text-zinc-700 italic">No Accents detected</p>
+              <p className="text-[10px] text-zinc-700 italic">
+                No Accents detected
+              </p>
             )}
           </div>
         </div>
