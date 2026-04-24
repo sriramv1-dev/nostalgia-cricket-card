@@ -11,4 +11,9 @@ export const CARD_DISPLAY = {
   detail: { width: 375, height: 525 },
 } as const;
 
+export const CARD_LOGO = {
+  brand: { width: 500, height: 200 },
+  player: { height: 180 },
+} as const;
+
 export type CardScale = keyof typeof CARD_SCALES;
