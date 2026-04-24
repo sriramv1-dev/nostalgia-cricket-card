@@ -8,9 +8,35 @@ export interface CountryStyles {
   character: CharacterColors;
 }
 
-export function getCountryStyles(country: string): CountryStyles {
-  const styles: Record<string, CountryStyles> = {
-    India: {
+interface CountryData {
+  styles: CountryStyles;
+  code: string;
+  flag: string;
+}
+
+const FALLBACK: CountryData = {
+  styles: {
+    border: "#CE1126",
+    bgStart: "#f8f5e9",
+    bgEnd: "#f2ead0",
+    textColor: "#ffffff",
+    character: {
+      cap: "#CE1126",
+      capAccent: "#ffffff",
+      gloves: "#CE1126",
+      pads: "#CE1126",
+      shoes: "#ffffff",
+      bat: "#8B4513",
+      ball: "#CE1126",
+    },
+  },
+  code: "UNK",
+  flag: "🏏",
+};
+
+export const COUNTRIES: Record<string, CountryData> = {
+  India: {
+    styles: {
       border: "#0038A8",
       bgStart: "#f0f7ff",
       bgEnd: "#cfe3ff",
@@ -25,7 +51,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    Australia: {
+    code: "IND",
+    flag: "🇮🇳",
+  },
+  Australia: {
+    styles: {
       border: "#FFCD00",
       bgStart: "#fffdf5",
       bgEnd: "#fff2c2",
@@ -40,7 +70,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    "Sri Lanka": {
+    code: "AUS",
+    flag: "🇦🇺",
+  },
+  "Sri Lanka": {
+    styles: {
       border: "#000080",
       bgStart: "#f0f0ff",
       bgEnd: "#d1d1ff",
@@ -55,7 +89,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    Pakistan: {
+    code: "SL",
+    flag: "🇱🇰",
+  },
+  Pakistan: {
+    styles: {
       border: "#00401A",
       bgStart: "#f2fdf5",
       bgEnd: "#d4f7de",
@@ -70,7 +108,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    "South Africa": {
+    code: "PAK",
+    flag: "🇵🇰",
+  },
+  "South Africa": {
+    styles: {
       border: "#007749",
       bgStart: "#f5fdf9",
       bgEnd: "#dcf7eb",
@@ -85,7 +127,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    "West Indies": {
+    code: "SA",
+    flag: "🇿🇦",
+  },
+  "West Indies": {
+    styles: {
       border: "#7B0041",
       bgStart: "#fdf5f9",
       bgEnd: "#f7d4e6",
@@ -100,7 +146,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    England: {
+    code: "WI",
+    flag: "🌴",
+  },
+  England: {
+    styles: {
       border: "#CE1126",
       bgStart: "#fff5f5",
       bgEnd: "#ffdada",
@@ -115,7 +165,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    "New Zealand": {
+    code: "ENG",
+    flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  },
+  "New Zealand": {
+    styles: {
       border: "#000000",
       bgStart: "#fcfcfc",
       bgEnd: "#e0e0e0",
@@ -130,7 +184,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    Zimbabwe: {
+    code: "NZ",
+    flag: "🇳🇿",
+  },
+  Zimbabwe: {
+    styles: {
       border: "#E4332E",
       bgStart: "#fff7f7",
       bgEnd: "#ffe0e0",
@@ -145,7 +203,11 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-    Bangladesh: {
+    code: "ZIM",
+    flag: "🇿🇼",
+  },
+  Bangladesh: {
+    styles: {
       border: "#006A4E",
       bgStart: "#f5fdf9",
       bgEnd: "#dcf7eb",
@@ -160,54 +222,19 @@ export function getCountryStyles(country: string): CountryStyles {
         ball: "#CE1126",
       },
     },
-  };
-  return (
-    styles[country] || {
-      border: "#CE1126",
-      bgStart: "#f8f5e9",
-      bgEnd: "#f2ead0",
-      textColor: "#ffffff",
-      character: {
-        cap: "#CE1126",
-        capAccent: "#ffffff",
-        gloves: "#CE1126",
-        pads: "#CE1126",
-        shoes: "#ffffff",
-        bat: "#8B4513",
-        ball: "#CE1126",
-      },
-    }
-  );
+    code: "BAN",
+    flag: "🇧🇩",
+  },
+};
+
+export function getCountryStyles(country: string): CountryStyles {
+  return (COUNTRIES[country] ?? FALLBACK).styles;
 }
 
 export function getCountryCode(country: string): string {
-  const codes: Record<string, string> = {
-    India: "IND",
-    Australia: "AUS",
-    "Sri Lanka": "SL",
-    Pakistan: "PAK",
-    "South Africa": "SA",
-    England: "ENG",
-    "West Indies": "WI",
-    "New Zealand": "NZ",
-    Zimbabwe: "ZIM",
-    Bangladesh: "BAN",
-  };
-  return codes[country] || country.slice(0, 3).toUpperCase();
+  return COUNTRIES[country]?.code ?? country.slice(0, 3).toUpperCase();
 }
 
 export function getCountryFlag(country: string): string {
-  const flags: Record<string, string> = {
-    India: "🇮🇳",
-    Australia: "🇦🇺",
-    "Sri Lanka": "🇱🇰",
-    Pakistan: "🇵🇰",
-    "South Africa": "🇿🇦",
-    England: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-    "West Indies": "🌴",
-    "New Zealand": "🇳🇿",
-    Zimbabwe: "🇿🇼",
-    Bangladesh: "🇧🇩",
-  };
-  return flags[country] || "🏏";
+  return COUNTRIES[country]?.flag ?? "🏏";
 }

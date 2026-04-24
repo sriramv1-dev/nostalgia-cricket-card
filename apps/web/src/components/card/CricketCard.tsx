@@ -10,6 +10,7 @@ import {
   getCountryFlag,
 } from "@/constants/countries";
 import { getCharacterSources } from "@/constants/characters";
+import { CARD_WIDTH, CARD_HEIGHT, CARD_LOGO } from "@/constants/card";
 
 interface CricketCardProps {
   player: PlayerRow;
@@ -84,8 +85,8 @@ export function CricketCard({ player, stats, variant }: CricketCardProps) {
       href={isBrand ? "/brand-side" : `/players/${player.id}`}
       className={`block relative overflow-hidden select-none transition-transform duration-200 hover:scale-[1.02]${isBrand ? "" : " shadow-2xl"}`}
       style={{
-        width: 750,
-        height: 1050,
+        width: CARD_WIDTH,
+        height: CARD_HEIGHT,
         backgroundColor: countryStyles.border,
       }}
     >
@@ -100,11 +101,10 @@ export function CricketCard({ player, stats, variant }: CricketCardProps) {
       <div className="relative z-10 w-full h-full flex flex-col items-center">
         {/* Logo */}
         <div
-          className="relative flex-shrink-0"
+          className="relative flex-shrink-0 mt-10"
           style={{
-            width: isBrand ? 500 : "100%",
-            height: isBrand ? 200 : 180,
-            marginTop: 40,
+            width: isBrand ? CARD_LOGO.brand.width : "100%",
+            height: isBrand ? CARD_LOGO.brand.height : CARD_LOGO.player.height,
           }}
         >
           <Image
