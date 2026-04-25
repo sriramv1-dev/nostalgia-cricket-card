@@ -6,6 +6,7 @@ export type PlayerRow = {
   name: string;
   country: string;
   role: PlayerRole;
+  shot: string | null;
   photo_url: string | null;
   is_active: boolean;
   external_id: string;
@@ -13,6 +14,15 @@ export type PlayerRow = {
   created_at: string;
   updated_at: string;
 };
+
+export interface ShotRow {
+  id: string;
+  label: string;
+  valid_roles: string[];
+  folder_path: string;
+  is_active: boolean;
+  created_at: string;
+}
 
 export type PlayerStatsRow = {
   id: string;

@@ -1,12 +1,4 @@
-import type { CharacterColors } from "@/components/card/LayeredCharacter";
-
-export interface CountryStyles {
-  border: string;
-  bgStart: string;
-  bgEnd: string;
-  textColor: string;
-  character: CharacterColors;
-}
+import type { CharacterColors, CountryStyles } from "@/types/card";
 
 interface CountryData {
   styles: CountryStyles;
@@ -28,6 +20,7 @@ const FALLBACK: CountryData = {
       shoes: "#ffffff",
       bat: "#8B4513",
       ball: "#CE1126",
+      wickets: "#c8956a",
     },
   },
   code: "UNK",
@@ -49,6 +42,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "IND",
@@ -68,6 +62,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#00401A",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "AUS",
@@ -87,6 +82,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "SL",
@@ -106,6 +102,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "PAK",
@@ -125,6 +122,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "SA",
@@ -144,6 +142,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "WI",
@@ -163,6 +162,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "ENG",
@@ -182,6 +182,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#000000",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "NZ",
@@ -201,6 +202,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "ZIM",
@@ -220,6 +222,7 @@ export const COUNTRIES: Record<string, CountryData> = {
         shoes: "#ffffff",
         bat: "#8B4513",
         ball: "#CE1126",
+        wickets: "#c8956a",
       },
     },
     code: "BAN",
