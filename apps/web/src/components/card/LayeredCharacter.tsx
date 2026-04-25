@@ -4,16 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { MotionProps } from "framer-motion";
-export interface CharacterColors {
-  cap: string;
-  capAccent: string;
-  gloves: string;
-  pads: string;
-  shoes: string;
-  bat?: string;
-  ball?: string;
-  wickets?: string;
-}
+import type { CharacterColors } from "@/types/card";
 
 export interface LayeredCharacterSources {
   /** Base layer — skin, hair, jersey body (no tint applied). */
@@ -111,9 +102,6 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
                   className="object-contain pointer-events-none select-none"
                   priority
                 />
-                {/* Colored layers — render original image for full detail, then apply a
-                    color-blend overlay so hue/saturation shifts while luminance (shadows,
-                    highlights, gradients) is preserved from the source PNG. */}
                 {coloredLayers.map(({ src, color }) => (
                   <div
                     key={src}
@@ -121,49 +109,31 @@ export const LayeredCharacter: React.FC<LayeredCharacterProps> = ({
                     className="absolute inset-0 pointer-events-none"
                     style={{ isolation: "isolate" }}
                   >
+                    {/* Original PNG — visible, provides shape, shadow, highlight detail */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src}
                       alt=""
                       className="absolute inset-0 w-full h-full object-contain select-none"
                     />
+                    {/* Hue overlay — shifts color while preserving luminance from original */}
                     {color && (
-                      <>
-                        {/* multiply pass — tints light/white pixels with the target colour */}
-                        <div
-                          className="absolute inset-0"
-                          style={{
-                            backgroundColor: color,
-                            mixBlendMode: "multiply",
-                            WebkitMaskImage: `url(${src})`,
-                            maskImage: `url(${src})`,
-                            WebkitMaskSize: "contain",
-                            maskSize: "contain",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskPosition: "center",
-                            maskPosition: "center",
-                            opacity: 0.85,
-                          }}
-                        />
-                        {/* color pass — shifts hue on mid-tone pixels */}
-                        <div
-                          className="absolute inset-0"
-                          style={{
-                            backgroundColor: color,
-                            mixBlendMode: "color",
-                            WebkitMaskImage: `url(${src})`,
-                            maskImage: `url(${src})`,
-                            WebkitMaskSize: "contain",
-                            maskSize: "contain",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskPosition: "center",
-                            maskPosition: "center",
-                            opacity: 0.6,
-                          }}
-                        />
-                      </>
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundColor: color,
+                          mixBlendMode: "hue",
+                          WebkitMaskImage: `url(${src})`,
+                          maskImage: `url(${src})`,
+                          WebkitMaskSize: "contain",
+                          maskSize: "contain",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskPosition: "center",
+                          maskPosition: "center",
+                          opacity: 0.9,
+                        }}
+                      />
                     )}
                   </div>
                 ))}

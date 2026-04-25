@@ -20,6 +20,7 @@ export async function insertPlayerWithStats(
       name: geminiPlayer.name,
       country: geminiPlayer.country,
       role: geminiPlayer.role,
+      shot: null,
       external_id: geminiPlayer.external_id || `gemini_${Date.now()}`,
       is_active: false,
       photo_url: null,

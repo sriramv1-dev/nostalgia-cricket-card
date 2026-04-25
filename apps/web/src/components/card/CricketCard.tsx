@@ -4,28 +4,28 @@ import Link from "next/link";
 import Image from "next/image";
 import type { PlayerRow, PlayerStatsRow } from "@/types/database.types";
 import { LayeredCharacter } from "@/components/card/LayeredCharacter";
-import {
-  getCountryStyles,
-  getCountryCode,
-  getCountryFlag,
-} from "@/constants/countries";
+import { getCountryCode, getCountryFlag } from "@/constants/countries";
 import { getCharacterSources } from "@/constants/characters";
 import { CARD_WIDTH, CARD_HEIGHT, CARD_LOGO } from "@/constants/card";
+import { useCountryTheme } from "@/hooks";
+import type { CountryStyles } from "@/types/card";
 
 interface CricketCardProps {
   player: PlayerRow;
   stats?: PlayerStatsRow | null;
   variant: "player" | "brand";
+  themeOverride?: CountryStyles;
 }
 
 function CardFooter({
   player,
   stats,
+  countryStyles,
 }: {
   player: PlayerRow;
   stats?: PlayerStatsRow | null;
+  countryStyles: CountryStyles;
 }) {
-  const countryStyles = getCountryStyles(player.country);
   const isBowler = player.role === "bowler" || player.role === "allrounder";
   const matches = isBowler ? stats?.bowl_matches : stats?.bat_matches;
   const secondaryStatValue = isBowler
@@ -75,26 +75,32 @@ function CardFooter({
   );
 }
 
-export function CricketCard({ player, stats, variant }: CricketCardProps) {
-  const countryStyles = getCountryStyles(player.country);
-  const characterSources = getCharacterSources(player.role);
+export function CricketCard({
+  player,
+  stats,
+  variant,
+  themeOverride,
+}: CricketCardProps) {
+  const { styles: countryStyles } = useCountryTheme(player.country);
+  const activeStyles = themeOverride ?? countryStyles;
+  const characterSources = getCharacterSources(player.role, player.shot);
   const isBrand = variant === "brand";
 
   return (
     <Link
-      href={isBrand ? "/brand-side" : `/players/${player.id}`}
+      href={isBrand ? "/admin/card-builder" : `/players/${player.id}`}
       className={`block relative overflow-hidden select-none transition-transform duration-200 hover:scale-[1.02]${isBrand ? "" : " shadow-2xl"}`}
       style={{
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
-        backgroundColor: countryStyles.border,
+        backgroundColor: activeStyles.border,
       }}
     >
       {/* Inner Panel */}
       <div
         className="absolute inset-[30px] rounded-[3rem] overflow-hidden"
         style={{
-          background: `linear-gradient(to bottom, ${countryStyles.bgStart}, ${countryStyles.bgEnd})`,
+          background: `linear-gradient(to bottom, ${activeStyles.bgStart}, ${activeStyles.bgEnd})`,
         }}
       />
       {/* Content */}
@@ -121,14 +127,18 @@ export function CricketCard({ player, stats, variant }: CricketCardProps) {
         <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
           <LayeredCharacter
             sources={characterSources}
-            colors={countryStyles.character}
+            colors={activeStyles.character}
             width={580}
             height={580}
             animate={isBrand}
           />
         </div>
         {/* Footer */}
-        <CardFooter player={player} stats={stats} />
+        <CardFooter
+          player={player}
+          stats={stats}
+          countryStyles={activeStyles}
+        />
       </div>
     </Link>
   );

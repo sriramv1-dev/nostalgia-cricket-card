@@ -147,3 +147,18 @@ types/             ← TypeScript interfaces and types
 - Remove all `console.log` statements.
 - Confirm no magic numbers remain in JSX.
 - Confirm no inline styles for static values.
+
+---
+
+## Pending Migrations (do not refactor until explicitly instructed)
+
+### `useCountryTheme` — localStorage → Supabase
+The `useCountryTheme` hook currently reads and writes to localStorage.
+This is intentional and temporary. It will be migrated to Supabase
+(`country_themes` table) in a future task.
+
+Rules until migration:
+- Do not add any additional localStorage keys or reads outside this hook
+- Do not inline theme storage anywhere else in the codebase
+- The hook's return signature must not change — only the internal storage mechanism will swap
+- When migrating: only `useCountryTheme.ts` changes, nothing else

@@ -1,7 +1,5 @@
-import {
-  CharacterColors,
-  LayeredCharacterSources,
-} from "@/components/card/LayeredCharacter";
+import { LayeredCharacterSources } from "@/components/card/LayeredCharacter";
+import type { CharacterColors } from "@/types/card";
 
 export interface PoseConfig {
   src: string;
