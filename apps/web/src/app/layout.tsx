@@ -7,6 +7,7 @@ import {
   Inconsolata,
   Nunito,
 } from "next/font/google";
+import { Header } from "@/components/layout/Header";
 import "./globals.css";
 
 const inter = Inter({
@@ -74,7 +75,8 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-gray-950 text-white font-body antialiased min-h-screen">
-        {children}
+        <Header />
+        <main className="pt-[60px] pb-[60px] md:pb-0">{children}</main>
       </body>
     </html>
   );
