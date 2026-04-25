@@ -62,6 +62,7 @@ export default async function PlayersPage({
       {/* Search + filter bar */}
       <div className="mb-6">
         <SearchFilterBar
+          key={[search, ...countries, ...roles].join("|")}
           initialSearch={search}
           initialCountries={countries}
           initialRoles={roles.map(

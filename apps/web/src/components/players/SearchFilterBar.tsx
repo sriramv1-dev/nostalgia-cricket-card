@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const COUNTRIES = [
   "India",
@@ -38,7 +38,6 @@ export function SearchFilterBar({
   initialRoles,
 }: SearchFilterBarProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [searchText, setSearchText] = useState(initialSearch);
   const [selectedCountries, setSelectedCountries] =
@@ -49,17 +48,6 @@ export function SearchFilterBar({
 
   const countryRef = useRef<HTMLDivElement>(null);
   const roleRef = useRef<HTMLDivElement>(null);
-
-  // Sync state with URL on browser back/forward navigation
-  useEffect(() => {
-    setSearchText(searchParams.get("search") ?? "");
-    setSelectedCountries(searchParams.getAll("country"));
-    setSelectedRoles(
-      searchParams
-        .getAll("role")
-        .map((r) => r.charAt(0).toUpperCase() + r.slice(1))
-    );
-  }, [searchParams]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
