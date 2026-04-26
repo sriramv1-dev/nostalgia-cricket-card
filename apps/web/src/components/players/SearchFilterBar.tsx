@@ -67,9 +67,11 @@ export function SearchFilterBar({
   }, []);
 
   const toggleCountry = (c: string) => {
-    setSelectedCountries((prev) =>
-      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
-    );
+    setSelectedCountries((prev) => {
+      if (prev.length === 0) return [c];
+      if (prev.includes(c)) return prev.length === 1 ? [] : prev.filter((x) => x !== c);
+      return [...prev, c];
+    });
   };
 
   const removeCountry = (c: string) => {
@@ -77,9 +79,11 @@ export function SearchFilterBar({
   };
 
   const toggleRole = (r: string) => {
-    setSelectedRoles((prev) =>
-      prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]
-    );
+    setSelectedRoles((prev) => {
+      if (prev.length === 0) return [r];
+      if (prev.includes(r)) return prev.length === 1 ? [] : prev.filter((x) => x !== r);
+      return [...prev, r];
+    });
   };
 
   const removeRole = (r: string) => {
@@ -131,6 +135,17 @@ export function SearchFilterBar({
           </button>
           {countryOpen && (
             <div className="absolute top-[calc(100%+8px)] left-0 bg-zinc-900 border border-zinc-700 rounded-xl p-2 z-50 min-w-[180px] shadow-xl">
+              <div
+                onClick={() => setSelectedCountries([])}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] uppercase tracking-wide border-b border-white/5 mb-1"
+              >
+                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 ${
+                  selectedCountries.length === 0 ? "bg-[#e8257a]/40 border-[#e8257a] text-white" : "border-white/20"
+                }`}>
+                  {selectedCountries.length === 0 && "✓"}
+                </div>
+                <span className={selectedCountries.length === 0 ? "text-white" : "text-white/60"}>All Countries</span>
+              </div>
               {COUNTRIES.map((c) => (
                 <div
                   key={c}
@@ -178,6 +193,17 @@ export function SearchFilterBar({
           </button>
           {roleOpen && (
             <div className="absolute top-[calc(100%+8px)] left-0 bg-zinc-900 border border-zinc-700 rounded-xl p-2 z-50 min-w-[160px] shadow-xl">
+              <div
+                onClick={() => setSelectedRoles([])}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] uppercase tracking-wide border-b border-white/5 mb-1"
+              >
+                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 ${
+                  selectedRoles.length === 0 ? "bg-[#e8257a]/40 border-[#e8257a] text-white" : "border-white/20"
+                }`}>
+                  {selectedRoles.length === 0 && "✓"}
+                </div>
+                <span className={selectedRoles.length === 0 ? "text-white" : "text-white/60"}>All Roles</span>
+              </div>
               {ROLES.map((r) => (
                 <div
                   key={r}
@@ -216,13 +242,23 @@ export function SearchFilterBar({
         </button>
       </div>
 
-      {/* Active pills row — full width, flex wrap */}
-      {(selectedCountries.length > 0 || selectedRoles.length > 0) && (
-        <div className="flex flex-wrap gap-2 mt-3 w-full">
-          {selectedCountries.map((c) => (
+      {/* Active filter pills — always visible */}
+      <div className="flex flex-wrap gap-2 mt-3 w-full">
+        {selectedCountries.length === 0 ? (
+          COUNTRIES.map((c) => (
             <span
               key={c}
-              className={`inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 ${COUNTRY_PILL_CLASS}`}
+              onClick={() => toggleCountry(c)}
+              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
+            >
+              {c}
+            </span>
+          ))
+        ) : (
+          selectedCountries.map((c) => (
+            <span
+              key={c}
+              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 bg-blue-900/50 text-blue-300 border border-blue-700/50"
             >
               {c}
               <button
@@ -232,8 +268,23 @@ export function SearchFilterBar({
                 ✕
               </button>
             </span>
-          ))}
-          {selectedRoles.map((r) => (
+          ))
+        )}
+
+        <div className="w-px h-4 self-center bg-white/10 mx-1 shrink-0" />
+
+        {selectedRoles.length === 0 ? (
+          ROLES.map((r) => (
+            <span
+              key={r}
+              onClick={() => toggleRole(r)}
+              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
+            >
+              {r}
+            </span>
+          ))
+        ) : (
+          selectedRoles.map((r) => (
             <span
               key={r}
               className={`inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 ${ROLE_PILL_CLASSES[r]}`}
@@ -246,9 +297,9 @@ export function SearchFilterBar({
                 ✕
               </button>
             </span>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }

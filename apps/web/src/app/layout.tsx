@@ -8,6 +8,9 @@ import {
   Nunito,
 } from "next/font/google";
 import { Header } from "@/components/layout/Header";
+import { PageHeaderSlot } from "@/components/layout/PageHeaderSlot";
+import { PageTitleProvider } from "@/context/PageTitleContext";
+import { PageHeaderProvider } from "@/context/PageHeaderContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -75,8 +78,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-gray-950 text-white font-body antialiased min-h-screen">
-        <Header />
-        <main className="pt-[60px] pb-[60px] md:pb-0">{children}</main>
+        <PageTitleProvider>
+          <PageHeaderProvider>
+            <Header />
+            <PageHeaderSlot />
+            <main className="pt-[112px] pb-[60px] md:pb-0">{children}</main>
+          </PageHeaderProvider>
+        </PageTitleProvider>
       </body>
     </html>
   );

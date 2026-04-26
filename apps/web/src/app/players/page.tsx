@@ -4,7 +4,8 @@ import type { PlayerWithFormatFilter } from "@/lib/queries/types";
 import type { PlayerRole } from "@/types/database.types";
 import { CricketCard } from "@/components/card/CricketCard";
 import { CardWrapper } from "@/components/ui/CardWrapper";
-import { SearchFilterBar } from "@/components/players/SearchFilterBar";
+import { PageHeader } from "@/components/layout";
+import { SearchFilterBar } from "@/components/players";
 
 type SearchParams = Promise<{
   country?: string | string[];
@@ -50,26 +51,19 @@ export default async function PlayersPage({
   const players = playersResult.data;
 
   return (
-    <div className="bg-zinc-950 min-h-screen p-12">
-      {/* Heading */}
-      <h1 className="font-display text-5xl text-cream tracking-widest uppercase mb-2">
-        Players
-      </h1>
-      <p className="text-zinc-600 text-xs uppercase tracking-widest font-mono mb-8">
-        Nostalgia Cricket Card · 1990s Legends
-      </p>
-
-      {/* Search + filter bar */}
-      <div className="mb-6">
-        <SearchFilterBar
-          key={[search, ...countries, ...roles].join("|")}
-          initialSearch={search}
-          initialCountries={countries}
-          initialRoles={roles.map(
-            (r) => r.charAt(0).toUpperCase() + r.slice(1)
-          )}
-        />
-      </div>
+    <div className="bg-zinc-950 min-h-screen p-8 pt-6">
+      <PageHeader
+        key={[search, ...countries, ...roles].join("|")}
+        title="Players"
+        subtitle={
+          <SearchFilterBar
+            initialSearch={search}
+            initialCountries={countries}
+            initialRoles={roles.map((r) => r.charAt(0).toUpperCase() + r.slice(1))}
+          />
+        }
+        subtitleFill
+      />
 
       {/* Result count */}
       <p className="text-zinc-600 text-xs font-mono mb-2">
