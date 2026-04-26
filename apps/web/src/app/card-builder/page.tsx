@@ -105,7 +105,7 @@ function CardBuilderPageInner() {
   const countryParam = searchParams.get("country");
   const roleParam = searchParams.get("role") as PlayerRole | null;
 
-  const [selectedCountry, setSelectedCountry] = useState("India");
+  const [selectedCountry, setSelectedCountry] = useState(countryParam ?? "India");
   const [selectedRole, setSelectedRole] = useState<PlayerRole>(roleParam ?? "batter");
   const [selectedShot, setSelectedShot] = useState<ShotType>(
     DEFAULT_SHOT[roleParam ?? "batter"]
@@ -113,10 +113,6 @@ function CardBuilderPageInner() {
   const [editMode, setEditMode] = useState<"form" | "tap">("form");
   const [presetName, setPresetName] = useState("");
   const [activeTab, setActiveTab] = useState<"card" | "character" | "presets">("card");
-
-  useEffect(() => {
-    if (countryParam) setSelectedCountry(countryParam);
-  }, [countryParam]);
 
   const { styles, save, reset, update } = useCountryTheme(selectedCountry);
 
