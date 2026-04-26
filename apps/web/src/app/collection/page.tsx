@@ -62,12 +62,11 @@ export default function CollectionPage() {
           <p className="text-gray-700 text-sm">
             Your collection is empty. Open a pack to get started!
           </p>
-          <a
-            href="/packs"
-            className="inline-block mt-3 bg-brand/10 border border-brand/20 text-brand text-sm font-medium px-4 py-2 rounded-xl hover:bg-brand/20 transition-colors"
+          <div
+            className="inline-block mt-3 bg-brand/10 border border-brand/20 text-brand text-sm font-medium px-4 py-2 rounded-xl hover:bg-brand/20 transition-colors cursor-not-allowed opacity-60"
           >
             Go to Pack Shop →
-          </a>
+          </div>
         </div>
       </div>
     </main>

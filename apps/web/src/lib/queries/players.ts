@@ -18,7 +18,8 @@ function toQueryError(error: unknown): { message: string; code?: string } {
 export async function fetchPlayersWithFormatStats(
   filters: PlayerWithFormatFilter = {}
 ): Promise<QueryResult<PlayerWithFormatStats[]>> {
-  const { country, role, isActive, format = "odi", search } = filters;
+  const { country, role, isActive, format = "odi", search, countries, roles } =
+    filters;
   const supabase = await createSupabaseServerClient();
 
   let playersQuery = supabase
@@ -26,8 +27,18 @@ export async function fetchPlayersWithFormatStats(
     .select("*")
     .order("name", { ascending: true });
 
-  if (country !== undefined) playersQuery = playersQuery.eq("country", country);
-  if (role !== undefined) playersQuery = playersQuery.eq("role", role);
+  if (countries && countries.length > 0) {
+    playersQuery = playersQuery.in("country", countries);
+  } else if (country !== undefined) {
+    playersQuery = playersQuery.eq("country", country);
+  }
+
+  if (roles && roles.length > 0) {
+    playersQuery = playersQuery.in("role", roles);
+  } else if (role !== undefined) {
+    playersQuery = playersQuery.eq("role", role);
+  }
+
   if (isActive !== undefined)
     playersQuery = playersQuery.eq("is_active", isActive);
   if (search !== undefined)

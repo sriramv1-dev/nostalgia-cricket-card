@@ -6,6 +6,7 @@ import { CricketCard } from "@/components/card/CricketCard";
 import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { StatsGrid } from "@/components/card/StatsGrid";
 import StatCard from "@/components/card/StatCard";
+import { CARD_WIDTH, CARD_HEIGHT, CARD_SCALES, CARD_DISPLAY } from "@/constants/card";
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ view?: string }>;
@@ -28,9 +29,9 @@ export default async function PlayerDetailPage({
   if (result.error) {
     if (result.error.code === "PGRST116") notFound();
     return (
-      <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-8">
+      <div className="min-h-screen flex items-center justify-center p-8">
         <p className="text-red-400 text-sm">{result.error.message}</p>
-      </main>
+      </div>
     );
   }
 
@@ -42,27 +43,17 @@ export default async function PlayerDetailPage({
     "Legend"
   );
   return (
-    <main className="bg-zinc-950 min-h-screen">
-      {/* Top bar */}
-      <div className="px-8 pt-4 flex items-center gap-6">
+    <div className="bg-zinc-950 min-h-screen">
+      {/* Breadcrumb */}
+      <div className="px-8 pt-4 flex items-center gap-2 text-sm font-mono tracking-wider">
         <Link
           href="/players"
-          className="text-zinc-500 hover:text-zinc-300 text-sm font-mono tracking-wider transition-colors flex-shrink-0"
+          className="text-zinc-500 hover:text-zinc-300 transition-colors"
         >
           ← Players
         </Link>
-        <div className="flex items-center gap-4 flex-1 justify-center">
-          <h1 className="font-display text-4xl text-cream leading-none">
-            {player.name}
-          </h1>
-          <span className="text-zinc-500 text-xs uppercase tracking-wider font-mono mt-1">
-            {player.country}
-          </span>
-          <span className="text-zinc-500 text-xs uppercase tracking-wider font-mono mt-1">
-            {player.role}
-          </span>
-        </div>
-        <div className="flex-shrink-0 w-20" />
+        <span className="text-zinc-700">›</span>
+        <span className="text-zinc-300">{player.name}</span>
       </div>
 
       <div className="px-8 py-4">
@@ -92,8 +83,8 @@ export default async function PlayerDetailPage({
               </p>
               <div
                 style={{
-                  width: "375px",
-                  height: "525px",
+                  width: CARD_DISPLAY.detail.width,
+                  height: CARD_DISPLAY.detail.height,
                   overflow: "hidden",
                   position: "relative",
                   flexShrink: 0,
@@ -101,9 +92,9 @@ export default async function PlayerDetailPage({
               >
                 <div
                   style={{
-                    width: "750px",
-                    height: "1050px",
-                    transform: "scale(0.5)",
+                    width: CARD_WIDTH,
+                    height: CARD_HEIGHT,
+                    transform: `scale(${CARD_SCALES.detail})`,
                     transformOrigin: "top left",
                   }}
                 >
@@ -128,6 +119,6 @@ export default async function PlayerDetailPage({
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -3,10 +3,19 @@ import type { CookieMethodsServer } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { verifyAdminToken, ADMIN_COOKIE_NAME } from '@/lib/admin/session'
 
+const DISABLED_ROUTES = ['/collection', '/packs', '/trade', '/battle', '/battles']
 const PROTECTED_ROUTES = ['/collection', '/packs', '/trade', '/battle']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Redirect disabled pillar routes for all users
+  const isDisabled = DISABLED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  )
+  if (isDisabled) {
+    return NextResponse.redirect(new URL('/players', request.url))
+  }
 
   // Admin routes use cookie-based auth, independent of Supabase
   if (pathname.startsWith('/admin')) {
