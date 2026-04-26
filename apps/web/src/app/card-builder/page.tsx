@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import type { PlayerRow, PlayerRole } from "@/types/database.types";
 import type { CharacterColors } from "@/types/card";
 import {
@@ -8,7 +9,8 @@ import {
   CricketCard,
   CharacterHotspotOverlay,
 } from "@/components/card";
-import { useCountryTheme } from "@/hooks";
+import { useCountryTheme, useTitle } from "@/hooks";
+import { PageHeader } from "@/components/layout";
 import {
   ROLE_SHOTS,
   DEFAULT_SHOT,
@@ -98,16 +100,27 @@ function ColorField({ label, value, onChange, tabIndex }: ColorFieldProps) {
   );
 }
 
-export default function CardBuilderPage() {
-  const [selectedCountry, setSelectedCountry] = useState("India");
-  const [selectedRole, setSelectedRole] = useState<PlayerRole>("batter");
-  const [selectedShot, setSelectedShot] = useState<ShotType>(DEFAULT_SHOT["batter"]);
-  const [cardVariant, setCardVariant] = useState<"player" | "brand">("brand");
+function CardBuilderPageInner() {
+  const searchParams = useSearchParams();
+  const countryParam = searchParams.get("country");
+  const roleParam = searchParams.get("role") as PlayerRole | null;
+
+  const [selectedCountry, setSelectedCountry] = useState(countryParam ?? "India");
+  const [selectedRole, setSelectedRole] = useState<PlayerRole>(roleParam ?? "batter");
+  const [selectedShot, setSelectedShot] = useState<ShotType>(
+    DEFAULT_SHOT[roleParam ?? "batter"]
+  );
   const [editMode, setEditMode] = useState<"form" | "tap">("form");
   const [presetName, setPresetName] = useState("");
   const [activeTab, setActiveTab] = useState<"card" | "character" | "presets">("card");
 
   const { styles, save, reset, update } = useCountryTheme(selectedCountry);
+
+  useTitle(
+    countryParam
+      ? [{ label: "Card Builder", href: "/card-builder" }, { label: selectedCountry }]
+      : [{ label: "Card Builder" }]
+  );
 
   function handleRoleChange(role: PlayerRole) {
     setSelectedRole(role);
@@ -130,34 +143,31 @@ export default function CardBuilderPage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-zinc-800">
-        <h1 className="font-display text-2xl uppercase tracking-widest text-pink-400">
-          Card Builder
-        </h1>
-        <div className="flex gap-3">
-          {/* Card variant toggle */}
-          <button
-            onClick={() =>
-              setCardVariant((v) => (v === "player" ? "brand" : "player"))
-            }
-            className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-bold uppercase tracking-widest transition-all"
-          >
-            {cardVariant === "player" ? "Player" : "Brand"}
-          </button>
-          {/* Edit mode toggle */}
+      <PageHeader
+        title="Card Builder"
+        subtitle={
+          <>
+            <span className="font-display text-sm uppercase tracking-widest text-white flex-shrink-0">
+              {selectedCountry}
+            </span>
+            <span className="text-zinc-500 text-xs font-mono ml-3 tracking-wide">
+              — changes apply to all {selectedCountry} cards across the app
+            </span>
+          </>
+        }
+        right={
           <button
             onClick={() => setEditMode((m) => (m === "form" ? "tap" : "form"))}
-            className={`px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-widest transition-all ${
+            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
               editMode === "tap"
                 ? "bg-pink-500 text-white"
-                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+                : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
             }`}
           >
             {editMode === "tap" ? "Tap Mode" : "Form Mode"}
           </button>
-        </div>
-      </header>
+        }
+      />
 
       {/* Body */}
       <div className="flex-1 flex flex-col md:flex-row gap-8 p-8 items-start justify-center">
@@ -168,7 +178,7 @@ export default function CardBuilderPage() {
               <CricketCard
                 player={PREVIEW_PLAYER}
                 stats={null}
-                variant={cardVariant}
+                variant="brand"
                 themeOverride={styles}
               />
             </CardScaleWrapper>
@@ -339,5 +349,13 @@ export default function CardBuilderPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function CardBuilderPage() {
+  return (
+    <Suspense fallback={null}>
+      <CardBuilderPageInner />
+    </Suspense>
   );
 }

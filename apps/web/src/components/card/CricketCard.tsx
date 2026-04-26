@@ -15,6 +15,7 @@ interface CricketCardProps {
   stats?: PlayerStatsRow | null;
   variant: "player" | "brand";
   themeOverride?: CountryStyles;
+  noLink?: boolean;
 }
 
 function CardFooter({
@@ -80,22 +81,22 @@ export function CricketCard({
   stats,
   variant,
   themeOverride,
+  noLink = false,
 }: CricketCardProps) {
   const { styles: countryStyles } = useCountryTheme(player.country);
   const activeStyles = themeOverride ?? countryStyles;
   const characterSources = getCharacterSources(player.role, player.shot);
   const isBrand = variant === "brand";
 
-  return (
-    <Link
-      href={isBrand ? "/admin/card-builder" : `/players/${player.id}`}
-      className={`block relative overflow-hidden select-none transition-transform duration-200 hover:scale-[1.02]${isBrand ? "" : " shadow-2xl"}`}
-      style={{
-        width: CARD_WIDTH,
-        height: CARD_HEIGHT,
-        backgroundColor: activeStyles.border,
-      }}
-    >
+  const cardClassName = `block relative overflow-hidden select-none transition-transform duration-200 hover:scale-[1.02]${isBrand ? "" : " shadow-2xl"}`;
+  const cardStyle = {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    backgroundColor: activeStyles.border,
+  };
+
+  const cardContent = (
+    <>
       {/* Inner Panel */}
       <div
         className="absolute inset-[30px] rounded-[3rem] overflow-hidden"
@@ -140,6 +141,24 @@ export function CricketCard({
           countryStyles={activeStyles}
         />
       </div>
+    </>
+  );
+
+  if (noLink) {
+    return (
+      <div className={cardClassName} style={cardStyle}>
+        {cardContent}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={isBrand ? "/card-builder" : `/players/${player.id}`}
+      className={cardClassName}
+      style={cardStyle}
+    >
+      {cardContent}
     </Link>
   );
 }

@@ -4,9 +4,15 @@ import { fetchPlayerById } from "@/lib/queries/players";
 import { playerToStatCard } from "@/lib/adapters/playerToStatCard";
 import { CricketCard } from "@/components/card/CricketCard";
 import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
+import { PageHeader } from "@/components/layout";
 import { StatsGrid } from "@/components/card/StatsGrid";
 import StatCard from "@/components/card/StatCard";
-import { CARD_WIDTH, CARD_HEIGHT, CARD_SCALES, CARD_DISPLAY } from "@/constants/card";
+import {
+  CARD_WIDTH,
+  CARD_HEIGHT,
+  CARD_SCALES,
+  CARD_DISPLAY,
+} from "@/constants/card";
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ view?: string }>;
@@ -44,17 +50,22 @@ export default async function PlayerDetailPage({
   );
   return (
     <div className="bg-zinc-950 min-h-screen">
-      {/* Breadcrumb */}
-      <div className="px-8 pt-4 flex items-center gap-2 text-sm font-mono tracking-wider">
-        <Link
-          href="/players"
-          className="text-zinc-500 hover:text-zinc-300 transition-colors"
-        >
-          ← Players
-        </Link>
-        <span className="text-zinc-700">›</span>
-        <span className="text-zinc-300">{player.name}</span>
-      </div>
+      <PageHeader
+        title={player.name}
+        subtitle={
+          <>
+            <span className="font-display text-sm uppercase tracking-widest text-white">
+              {player.country}
+            </span>
+            <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">
+              ›
+            </span>
+            <span className="font-display text-sm uppercase tracking-widest text-white">
+              {player.role}
+            </span>
+          </>
+        }
+      />
 
       <div className="px-8 py-4">
         {/* View tabs */}
@@ -102,14 +113,22 @@ export default async function PlayerDetailPage({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-center gap-3">
-              <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono">
-                Brand Card
+            <Link
+              href={`/card-builder?country=${encodeURIComponent(player.country)}&role=${player.role}`}
+              className="flex flex-col items-center gap-3 group cursor-pointer"
+            >
+              <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+                Brand Card ↗
               </p>
               <CardScaleWrapper scale="detail">
-                <CricketCard player={player} stats={odiStats} variant="brand" />
+                <CricketCard
+                  player={player}
+                  stats={odiStats}
+                  variant="brand"
+                  noLink
+                />
               </CardScaleWrapper>
-            </div>
+            </Link>
           </div>
         ) : (
           <div className="max-w-3xl mx-auto">
