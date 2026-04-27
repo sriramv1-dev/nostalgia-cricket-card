@@ -1,5 +1,7 @@
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminQueuePage() {
   const supabase = createSupabaseServiceClient();
   const { data: players, error } = await supabase
