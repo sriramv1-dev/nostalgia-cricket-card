@@ -57,11 +57,11 @@ function CardFooter({
             {player.name}
           </p>
         </div>
-        <div className="flex-1 bg-yellow-400 border-b-[5px] border-green-800 px-6 py-2 flex justify-between items-center text-green-900 font-nunito font-extrabold text-2xl uppercase">
+        <div className="flex-1 bg-yellow-400 border-b-[5px] border-green-800 px-6 py-2 flex justify-between items-center text-green-900 font-display font-extrabold text-2xl uppercase">
           <span>Matches</span>
           <span>{matches ?? 0}</span>
         </div>
-        <div className="flex-1 flex bg-yellow-400 text-green-900 font-nunito font-extrabold text-2xl uppercase">
+        <div className="flex-1 flex bg-yellow-400 text-green-900 font-display font-extrabold text-2xl uppercase">
           <div className="flex-1 border-r-[5px] border-green-800 px-6 py-2 flex justify-between items-center">
             <span>Avg.</span>
             <span>{secondaryStatValue ?? "-"}</span>

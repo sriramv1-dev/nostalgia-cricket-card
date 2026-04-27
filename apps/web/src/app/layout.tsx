@@ -1,33 +1,10 @@
 import type { Metadata } from "next";
-import {
-  Inter,
-  Roboto_Mono,
-  Fredoka,
-  Sour_Gummy,
-  Inconsolata,
-  Nunito,
-} from "next/font/google";
+import { Sour_Gummy, Inconsolata } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { PageHeaderSlot } from "@/components/layout/PageHeaderSlot";
 import { PageTitleProvider } from "@/context/PageTitleContext";
 import { PageHeaderProvider } from "@/context/PageHeaderContext";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const nunito = Nunito({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-nunito",
-});
-
-const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  variable: "--font-roboto-mono",
-});
 
 const inconsolata = Inconsolata({
   subsets: ["latin"],
@@ -39,12 +16,6 @@ const sourGummy = Sour_Gummy({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "900"],
   variable: "--font-sour-gummy",
-});
-
-const fredoka = Fredoka({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-fredoka",
 });
 
 export const metadata: Metadata = {
@@ -67,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${nunito.variable} ${robotoMono.variable} ${fredoka.variable} ${sourGummy.variable} ${inconsolata.variable} dark`}
+      className={`${sourGummy.variable} ${inconsolata.variable} dark`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />

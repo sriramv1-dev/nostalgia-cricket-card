@@ -59,7 +59,7 @@ const tokens = {
 
 const variantTokens = {
   card: {
-    font: "font-roboto-mono",
+    font: "font-body",
     szLabel: "text-[21px]",
     szValue: "text-[22px]",
     szSplit: "text-[20px]",

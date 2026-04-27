@@ -13,10 +13,6 @@ const config: Config = {
       fontFamily: {
         display: ['var(--font-sour-gummy)', 'sans-serif'],
         body: ['var(--font-inconsolata)', 'monospace'],
-        inconsolata: ['var(--font-inconsolata)', 'monospace'],
-        fredoka: ['var(--font-fredoka)', 'sans-serif'],
-        nunito: ['var(--font-nunito)', 'sans-serif'],
-        'roboto-mono': ['var(--font-roboto-mono)', 'monospace'],
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.4)',
