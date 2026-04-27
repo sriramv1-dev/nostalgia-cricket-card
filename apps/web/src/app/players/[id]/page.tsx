@@ -65,25 +65,26 @@ export default async function PlayerDetailPage({
             </span>
           </>
         }
+        right={
+          <div className="flex gap-1 bg-zinc-900 rounded-full p-1">
+            {(["card", "table"] as const).map((v) => (
+              <Link
+                key={v}
+                href={`/players/${player.id}?view=${v}`}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-widest transition-all ${
+                  view === v
+                    ? "bg-zinc-100 text-zinc-950"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {v === "card" ? "Card View" : "Table View"}
+              </Link>
+            ))}
+          </div>
+        }
       />
 
       <div className="px-8 py-4">
-        {/* View tabs */}
-        <div className="flex gap-2 mb-4 justify-center mt-2">
-          {(["card", "table"] as const).map((v) => (
-            <Link
-              key={v}
-              href={`/players/${player.id}?view=${v}`}
-              className={`px-5 py-2 rounded-full text-xs tracking-wider font-medium transition-colors ${
-                view === v
-                  ? "bg-zinc-100 text-zinc-950"
-                  : "text-zinc-500 border border-zinc-800 hover:border-zinc-600"
-              }`}
-            >
-              {v === "card" ? "Card View" : "Table View"}
-            </Link>
-          ))}
-        </div>
 
         {/* Content */}
         {view === "card" ? (
