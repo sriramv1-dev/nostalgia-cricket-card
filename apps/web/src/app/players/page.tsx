@@ -77,7 +77,7 @@ export default async function PlayersPage({
           <p>No players found.</p>
           <Link
             href="/players"
-            className="text-xs uppercase tracking-wider border border-zinc-800 px-4 py-2 rounded-full hover:border-zinc-600 hover:text-zinc-400 transition-colors"
+            className="text-xs tracking-wider border border-zinc-800 px-4 py-2 rounded-full hover:border-zinc-600 hover:text-zinc-400 transition-colors"
           >
             Reset filters
           </Link>

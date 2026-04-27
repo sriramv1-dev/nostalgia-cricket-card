@@ -11,6 +11,7 @@ import {
 } from "@/components/card";
 import { useCountryTheme, useTitle } from "@/hooks";
 import { PageHeader } from "@/components/layout";
+import { SectionLabel, CardButton } from "@/components/ui";
 import {
   ROLE_SHOTS,
   DEFAULT_SHOT,
@@ -76,7 +77,7 @@ function ColorField({ label, value, onChange, tabIndex }: ColorFieldProps) {
         }}
         className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
       />
-      <span className="text-zinc-400 text-xs uppercase tracking-widest w-28 flex-shrink-0">
+      <span className="text-zinc-400 text-xs tracking-widest w-28 flex-shrink-0">
         {label}
       </span>
       <div className="flex items-center flex-1 bg-zinc-800 rounded-xl px-3 py-2 gap-1">
@@ -89,7 +90,7 @@ function ColorField({ label, value, onChange, tabIndex }: ColorFieldProps) {
           onChange={(e) => setHex(`#${e.target.value}`)}
           onBlur={commit}
           onKeyDown={(e) => e.key === "Enter" && commit()}
-          className="flex-1 bg-transparent text-sm font-mono uppercase text-white focus:outline-none"
+          className="flex-1 bg-transparent text-sm font-mono text-white focus:outline-none"
         />
       </div>
       <div
@@ -147,7 +148,7 @@ function CardBuilderPageInner() {
         title="Card Builder"
         subtitle={
           <>
-            <span className="font-display text-sm uppercase tracking-widest text-white flex-shrink-0">
+            <span className="font-display text-sm tracking-widest text-white flex-shrink-0">
               {selectedCountry}
             </span>
             <span className="text-zinc-500 text-xs font-mono ml-3 tracking-wide">
@@ -158,7 +159,7 @@ function CardBuilderPageInner() {
         right={
           <button
             onClick={() => setEditMode((m) => (m === "form" ? "tap" : "form"))}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+            className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-widest transition-all ${
               editMode === "tap"
                 ? "bg-pink-500 text-white"
                 : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
@@ -203,7 +204,7 @@ function CardBuilderPageInner() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all ${
+                  className={`flex-1 py-2 rounded-xl text-xs tracking-widest font-bold transition-all ${
                     activeTab === tab
                       ? "bg-pink-500 text-white"
                       : "text-zinc-400 hover:text-zinc-200"
@@ -248,14 +249,14 @@ function CardBuilderPageInner() {
             {activeTab === "character" && (
               <div className="flex flex-col gap-4">
                 {/* Role selector */}
-                <p className="text-zinc-400 text-xs uppercase tracking-widest">Role</p>
+                <SectionLabel>Role</SectionLabel>
                 <div className="grid grid-cols-4 gap-2">
                   {(["batter", "bowler", "allrounder", "keeper"] as PlayerRole[]).map((role, i) => (
                     <button
                       key={role}
                       tabIndex={5 + i}
                       onClick={() => handleRoleChange(role)}
-                      className={`py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all ${
+                      className={`py-2 rounded-xl text-xs tracking-widest font-bold transition-all ${
                         selectedRole === role
                           ? "bg-pink-500 text-white"
                           : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
@@ -267,13 +268,13 @@ function CardBuilderPageInner() {
                 </div>
 
                 {/* Shot selector */}
-                <p className="text-zinc-400 text-xs uppercase tracking-widest mt-2">Shot</p>
+                <SectionLabel className="mt-2">Shot</SectionLabel>
                 <div className="grid grid-cols-3 gap-2">
                   {ROLE_SHOTS[selectedRole].map((shot) => (
                     <button
                       key={shot}
                       onClick={() => setSelectedShot(shot)}
-                      className={`py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all ${
+                      className={`py-2 rounded-xl text-xs tracking-widest font-bold transition-all ${
                         selectedShot === shot
                           ? "bg-yellow-400 text-zinc-900"
                           : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
@@ -322,7 +323,8 @@ function CardBuilderPageInner() {
                   tabIndex={21}
                   className="w-full bg-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
-                <button
+                <CardButton
+                  variant="primary"
                   tabIndex={22}
                   onClick={() =>
                     save({
@@ -332,17 +334,16 @@ function CardBuilderPageInner() {
                       savedAt: "",
                     })
                   }
-                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl uppercase tracking-widest transition-all"
                 >
                   Save & Apply to {selectedCountry}
-                </button>
-                <button
+                </CardButton>
+                <CardButton
+                  variant="secondary"
                   tabIndex={23}
                   onClick={reset}
-                  className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 font-bold py-3 rounded-xl uppercase tracking-widest transition-all"
                 >
                   Reset to Default
-                </button>
+                </CardButton>
               </div>
             )}
           </div>

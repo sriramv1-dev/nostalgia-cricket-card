@@ -54,13 +54,13 @@ export default async function PlayerDetailPage({
         title={player.name}
         subtitle={
           <>
-            <span className="font-display text-sm uppercase tracking-widest text-white">
+            <span className="font-display text-sm tracking-widest text-white">
               {player.country}
             </span>
             <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">
               ›
             </span>
-            <span className="font-display text-sm uppercase tracking-widest text-white">
+            <span className="font-display text-sm tracking-widest text-white">
               {player.role}
             </span>
           </>
@@ -74,7 +74,7 @@ export default async function PlayerDetailPage({
             <Link
               key={v}
               href={`/players/${player.id}?view=${v}`}
-              className={`px-5 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-colors ${
+              className={`px-5 py-2 rounded-full text-xs tracking-wider font-medium transition-colors ${
                 view === v
                   ? "bg-zinc-100 text-zinc-950"
                   : "text-zinc-500 border border-zinc-800 hover:border-zinc-600"
@@ -89,7 +89,7 @@ export default async function PlayerDetailPage({
         {view === "card" ? (
           <div className="flex flex-wrap gap-8 justify-center">
             <div className="flex flex-col items-center gap-3">
-              <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono">
+              <p className="text-zinc-600 text-[10px] tracking-widest font-mono">
                 Stat Card
               </p>
               <div
@@ -117,7 +117,7 @@ export default async function PlayerDetailPage({
               href={`/card-builder?country=${encodeURIComponent(player.country)}&role=${player.role}`}
               className="flex flex-col items-center gap-3 group cursor-pointer"
             >
-              <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+              <p className="text-zinc-600 text-[10px] tracking-widest font-mono group-hover:text-pink-400 transition-colors">
                 Brand Card ↗
               </p>
               <CardScaleWrapper scale="detail">

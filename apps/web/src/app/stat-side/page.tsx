@@ -43,10 +43,10 @@ export default function StatSidePage() {
   return (
     <main className="min-h-screen bg-[#0a0f1e] flex flex-col items-center justify-center p-8 gap-8">
       <div className="text-center mb-4">
-        <h1 className="text-white text-3xl font-bold tracking-tight mb-2 uppercase font-mono">
+        <h1 className="text-white text-3xl font-bold tracking-tight mb-2 font-mono">
           Stat Side Preview
         </h1>
-        <p className="text-zinc-500 text-sm uppercase tracking-[0.3em] font-mono">
+        <p className="text-zinc-500 text-sm tracking-[0.3em] font-mono">
           HTML v7 → React Conversion
         </p>
       </div>
