@@ -25,7 +25,7 @@ export function CountrySelect({ countries, selected }: CountrySelectProps) {
     <select
       value={selected ?? ""}
       onChange={handleChange}
-      className="bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg px-3 py-2 text-xs uppercase tracking-wider cursor-pointer focus:outline-none focus:border-zinc-500"
+      className="bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg px-3 py-2 text-xs tracking-wider cursor-pointer focus:outline-none focus:border-zinc-500"
     >
       <option value="">All Countries</option>
       {countries.map((c) => (

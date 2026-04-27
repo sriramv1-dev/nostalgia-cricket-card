@@ -48,7 +48,7 @@ export default function TradePage() {
 
         {/* How trading works */}
         <div className="mt-8 w-full max-w-xs text-left">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">
+          <h3 className="text-gray-400 text-xs font-semibold tracking-wider mb-3">
             How Trading Works
           </h3>
           <div className="space-y-3">

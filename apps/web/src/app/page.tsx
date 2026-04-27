@@ -53,7 +53,7 @@ export default function HomePage() {
           {/* Heading block */}
           <div className="flex flex-col items-center lg:items-start">
             <div className="mb-4">
-              <span className="inline-block bg-brand text-white text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full">
+              <span className="inline-block bg-brand text-white text-xs font-bold tracking-widest px-3 py-1 rounded-full">
                 Est. 1990s
               </span>
             </div>
@@ -100,7 +100,7 @@ export default function HomePage() {
       {/* Divider */}
       <div className="flex items-center gap-3 px-6 py-2 max-w-5xl mx-auto w-full">
         <div className="flex-1 h-px bg-gray-800" />
-        <span className="text-gray-600 text-xs font-medium uppercase tracking-widest">
+        <span className="text-gray-600 text-xs font-medium tracking-widest">
           Four Pillars
         </span>
         <div className="flex-1 h-px bg-gray-800" />

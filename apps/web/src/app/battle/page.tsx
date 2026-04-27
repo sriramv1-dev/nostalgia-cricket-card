@@ -34,7 +34,7 @@ export default function BattlePage() {
 
         {/* Battle mechanics preview */}
         <div className="mt-8 w-full max-w-xs text-left">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">
+          <h3 className="text-gray-400 text-xs font-semibold tracking-wider mb-3">
             How Battles Work
           </h3>
           <div className="space-y-3">
@@ -68,7 +68,7 @@ export default function BattlePage() {
 
         {/* Stat match-ups preview */}
         <div className="mt-6 w-full max-w-xs bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">
+          <h3 className="text-gray-400 text-xs font-semibold tracking-wider mb-3">
             Stat Match-ups
           </h3>
           <div className="space-y-2">

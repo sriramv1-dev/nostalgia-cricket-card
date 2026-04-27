@@ -18,14 +18,12 @@ export function PageHeader({
 }: PageHeaderProps) {
   usePageHeaderContent(
     <div className="flex items-center w-full">
-      <span className="font-display text-sm uppercase tracking-widest flex-shrink-0">
+      <span className="font-display text-sm tracking-widest flex-shrink-0">
         {title}
       </span>
       {subtitle != null && (
         <>
-          <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">
-            ›
-          </span>
+          <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">›</span>
           {subtitleFill ? (
             <div className="flex-1 min-w-0">{subtitle}</div>
           ) : (

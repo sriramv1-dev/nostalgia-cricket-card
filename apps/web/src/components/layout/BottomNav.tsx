@@ -153,7 +153,7 @@ export function BottomNav() {
 
               <span
                 className={cn(
-                  "text-[10px] font-semibold uppercase tracking-wider leading-none",
+                  "text-[10px] font-semibold tracking-wider leading-none",
                   isActive ? "text-brand" : "text-gray-600"
                 )}
               >

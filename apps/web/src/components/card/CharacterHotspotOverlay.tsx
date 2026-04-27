@@ -54,7 +54,7 @@ function ColorPopover({ label, value, onChange, onClose, anchorStyle }: ColorPop
       className="absolute z-50 bg-white rounded-2xl shadow-2xl p-4 flex flex-col gap-3 min-w-[200px]"
       style={anchorStyle}
     >
-      <p className="font-display text-sm uppercase tracking-widest text-zinc-500">{label}</p>
+      <p className="font-display text-sm tracking-widest text-zinc-500">{label}</p>
       <input
         type="color"
         value={hex.startsWith("#") && hex.length === 7 ? hex : "#000000"}

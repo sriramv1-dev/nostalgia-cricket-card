@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { RoleBadge } from "@/components/ui";
 
 const COUNTRIES = [
   "India",
@@ -16,15 +17,6 @@ const COUNTRIES = [
 
 const ROLES = ["Batter", "Bowler", "Allrounder", "Keeper"];
 
-const ROLE_PILL_CLASSES: Record<string, string> = {
-  Batter: "bg-orange-900/30 text-orange-400 border border-orange-700/40",
-  Bowler: "bg-purple-900/30 text-purple-400 border border-purple-700/40",
-  Allrounder: "bg-emerald-900/30 text-emerald-400 border border-emerald-700/40",
-  Keeper: "bg-amber-900/30 text-amber-400 border border-amber-700/40",
-};
-
-const COUNTRY_PILL_CLASS =
-  "bg-blue-900/50 text-blue-300 border border-blue-700/50";
 
 interface SearchFilterBarProps {
   initialSearch: string;
@@ -121,7 +113,7 @@ export function SearchFilterBar({
         <div className="relative shrink-0" ref={countryRef}>
           <button
             onClick={() => setCountryOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] uppercase tracking-wide text-white/55 hover:bg-white/5 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] tracking-wide text-white/55 hover:bg-white/5 transition-colors"
           >
             Countries
             {selectedCountries.length > 0 && (
@@ -137,7 +129,7 @@ export function SearchFilterBar({
             <div className="absolute top-[calc(100%+8px)] left-0 bg-zinc-900 border border-zinc-700 rounded-xl p-2 z-50 min-w-[180px] shadow-xl">
               <div
                 onClick={() => setSelectedCountries([])}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] uppercase tracking-wide border-b border-white/5 mb-1"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide border-b border-white/5 mb-1"
               >
                 <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 ${
                   selectedCountries.length === 0 ? "bg-[#e8257a]/40 border-[#e8257a] text-white" : "border-white/20"
@@ -150,7 +142,7 @@ export function SearchFilterBar({
                 <div
                   key={c}
                   onClick={() => toggleCountry(c)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] uppercase tracking-wide text-white/60"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide text-white/60"
                 >
                   <div
                     className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 transition-all ${
@@ -179,7 +171,7 @@ export function SearchFilterBar({
         <div className="relative shrink-0" ref={roleRef}>
           <button
             onClick={() => setRoleOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] uppercase tracking-wide text-white/55 hover:bg-white/5 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] tracking-wide text-white/55 hover:bg-white/5 transition-colors"
           >
             Player Type
             {selectedRoles.length > 0 && (
@@ -195,7 +187,7 @@ export function SearchFilterBar({
             <div className="absolute top-[calc(100%+8px)] left-0 bg-zinc-900 border border-zinc-700 rounded-xl p-2 z-50 min-w-[160px] shadow-xl">
               <div
                 onClick={() => setSelectedRoles([])}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] uppercase tracking-wide border-b border-white/5 mb-1"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide border-b border-white/5 mb-1"
               >
                 <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 ${
                   selectedRoles.length === 0 ? "bg-[#e8257a]/40 border-[#e8257a] text-white" : "border-white/20"
@@ -208,7 +200,7 @@ export function SearchFilterBar({
                 <div
                   key={r}
                   onClick={() => toggleRole(r)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] uppercase tracking-wide text-white/60"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide text-white/60"
                 >
                   <div
                     className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 transition-all ${
@@ -236,7 +228,7 @@ export function SearchFilterBar({
         {/* Search button */}
         <button
           onClick={handleSearch}
-          className="bg-[#e8257a] text-white font-bold text-[13px] uppercase tracking-wide px-4 py-1.5 rounded-xl shrink-0"
+          className="bg-[#e8257a] text-white font-bold text-[13px] tracking-wide px-4 py-1.5 rounded-xl shrink-0"
         >
           Search
         </button>
@@ -249,7 +241,7 @@ export function SearchFilterBar({
             <span
               key={c}
               onClick={() => toggleCountry(c)}
-              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
             >
               {c}
             </span>
@@ -258,7 +250,7 @@ export function SearchFilterBar({
           selectedCountries.map((c) => (
             <span
               key={c}
-              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 bg-blue-900/50 text-blue-300 border border-blue-700/50"
+              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 bg-blue-900/50 text-blue-300 border border-blue-700/50"
             >
               {c}
               <button
@@ -278,16 +270,16 @@ export function SearchFilterBar({
             <span
               key={r}
               onClick={() => toggleRole(r)}
-              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
             >
               {r}
             </span>
           ))
         ) : (
           selectedRoles.map((r) => (
-            <span
+            <RoleBadge
               key={r}
-              className={`inline-flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide px-3 py-1 ${ROLE_PILL_CLASSES[r]}`}
+              role={r.toLowerCase() as "batter" | "bowler" | "allrounder" | "keeper"}
             >
               {r}
               <button
@@ -296,7 +288,7 @@ export function SearchFilterBar({
               >
                 ✕
               </button>
-            </span>
+            </RoleBadge>
           ))
         )}
       </div>
