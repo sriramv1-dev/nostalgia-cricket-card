@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { RoleBadge } from "@/components/ui";
+import { RoleBadge, MultiSelect } from "@/components/ui";
 
 const COUNTRIES = [
   "India",
@@ -35,28 +35,7 @@ export function SearchFilterBar({
   const [selectedCountries, setSelectedCountries] =
     useState<string[]>(initialCountries);
   const [selectedRoles, setSelectedRoles] = useState<string[]>(initialRoles);
-  const [countryOpen, setCountryOpen] = useState(false);
-  const [roleOpen, setRoleOpen] = useState(false);
 
-  const countryRef = useRef<HTMLDivElement>(null);
-  const roleRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!countryRef.current?.contains(e.target as Node))
-        setCountryOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!roleRef.current?.contains(e.target as Node)) setRoleOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   const toggleCountry = (c: string) => {
     setSelectedCountries((prev) => {
@@ -110,117 +89,25 @@ export function SearchFilterBar({
         <div className="w-px h-5 bg-white/10 mx-1.5 shrink-0" />
 
         {/* Countries dropdown */}
-        <div className="relative shrink-0" ref={countryRef}>
-          <button
-            onClick={() => setCountryOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] tracking-wide text-white/55 hover:bg-white/5 transition-colors"
-          >
-            Countries
-            {selectedCountries.length > 0 && (
-              <span className="bg-[#e8257a] text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none">
-                {selectedCountries.length}
-              </span>
-            )}
-            <span className="text-[9px] opacity-40">
-              {countryOpen ? "▴" : "▾"}
-            </span>
-          </button>
-          {countryOpen && (
-            <div className="absolute top-[calc(100%+8px)] left-0 bg-zinc-900 border border-zinc-700 rounded-xl p-2 z-50 min-w-[180px] shadow-xl">
-              <div
-                onClick={() => setSelectedCountries([])}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide border-b border-white/5 mb-1"
-              >
-                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 ${
-                  selectedCountries.length === 0 ? "bg-[#e8257a]/40 border-[#e8257a] text-white" : "border-white/20"
-                }`}>
-                  {selectedCountries.length === 0 && "✓"}
-                </div>
-                <span className={selectedCountries.length === 0 ? "text-white" : "text-white/60"}>All Countries</span>
-              </div>
-              {COUNTRIES.map((c) => (
-                <div
-                  key={c}
-                  onClick={() => toggleCountry(c)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide text-white/60"
-                >
-                  <div
-                    className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 transition-all ${
-                      selectedCountries.includes(c)
-                        ? "bg-[#e8257a]/40 border-[#e8257a] text-white"
-                        : "border-white/20"
-                    }`}
-                  >
-                    {selectedCountries.includes(c) && "✓"}
-                  </div>
-                  <span
-                    className={selectedCountries.includes(c) ? "text-white" : ""}
-                  >
-                    {c}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <MultiSelect
+          label="Countries"
+          options={COUNTRIES}
+          selected={selectedCountries}
+          onChange={setSelectedCountries}
+          allLabel="All Countries"
+        />
 
         {/* Divider */}
         <div className="w-px h-5 bg-white/10 mx-1.5 shrink-0" />
 
         {/* Player Type dropdown */}
-        <div className="relative shrink-0" ref={roleRef}>
-          <button
-            onClick={() => setRoleOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] tracking-wide text-white/55 hover:bg-white/5 transition-colors"
-          >
-            Player Type
-            {selectedRoles.length > 0 && (
-              <span className="bg-[#e8257a] text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none">
-                {selectedRoles.length}
-              </span>
-            )}
-            <span className="text-[9px] opacity-40">
-              {roleOpen ? "▴" : "▾"}
-            </span>
-          </button>
-          {roleOpen && (
-            <div className="absolute top-[calc(100%+8px)] left-0 bg-zinc-900 border border-zinc-700 rounded-xl p-2 z-50 min-w-[160px] shadow-xl">
-              <div
-                onClick={() => setSelectedRoles([])}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide border-b border-white/5 mb-1"
-              >
-                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 ${
-                  selectedRoles.length === 0 ? "bg-[#e8257a]/40 border-[#e8257a] text-white" : "border-white/20"
-                }`}>
-                  {selectedRoles.length === 0 && "✓"}
-                </div>
-                <span className={selectedRoles.length === 0 ? "text-white" : "text-white/60"}>All Roles</span>
-              </div>
-              {ROLES.map((r) => (
-                <div
-                  key={r}
-                  onClick={() => toggleRole(r)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/5 font-semibold text-[13px] tracking-wide text-white/60"
-                >
-                  <div
-                    className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] shrink-0 transition-all ${
-                      selectedRoles.includes(r)
-                        ? "bg-[#e8257a]/40 border-[#e8257a] text-white"
-                        : "border-white/20"
-                    }`}
-                  >
-                    {selectedRoles.includes(r) && "✓"}
-                  </div>
-                  <span
-                    className={selectedRoles.includes(r) ? "text-white" : ""}
-                  >
-                    {r}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <MultiSelect
+          label="Player Type"
+          options={ROLES}
+          selected={selectedRoles}
+          onChange={setSelectedRoles}
+          allLabel="All Roles"
+        />
 
         {/* Divider */}
         <div className="w-px h-5 bg-white/10 mx-1.5 shrink-0" />
@@ -236,37 +123,74 @@ export function SearchFilterBar({
 
       {/* Active filter pills — always visible */}
       <div className="flex flex-wrap gap-2 mt-3 w-full">
-        {selectedCountries.length === 0 ? (
-          COUNTRIES.map((c) => (
+        {(selectedCountries.length === 0 ? COUNTRIES : selectedCountries).map((c) => {
+          const isSelected = selectedCountries.includes(c);
+          const isAllMode = selectedCountries.length === 0;
+          
+          return (
             <span
               key={c}
-              onClick={() => toggleCountry(c)}
-              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 cursor-pointer bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600 transition-colors"
+              onClick={() => isAllMode ? setSelectedCountries(COUNTRIES.filter(x => x !== c)) : toggleCountry(c)}
+              className={`inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 cursor-pointer transition-colors ${
+                isAllMode || isSelected
+                  ? "bg-blue-900/50 text-blue-300 border border-blue-700/50"
+                  : "bg-zinc-800/60 text-zinc-500 border border-zinc-700/40 hover:text-zinc-300 hover:border-zinc-600"
+              }`}
             >
               {c}
+              {(isAllMode || isSelected) && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isAllMode) {
+                      setSelectedCountries(COUNTRIES.filter(x => x !== c));
+                    } else {
+                      removeCountry(c);
+                    }
+                  }}
+                  className="opacity-60 hover:opacity-100 text-[11px] leading-none"
+                >
+                  ✕
+                </button>
+              )}
             </span>
-          ))
-        ) : (
-          selectedCountries.map((c) => (
-            <span
-              key={c}
-              className="inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 bg-blue-900/50 text-blue-300 border border-blue-700/50"
-            >
-              {c}
-              <button
-                onClick={() => removeCountry(c)}
-                className="opacity-60 hover:opacity-100 text-[11px] leading-none"
-              >
-                ✕
-              </button>
-            </span>
-          ))
-        )}
+          );
+        })}
 
         <div className="w-px h-4 self-center bg-white/10 mx-1 shrink-0" />
 
-        {selectedRoles.length === 0 ? (
-          ROLES.map((r) => (
+        {(selectedRoles.length === 0 ? ROLES : selectedRoles).map((r) => {
+          const isSelected = selectedRoles.includes(r);
+          const isAllMode = selectedRoles.length === 0;
+          const roleKey = r.toLowerCase() as "batter" | "bowler" | "allrounder" | "keeper";
+
+          if (isAllMode || isSelected) {
+            return (
+              <RoleBadge
+                key={r}
+                role={roleKey}
+                onClick={() => isAllMode ? setSelectedRoles(ROLES.filter(x => x !== r)) : toggleRole(r)}
+                className="cursor-pointer"
+              >
+                {r}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isAllMode) {
+                      setSelectedRoles(ROLES.filter(x => x !== r));
+                    } else {
+                      removeRole(r);
+                    }
+                  }}
+                  className="opacity-60 hover:opacity-100 text-[11px] leading-none"
+                >
+                  ✕
+                </button>
+              </RoleBadge>
+            );
+          }
+
+          return (
             <span
               key={r}
               onClick={() => toggleRole(r)}
@@ -274,23 +198,8 @@ export function SearchFilterBar({
             >
               {r}
             </span>
-          ))
-        ) : (
-          selectedRoles.map((r) => (
-            <RoleBadge
-              key={r}
-              role={r.toLowerCase() as "batter" | "bowler" | "allrounder" | "keeper"}
-            >
-              {r}
-              <button
-                onClick={() => removeRole(r)}
-                className="opacity-60 hover:opacity-100 text-[11px] leading-none"
-              >
-                ✕
-              </button>
-            </RoleBadge>
-          ))
-        )}
+          );
+        })}
       </div>
     </div>
   );

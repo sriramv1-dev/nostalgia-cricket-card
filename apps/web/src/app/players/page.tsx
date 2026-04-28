@@ -35,7 +35,7 @@ export default async function PlayersPage({
   const filter: PlayerWithFormatFilter = {
     countries,
     roles: roles as PlayerRole[],
-    search: search || undefined,
+    search: typeof search === "string" ? search || undefined : undefined,
   };
 
   const playersResult = await fetchPlayersWithFormatStats(filter);

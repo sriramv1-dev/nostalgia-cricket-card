@@ -11,7 +11,7 @@ import {
 } from "@/components/card";
 import { useCountryTheme, useTitle } from "@/hooks";
 import { PageHeader } from "@/components/layout";
-import { SectionLabel, CardButton } from "@/components/ui";
+import { SectionLabel, CardButton, Select } from "@/components/ui";
 import {
   ROLE_SHOTS,
   DEFAULT_SHOT,
@@ -323,18 +323,12 @@ function CardBuilderPageInner() {
             {/* Tab: Presets */}
             {activeTab === "presets" && (
               <div className="flex flex-col gap-4">
-                <select
+                <Select
+                  options={COUNTRIES}
                   value={selectedCountry}
-                  onChange={(e) => setSelectedCountry(e.target.value)}
-                  tabIndex={20}
-                  className="w-full bg-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
-                >
-                  {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSelectedCountry}
+                  className="w-full"
+                />
                 <input
                   type="text"
                   placeholder="Preset name..."

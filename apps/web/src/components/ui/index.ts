@@ -4,3 +4,6 @@ export { FormatPill } from "./FormatPill";
 export { RarityBadge } from "./RarityBadge";
 export { RoleBadge } from "./RoleBadge";
 export { SectionLabel } from "./SectionLabel";
+export { MultiSelect } from "./MultiSelect";
+export { TabSwitch } from "./TabSwitch";
+export { Select } from "./Select";
