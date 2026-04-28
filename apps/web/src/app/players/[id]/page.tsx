@@ -7,6 +7,7 @@ import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { PageHeader } from "@/components/layout";
 import { StatsGrid } from "@/components/card/StatsGrid";
 import StatCard from "@/components/card/StatCard";
+import { ViewSwitcher } from "./ViewSwitcher";
 import {
   CARD_WIDTH,
   CARD_HEIGHT,
@@ -16,8 +17,6 @@ import {
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ view?: string }>;
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function PlayerDetailPage({
   params,
@@ -43,11 +42,8 @@ export default async function PlayerDetailPage({
 
   const { player, stats } = result.data;
   const odiStats = stats.odi;
-  const playerStats = playerToStatCard(
-    result.data,
-    player.external_id,
-    "Legend"
-  );
+  const playerStats = playerToStatCard(result.data, player.external_id, "Legend");
+
   return (
     <div className="bg-zinc-950 min-h-screen">
       <PageHeader
@@ -57,36 +53,16 @@ export default async function PlayerDetailPage({
             <span className="font-display text-md tracking-widest text-white">
               {player.country}
             </span>
-            <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">
-              ›
-            </span>
+            <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">›</span>
             <span className="font-display text-md tracking-widest text-white">
               {player.role}
             </span>
           </>
         }
-        right={
-          <div className="flex gap-1 bg-zinc-900 rounded-full p-1">
-            {(["card", "table"] as const).map((v) => (
-              <Link
-                key={v}
-                href={`/players/${player.id}?view=${v}`}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-widest transition-all ${
-                  view === v
-                    ? "bg-zinc-100 text-zinc-950"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                {v === "card" ? "Card View" : "Table View"}
-              </Link>
-            ))}
-          </div>
-        }
+        right={<ViewSwitcher playerId={player.id} view={view} />}
       />
 
       <div className="px-8 py-4">
-
-        {/* Content */}
         {view === "card" ? (
           <div className="flex flex-wrap gap-8 justify-center">
             <div className="flex flex-col items-center gap-3">
@@ -122,12 +98,7 @@ export default async function PlayerDetailPage({
                 Brand Card ↗
               </p>
               <CardScaleWrapper scale="detail">
-                <CricketCard
-                  player={player}
-                  stats={odiStats}
-                  variant="brand"
-                  noLink
-                />
+                <CricketCard player={player} stats={odiStats} variant="brand" noLink />
               </CardScaleWrapper>
             </Link>
           </div>
