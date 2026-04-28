@@ -22,11 +22,15 @@ interface RoleBadgeProps extends VariantProps<typeof roleBadge> {
   role: RoleKey;
   children?: ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
-export function RoleBadge({ role, children, className }: RoleBadgeProps) {
+export function RoleBadge({ role, children, className, onClick }: RoleBadgeProps) {
   return (
-    <span className={cn(roleBadge({ role }), className)}>
+    <span 
+      className={cn(roleBadge({ role }), className)}
+      onClick={onClick}
+    >
       {children ?? role}
     </span>
   );
