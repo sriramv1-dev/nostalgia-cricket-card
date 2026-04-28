@@ -47,20 +47,20 @@ export default function HomePage() {
               "radial-gradient(circle at 50% 0%, #e63946 0%, transparent 60%)",
           }}
         />
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand via-gold to-pitch" />
+        {/* <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#e8257a] via-gold to-pitch" /> */}
 
         <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center lg:flex-row lg:items-center lg:justify-between lg:text-left gap-10">
           {/* Heading block */}
           <div className="flex flex-col items-center lg:items-start">
             <div className="mb-4">
-              <span className="inline-block bg-brand text-white text-xs font-bold tracking-widest px-3 py-1 rounded-full">
+              <span className="inline-block bg-[#e8257a] text-white text-xs font-bold tracking-widest px-3 py-1 rounded-full">
                 Est. 1990s
               </span>
             </div>
             <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-cream leading-none tracking-wider mb-2 text-shadow-retro">
               POCKET
             </h1>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-brand leading-none tracking-wider mb-1 text-shadow-retro">
+            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-[#e8257a] leading-none tracking-wider mb-1 text-shadow-retro">
               CRICKET
             </h1>
             <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-gold leading-none tracking-wider mb-6 text-shadow-retro">
@@ -80,13 +80,11 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full">
               <Link
                 href="/players"
-                className="w-full bg-brand hover:bg-red-600 text-white font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 shadow-lg shadow-brand/20 text-center"
+                className="w-full bg-[#e8257a] hover:bg-pink-600 text-white font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 shadow-lg shadow-brand/20 text-center"
               >
                 Start Collecting
               </Link>
-              <div
-                className="w-full bg-gray-800 hover:bg-gray-700 border border-gold/40 text-gold font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 text-center cursor-not-allowed opacity-60"
-              >
+              <div className="w-full bg-gray-800 hover:bg-gray-700 border border-gold/40 text-gold font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 text-center cursor-not-allowed opacity-60">
                 Open a Pack
               </div>
             </div>

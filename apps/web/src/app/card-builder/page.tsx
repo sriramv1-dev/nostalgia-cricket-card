@@ -36,10 +36,19 @@ function getActiveKeys(
   shot: ShotType
 ): Array<keyof CharacterColors> {
   if (role === "bowler") return ["cap", "capAccent", "shoes", "ball"];
-  if (role === "batter") return ["cap", "capAccent", "gloves", "pads", "shoes", "bat"];
-  if (role === "allrounder") return ["cap", "capAccent", "gloves", "pads", "shoes", "bat"];
+  if (role === "batter")
+    return ["cap", "capAccent", "gloves", "pads", "shoes", "bat"];
+  if (role === "allrounder")
+    return ["cap", "capAccent", "gloves", "pads", "shoes", "bat"];
   if (role === "keeper") {
-    const base: Array<keyof CharacterColors> = ["cap", "capAccent", "gloves", "pads", "shoes", "wickets"];
+    const base: Array<keyof CharacterColors> = [
+      "cap",
+      "capAccent",
+      "gloves",
+      "pads",
+      "shoes",
+      "wickets",
+    ];
     if (shot === "keeping1") return [...base, "ball"];
     return base;
   }
@@ -106,20 +115,29 @@ function CardBuilderPageInner() {
   const countryParam = searchParams.get("country");
   const roleParam = searchParams.get("role") as PlayerRole | null;
 
-  const [selectedCountry, setSelectedCountry] = useState(countryParam ?? "India");
-  const [selectedRole, setSelectedRole] = useState<PlayerRole>(roleParam ?? "batter");
+  const [selectedCountry, setSelectedCountry] = useState(
+    countryParam ?? "India"
+  );
+  const [selectedRole, setSelectedRole] = useState<PlayerRole>(
+    roleParam ?? "batter"
+  );
   const [selectedShot, setSelectedShot] = useState<ShotType>(
     DEFAULT_SHOT[roleParam ?? "batter"]
   );
   const [editMode, setEditMode] = useState<"form" | "tap">("form");
   const [presetName, setPresetName] = useState("");
-  const [activeTab, setActiveTab] = useState<"card" | "character" | "presets">("card");
+  const [activeTab, setActiveTab] = useState<"card" | "character" | "presets">(
+    "card"
+  );
 
   const { styles, save, reset, update } = useCountryTheme(selectedCountry);
 
   useTitle(
     countryParam
-      ? [{ label: "Card Builder", href: "/card-builder" }, { label: selectedCountry }]
+      ? [
+          { label: "Card Builder", href: "/card-builder" },
+          { label: selectedCountry },
+        ]
       : [{ label: "Card Builder" }]
   );
 
@@ -148,10 +166,10 @@ function CardBuilderPageInner() {
         title="Card Builder"
         subtitle={
           <>
-            <span className="font-display text-sm tracking-widest text-white flex-shrink-0">
+            <span className="font-display text-md tracking-widest text-white flex-shrink-0">
               {selectedCountry}
             </span>
-            <span className="text-zinc-500 text-xs font-mono ml-3 tracking-wide">
+            <span className="text-zinc-500 text-sm font-mono ml-3 tracking-wide">
               — changes apply to all {selectedCountry} cards across the app
             </span>
           </>
@@ -159,7 +177,7 @@ function CardBuilderPageInner() {
         right={
           <button
             onClick={() => setEditMode((m) => (m === "form" ? "tap" : "form"))}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-widest transition-all ${
+            className={`px-4 py-1.5 rounded-full text-sm font-bold tracking-widest transition-all ${
               editMode === "tap"
                 ? "bg-pink-500 text-white"
                 : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
@@ -251,7 +269,9 @@ function CardBuilderPageInner() {
                 {/* Role selector */}
                 <SectionLabel>Role</SectionLabel>
                 <div className="grid grid-cols-4 gap-2">
-                  {(["batter", "bowler", "allrounder", "keeper"] as PlayerRole[]).map((role, i) => (
+                  {(
+                    ["batter", "bowler", "allrounder", "keeper"] as PlayerRole[]
+                  ).map((role, i) => (
                     <button
                       key={role}
                       tabIndex={5 + i}
@@ -337,11 +357,7 @@ function CardBuilderPageInner() {
                 >
                   Save & Apply to {selectedCountry}
                 </CardButton>
-                <CardButton
-                  variant="secondary"
-                  tabIndex={23}
-                  onClick={reset}
-                >
+                <CardButton variant="secondary" tabIndex={23} onClick={reset}>
                   Reset to Default
                 </CardButton>
               </div>

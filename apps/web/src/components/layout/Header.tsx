@@ -33,7 +33,7 @@ export function Header() {
         }}
       >
         <Link href="/" className="flex items-center gap-3 mr-10 flex-shrink-0">
-          <span className="font-display text-lg text-cream tracking-widest text-pink-400 leading-none">
+          <span className="font-display text-xl md:text-2xl lg:text-3xl text-pink-500 leading-none">
             Nostalgia
           </span>
         </Link>
@@ -45,7 +45,7 @@ export function Header() {
               <Link
                 key={href}
                 href={href}
-                className={`relative px-4 py-1.5 text-xs tracking-wider font-medium transition-colors ${
+                className={`relative px-4 py-1.5 text-lg tracking-wider font-medium transition-colors ${
                   pathname === href || pathname.startsWith(href + "/")
                     ? "text-white after:absolute after:bottom-[-17px] after:left-0 after:right-0 after:h-[2px] after:bg-[#e8257a] after:rounded-full"
                     : "text-zinc-400 hover:text-zinc-100"
@@ -57,7 +57,7 @@ export function Header() {
           })}
         </nav>
 
-        <button className="ml-auto px-4 py-1.5 text-xs tracking-wider font-bold text-pink-500 hover:text-zinc-200 transition-colors">
+        <button className="ml-auto px-4 py-1.5 text-lg tracking-wider font-bold text-pink-500 hover:text-zinc-200 transition-colors">
           Sign In
         </button>
       </header>

@@ -18,7 +18,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   usePageHeaderContent(
     <div className="flex items-center w-full">
-      <span className="font-display text-sm tracking-widest flex-shrink-0">
+      <span className="font-display text-md tracking-widest flex-shrink-0">
         {title}
       </span>
       {subtitle != null && (

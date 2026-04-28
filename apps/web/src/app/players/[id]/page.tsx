@@ -54,13 +54,13 @@ export default async function PlayerDetailPage({
         title={player.name}
         subtitle={
           <>
-            <span className="font-display text-sm tracking-widest text-white">
+            <span className="font-display text-md tracking-widest text-white">
               {player.country}
             </span>
             <span className="mx-2 flex-shrink-0 text-pink-400 font-bold">
               ›
             </span>
-            <span className="font-display text-sm tracking-widest text-white">
+            <span className="font-display text-md tracking-widest text-white">
               {player.role}
             </span>
           </>
