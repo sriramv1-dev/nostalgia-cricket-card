@@ -65,9 +65,13 @@ export default async function PlayerDetailPage({
       <div className="px-8 py-4">
         {view === "card" ? (
           <div className="flex flex-wrap gap-8 justify-center">
-            <div className="flex flex-col items-center gap-3">
-              <p className="text-zinc-600 text-[10px] tracking-widest font-mono">
-                Stat Card
+            <Link
+              href={`/players/${player.id}?view=table`}
+              scroll={false}
+              className="flex flex-col items-center gap-3 group cursor-pointer"
+            >
+              <p className="text-zinc-600 text-[10px] tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+                Stat Card ↗
               </p>
               <div
                 style={{
@@ -89,7 +93,7 @@ export default async function PlayerDetailPage({
                   <StatCard stats={playerStats} />
                 </div>
               </div>
-            </div>
+            </Link>
             <Link
               href={`/card-builder?country=${encodeURIComponent(player.country)}&role=${player.role}`}
               className="flex flex-col items-center gap-3 group cursor-pointer"
