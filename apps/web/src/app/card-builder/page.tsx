@@ -304,6 +304,8 @@ function CardBuilderPageInner() {
   const searchParams = useSearchParams();
   const countryParam = searchParams.get("country");
   const roleParam = searchParams.get("role") as PlayerRole | null;
+  const fromParam = searchParams.get("from");
+  const fromLabelParam = searchParams.get("fromLabel");
 
   const [selectedCountry, setSelectedCountry] = useState(
     countryParam ?? "India"
@@ -354,6 +356,11 @@ function CardBuilderPageInner() {
     <main className="min-h-screen bg-zinc-950 text-white flex flex-col">
       <PageHeader
         title="Card Builder"
+        back={
+          fromParam != null
+            ? { label: fromLabelParam ?? "Back" }
+            : undefined
+        }
         subtitle={
           <>
             <span className="font-display text-md tracking-widest text-white flex-shrink-0">
