@@ -6,4 +6,5 @@ export { RoleBadge } from "./RoleBadge";
 export { SectionLabel } from "./SectionLabel";
 export { MultiSelect } from "./MultiSelect";
 export { TabSwitch } from "./TabSwitch";
+export { BatSwitch } from "./BatSwitch";
 export { Select } from "./Select";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -46,33 +46,13 @@ export function TabSwitch({
 
   return (
     <div ref={containerRef} className={cn("relative h-full w-full", className)}>
-      {/* The Main Bar — fills container minus ball radius at top */}
+      {/* Bar */}
       <div
-        className="absolute left-0 right-0 bottom-0 bg-zinc-900 border border-white/5 rounded-xl shadow-2xl"
+        className="absolute left-0 right-0 bottom-0 bg-zinc-900 border border-white/5 rounded-xl shadow-2xl overflow-hidden"
         style={{ height: "calc(100% - 18px)" }}
-      >
-        {/* The Sliding Curved Cutout (SVG Mask) */}
-        <motion.div
-          className="absolute top-0 h-full flex items-start justify-center pointer-events-none"
-          initial={false}
-          animate={{ x: `${activeIndex * step}%`, width: `${step}%` }}
-          transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
-        >
-          {/*
-            This SVG creates the "Dip" effect.
-            It is filled with the background color of the page (zinc-950).
-          */}
-          <svg
-            viewBox="0 0 100 40"
-            className="w-full h-full -mt-[0.5px] fill-zinc-950"
-            preserveAspectRatio="none"
-          >
-            <path d="M0 0 Q10 0 15 2 Q25 10 30 25 A20 20 0 0 0 70 25 Q75 10 85 2 Q90 0 100 0 V40 H0 Z" />
-          </svg>
-        </motion.div>
-      </div>
+      ></div>
 
-      {/* The Floating Active Circle — centred on the bar's top edge */}
+      {/* Floating ball */}
       <motion.div
         className="absolute h-10 w-10 rounded-full border-[3px] border-zinc-950 z-20 flex items-center justify-center text-white"
         style={{
@@ -87,7 +67,7 @@ export function TabSwitch({
         <div className="scale-90">{options[activeIndex]?.icon}</div>
       </motion.div>
 
-      {/* The Tab Buttons — absolutely positioned over the bar */}
+      {/* Tab buttons */}
       {options.map((option, index) => {
         const isActive = value === option.id;
         return (
@@ -95,8 +75,8 @@ export function TabSwitch({
             key={option.id}
             onClick={() => onChange(option.id)}
             className={cn(
-              "absolute bottom-0 flex flex-col items-center justify-end z-10",
-              isActive ? "pb-0.5" : "pb-1.5"
+              "absolute bottom-0 z-10",
+              !isActive && "flex flex-col items-center justify-center gap-1"
             )}
             style={{
               left: `${(index / options.length) * 100}%`,
@@ -104,16 +84,19 @@ export function TabSwitch({
               height: "calc(100% - 18px)",
             }}
           >
-            <span
-              className={cn(
-                "font-bold tracking-widest",
-                isActive
-                  ? "text-[7px] text-white/80"
-                  : "text-[12px] text-white/80"
-              )}
-            >
-              {option.label}
-            </span>
+            <>
+              {!isActive && <div className="text-zinc-300">{option.icon}</div>}
+              <span
+                className={cn(
+                  "font-bold tracking-widest text-zinc-400",
+                  isActive
+                    ? "text-[9px] text-zinc-400"
+                    : "text-[11px] text-zinc-200"
+                )}
+              >
+                {option.label}
+              </span>
+            </>
           </button>
         );
       })}

@@ -31,7 +31,7 @@ export function PageHeader({
           )}
         </>
       )}
-      {right != null && <div className="ml-auto flex-shrink-0">{right}</div>}
+      {right != null && <div className="ml-auto flex-shrink-0 overflow-visible">{right}</div>}
     </div>
   );
   return null;
