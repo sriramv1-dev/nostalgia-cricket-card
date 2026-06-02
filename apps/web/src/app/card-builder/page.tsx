@@ -383,7 +383,7 @@ function CardBuilderPageInner() {
       />
 
       {/* Body */}
-      <div className="flex-1 flex flex-col md:flex-row gap-8 p-8 items-start justify-center overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row gap-8 px-8 py-4 items-start justify-center overflow-hidden">
         {/* Left — Card Preview */}
         <div className="flex flex-col items-center gap-4 flex-shrink-0">
           <div className="relative">
@@ -409,9 +409,9 @@ function CardBuilderPageInner() {
 
         {/* Right — Form Panel (hidden in tap mode) */}
         {editMode === "form" && (
-          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-4 overflow-hidden">
+          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-2 overflow-hidden">
             {/* Tabs */}
-            <div className="h-16 w-full overflow-visible">
+            <div className="h-14 w-full overflow-visible">
               <TabSwitch
                 options={TAB_OPTIONS}
                 value={activeTab}
@@ -423,7 +423,7 @@ function CardBuilderPageInner() {
 
             {/* Tab: Card */}
             {activeTab === "card" && (
-              <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+              <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1 min-h-0">
                 <ColorField
                   label="Border"
                   value={styles.border}
@@ -455,7 +455,7 @@ function CardBuilderPageInner() {
             {activeTab === "character" && (
               <>
                 {/* Role selector - fixed */}
-                <div className="h-16 w-full overflow-visible">
+                <div className="h-14 w-full overflow-visible">
                   <TabSwitch
                     options={ROLE_OPTIONS}
                     value={selectedRole}
@@ -479,7 +479,7 @@ function CardBuilderPageInner() {
                 </div>
 
                 {/* Color fields - scrollable */}
-                <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+                <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1 min-h-0">
                   {getActiveKeys(selectedRole, selectedShot).map((key, i) => (
                     <ColorField
                       key={key}
@@ -497,7 +497,7 @@ function CardBuilderPageInner() {
 
             {/* Tab: Presets */}
             {activeTab === "presets" && (
-              <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+              <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1 min-h-0">
                 <Select
                   options={COUNTRIES}
                   value={selectedCountry}
