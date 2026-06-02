@@ -409,7 +409,7 @@ function CardBuilderPageInner() {
 
         {/* Right — Form Panel (hidden in tap mode) */}
         {editMode === "form" && (
-          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-4 overflow-y-auto">
+          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-4 overflow-hidden">
             {/* Tabs */}
             <div className="h-16 w-full overflow-visible">
               <TabSwitch
@@ -423,7 +423,7 @@ function CardBuilderPageInner() {
 
             {/* Tab: Card */}
             {activeTab === "card" && (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
                 <ColorField
                   label="Border"
                   value={styles.border}
@@ -453,9 +453,8 @@ function CardBuilderPageInner() {
 
             {/* Tab: Character */}
             {activeTab === "character" && (
-              <div className="flex flex-col gap-4">
-                {/* Role selector */}
-                {/* <SectionLabel>Role</SectionLabel> */}
+              <>
+                {/* Role selector - fixed */}
                 <div className="h-16 w-full overflow-visible">
                   <TabSwitch
                     options={ROLE_OPTIONS}
@@ -465,8 +464,7 @@ function CardBuilderPageInner() {
                   />
                 </div>
 
-                {/* Shot selector */}
-                {/* <SectionLabel className="mt-2">Shot</SectionLabel> */}
+                {/* Shot selector - fixed */}
                 <div className="h-12 w-full overflow-visible">
                   <BatSwitch
                     options={ROLE_SHOTS[selectedRole].map((shot) => ({
@@ -480,24 +478,26 @@ function CardBuilderPageInner() {
                   />
                 </div>
 
-                {/* Character color fields */}
-                {getActiveKeys(selectedRole, selectedShot).map((key, i) => (
-                  <ColorField
-                    key={key}
-                    label={key}
-                    value={styles.character[key]}
-                    onChange={(v) =>
-                      update({ character: { ...styles.character, [key]: v } })
-                    }
-                    tabIndex={10 + i}
-                  />
-                ))}
-              </div>
+                {/* Color fields - scrollable */}
+                <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+                  {getActiveKeys(selectedRole, selectedShot).map((key, i) => (
+                    <ColorField
+                      key={key}
+                      label={key}
+                      value={styles.character[key]}
+                      onChange={(v) =>
+                        update({ character: { ...styles.character, [key]: v } })
+                      }
+                      tabIndex={10 + i}
+                    />
+                  ))}
+                </div>
+              </>
             )}
 
             {/* Tab: Presets */}
             {activeTab === "presets" && (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
                 <Select
                   options={COUNTRIES}
                   value={selectedCountry}
