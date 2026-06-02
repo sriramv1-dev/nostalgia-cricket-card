@@ -5,8 +5,9 @@ import { playerToStatCard } from "@/lib/adapters/playerToStatCard";
 import { CricketCard } from "@/components/card/CricketCard";
 import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { PageHeader } from "@/components/layout";
-import { StatsGrid } from "@/components/card/StatsGrid";
+// import { StatsGrid } from "@/components/card/StatsGrid";
 import StatCard from "@/components/card/StatCard";
+import { PlayerStatsShowcase } from "@/components/PlayerStatsShowcase";
 import { ViewSwitcher } from "./ViewSwitcher";
 import {
   CARD_WIDTH,
@@ -14,6 +15,50 @@ import {
   CARD_SCALES,
   CARD_DISPLAY,
 } from "@/constants/card";
+import type { PlayerFormatStats } from "@/types/player-stats";
+import type { PlayerStatsRow } from "@/types/database.types";
+
+function toFormatStats(row: PlayerStatsRow): PlayerFormatStats {
+  return {
+    format: row.format,
+    batting:
+      row.bat_matches != null
+        ? {
+            matches: row.bat_matches,
+            runs: row.bat_runs ?? 0,
+            average: row.bat_average,
+            highest: row.bat_highest,
+            not_outs: row.bat_not_outs ?? 0,
+            hundreds: row.bat_100s ?? 0,
+            fifties: row.bat_50s ?? 0,
+            fours: row.bat_fours ?? 0,
+            sixes: row.bat_sixes ?? 0,
+          }
+        : null,
+    bowling:
+      row.bowl_matches != null
+        ? {
+            matches: row.bowl_matches,
+            wickets: row.bowl_wickets ?? 0,
+            average: row.bowl_average,
+            economy: row.bowl_economy,
+            best: row.bowl_best,
+            four_wickets: row.bowl_4w ?? 0,
+            five_wickets: row.bowl_5w ?? 0,
+          }
+        : null,
+    fielding:
+      row.field_catches != null ||
+      row.field_runouts != null ||
+      row.field_stumpings != null
+        ? {
+            catches: row.field_catches ?? 0,
+            run_outs: row.field_runouts ?? 0,
+            stumpings: row.field_stumpings ?? 0,
+          }
+        : null,
+  };
+}
 
 type Params = Promise<{ id: string }>;
 type SearchParams = Promise<{ view?: string }>;
@@ -44,8 +89,12 @@ export default async function PlayerDetailPage({
   const odiStats = stats.odi;
   const playerStats = playerToStatCard(result.data, player.external_id, "Legend");
 
+  const showcaseStats: PlayerFormatStats[] = [stats.test, stats.odi, stats.t20i]
+    .filter((s): s is PlayerStatsRow => s != null)
+    .map(toFormatStats);
+
   return (
-    <div className="bg-zinc-950 min-h-screen">
+    <div className="bg-zinc-950 h-screen overflow-hidden flex flex-col">
       <PageHeader
         title={player.name}
         back={{ label: "Players" }}
@@ -63,9 +112,9 @@ export default async function PlayerDetailPage({
         right={<ViewSwitcher playerId={player.id} view={view} />}
       />
 
-      <div className="px-8 py-4">
+      <div className="px-8 py-4 flex-1 overflow-hidden flex items-center justify-center">
         {view === "card" ? (
-          <div className="flex flex-wrap gap-8 justify-center">
+          <div className="flex flex-wrap gap-8 justify-center items-center">
             <Link
               href={`/players/${player.id}?view=table`}
               scroll={false}
@@ -108,11 +157,22 @@ export default async function PlayerDetailPage({
             </Link>
           </div>
         ) : (
-          <div className="max-w-3xl mx-auto">
-            <div className="rounded-2xl overflow-hidden border border-zinc-800">
-              <StatsGrid stats={playerStats} theme="dark" variant="page" />
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <PlayerStatsShowcase
+              player={{
+                name: player.name,
+                role: player.role,
+                country: player.country,
+                photo_url: player.photo_url,
+              }}
+              stats={showcaseStats}
+            />
           </div>
+          // <div className="max-w-3xl mx-auto">
+          //   <div className="rounded-2xl overflow-hidden border border-zinc-800">
+          //     <StatsGrid stats={playerStats} theme="dark" variant="page" />
+          //   </div>
+          // </div>
         )}
       </div>
     </div>

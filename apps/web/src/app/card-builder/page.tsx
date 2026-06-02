@@ -353,7 +353,7 @@ function CardBuilderPageInner() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white flex flex-col">
+    <main className="h-screen overflow-hidden bg-zinc-950 text-white flex flex-col">
       <PageHeader
         title="Card Builder"
         back={
@@ -383,7 +383,7 @@ function CardBuilderPageInner() {
       />
 
       {/* Body */}
-      <div className="flex-1 flex flex-col md:flex-row gap-8 p-8 items-start justify-center">
+      <div className="flex-1 flex flex-col md:flex-row gap-8 p-8 items-start justify-center overflow-hidden">
         {/* Left — Card Preview */}
         <div className="flex flex-col items-center gap-4 flex-shrink-0">
           <div className="relative">
@@ -409,7 +409,7 @@ function CardBuilderPageInner() {
 
         {/* Right — Form Panel (hidden in tap mode) */}
         {editMode === "form" && (
-          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-4">
+          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-4 overflow-y-auto">
             {/* Tabs */}
             <div className="h-16 w-full overflow-visible">
               <TabSwitch
