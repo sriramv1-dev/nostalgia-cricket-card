@@ -94,7 +94,7 @@ export default async function PlayerDetailPage({
     .map(toFormatStats);
 
   return (
-    <div className="bg-zinc-950 h-screen overflow-hidden flex flex-col">
+    <div className="bg-zinc-950 h-[calc(100vh-112px)] overflow-hidden flex flex-col">
       <PageHeader
         title={player.name}
         back={{ label: "Players" }}
@@ -157,7 +157,7 @@ export default async function PlayerDetailPage({
             </Link>
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto w-full overflow-y-auto h-full">
             <PlayerStatsShowcase
               player={{
                 name: player.name,

@@ -353,7 +353,7 @@ function CardBuilderPageInner() {
   };
 
   return (
-    <main className="h-screen overflow-hidden bg-zinc-950 text-white flex flex-col">
+    <main className="h-[calc(100vh-112px)] overflow-hidden bg-zinc-950 text-white flex flex-col">
       <PageHeader
         title="Card Builder"
         back={
