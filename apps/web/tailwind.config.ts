@@ -13,6 +13,8 @@ const config: Config = {
       fontFamily: {
         display: ['var(--font-sour-gummy)', 'sans-serif'],
         body: ['var(--font-inconsolata)', 'monospace'],
+        bangers: ['var(--font-bangers)', 'cursive'],
+        barlow: ['var(--font-barlow)', 'sans-serif'],
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.4)',
