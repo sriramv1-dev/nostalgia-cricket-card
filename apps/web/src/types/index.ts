@@ -1,5 +1,6 @@
 export type { CharacterColors, CountryStyles, CountryTheme } from "./card";
 export type { ShotRow } from "./database.types";
+export type { PlayerFormatStats, PlayerStatsShowcaseProps } from "./player-stats";
 export type Rarity = "common" | "uncommon" | "rare" | "legendary";
 export type PlayerRole = "batsman" | "bowler" | "allrounder" | "wicketkeeper";
 export type TradeStatus = "pending" | "accepted" | "declined" | "cancelled";
