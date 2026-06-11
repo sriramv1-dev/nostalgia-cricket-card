@@ -1,14 +1,10 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { PlayerRow, PlayerRole } from "@/types/database.types";
 import type { CharacterColors } from "@/types/card";
-import {
-  CardScaleWrapper,
-  CricketCard,
-  CharacterHotspotOverlay,
-} from "@/components/card";
+import { CardScaleWrapper, CricketCard } from "@/components/card";
 import { useCountryTheme, useTitle } from "@/hooks";
 import { PageHeader } from "@/components/layout";
 import { CardButton, Select, BatSwitch, TabSwitch } from "@/components/ui";
@@ -301,6 +297,7 @@ const TAB_OPTIONS = [
 ];
 
 function CardBuilderPageInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const countryParam = searchParams.get("country");
   const roleParam = searchParams.get("role") as PlayerRole | null;
@@ -353,7 +350,9 @@ function CardBuilderPageInner() {
   };
 
   return (
-    <main className="h-[calc(100vh-112px)] overflow-hidden bg-zinc-950 text-white flex flex-col">
+    // Mirrors the root layout chrome: 112px top padding everywhere, plus a
+    // 60px bottom inset on mobile (pb-[60px] md:pb-0) for the bottom bar.
+    <main className="h-[calc(100vh-172px)] md:h-[calc(100vh-112px)] flex flex-col bg-zinc-950 text-white overflow-hidden">
       <PageHeader
         title="Card Builder"
         back={
@@ -376,40 +375,37 @@ function CardBuilderPageInner() {
             <BatSwitch
               options={MODE_OPTIONS}
               value={editMode}
-              onChange={(v) => setEditMode(v as "form" | "tap")}
+              onChange={(v) => {
+                if (v === "tap") {
+                  router.push(
+                    `/admin/card-builder/customize?shot=${encodeURIComponent(selectedShot)}&country=${encodeURIComponent(selectedCountry)}`
+                  );
+                } else {
+                  setEditMode("form");
+                }
+              }}
             />
           </div>
         }
       />
 
       {/* Body */}
-      <div className="flex-1 flex flex-col md:flex-row gap-8 px-8 py-4 items-start justify-center overflow-hidden">
-        {/* Left — Card Preview */}
-        <div className="flex flex-col items-center gap-4 flex-shrink-0">
-          <div className="relative">
-            <CardScaleWrapper scale="detail">
-              <CricketCard
-                player={PREVIEW_PLAYER}
-                stats={null}
-                variant="brand"
-                themeOverride={styles}
-              />
-            </CardScaleWrapper>
-            {editMode === "tap" && (
-              <CharacterHotspotOverlay
-                colors={styles.character}
-                activeKeys={getActiveKeys(selectedRole, selectedShot)}
-                onChange={(key, color) =>
-                  update({ character: { ...styles.character, [key]: color } })
-                }
-              />
-            )}
-          </div>
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-8 px-8 py-4 justify-center overflow-hidden">
+        {/* Left — Card Preview, centred vertically */}
+        <div className="flex flex-col items-center gap-4 flex-shrink-0 self-center">
+          <CardScaleWrapper scale="detail">
+            <CricketCard
+              player={PREVIEW_PLAYER}
+              stats={null}
+              variant="brand"
+              themeOverride={styles}
+            />
+          </CardScaleWrapper>
         </div>
 
-        {/* Right — Form Panel (hidden in tap mode) */}
+        {/* Right — Form Panel, scrolls internally */}
         {editMode === "form" && (
-          <div className="flex-1 min-w-0 max-w-md flex flex-col gap-2 overflow-hidden">
+          <div className="flex-1 min-w-0 min-h-0 max-w-md flex flex-col gap-2 overflow-y-auto">
             {/* Tabs */}
             <div className="h-14 w-full overflow-visible">
               <TabSwitch
