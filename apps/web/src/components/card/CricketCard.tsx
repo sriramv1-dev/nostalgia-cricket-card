@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { PlayerRow, PlayerStatsRow } from "@/types/database.types";
@@ -16,6 +17,7 @@ interface CricketCardProps {
   variant: "player" | "brand";
   themeOverride?: CountryStyles;
   noLink?: boolean;
+  characterOverride?: ReactNode;
 }
 
 function CardFooter({
@@ -82,6 +84,7 @@ export function CricketCard({
   variant,
   themeOverride,
   noLink = false,
+  characterOverride,
 }: CricketCardProps) {
   const { styles: countryStyles } = useCountryTheme(player.country);
   const activeStyles = themeOverride ?? countryStyles;
@@ -126,13 +129,13 @@ export function CricketCard({
         </div>
         {/* Character */}
         <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
-          <LayeredCharacter
+          {characterOverride ?? <LayeredCharacter
             sources={characterSources}
             colors={activeStyles.character}
             width={580}
             height={580}
             animate={isBrand}
-          />
+          />}
         </div>
         {/* Footer */}
         <CardFooter
