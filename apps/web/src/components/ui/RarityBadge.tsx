@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import type { Rarity } from "@/types";
@@ -43,7 +44,7 @@ export interface RarityBadgeProps extends VariantProps<typeof rarityBadge> {
   className?: string;
 }
 
-export function RarityBadge({
+export const RarityBadge = memo(function RarityBadge({
   rarity,
   size = "sm",
   showDot = true,
@@ -63,4 +64,4 @@ export function RarityBadge({
       {rarity}
     </span>
   );
-}
+});

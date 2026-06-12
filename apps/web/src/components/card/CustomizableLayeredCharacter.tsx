@@ -163,6 +163,7 @@ export function CustomizableLayeredCharacter({
               <img
                 ref={(el) => { if (el) imgRefs.current.set(key, el); }}
                 src={layerSrc}
+                crossOrigin="anonymous"
                 alt=""
                 className="absolute inset-0 w-full h-full object-contain select-none"
                 style={{ pointerEvents: "none" }}
@@ -197,6 +198,7 @@ export function CustomizableLayeredCharacter({
           <img
             ref={(el) => { if (el) imgRefs.current.set("batOutline", el); }}
             src={sources.batOutline}
+            crossOrigin="anonymous"
             alt=""
             className="absolute inset-0 w-full h-full object-contain select-none"
             style={{ pointerEvents: "none", opacity: 0 }}

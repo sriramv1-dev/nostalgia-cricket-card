@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
 const roleBadge = cva(
   "inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1",
@@ -25,13 +25,18 @@ export interface RoleBadgeProps extends VariantProps<typeof roleBadge> {
   onClick?: () => void;
 }
 
-export function RoleBadge({ role, children, className, onClick }: RoleBadgeProps) {
+export const RoleBadge = memo(function RoleBadge({
+  role,
+  children,
+  className,
+  onClick,
+}: RoleBadgeProps) {
   return (
-    <span 
+    <span
       className={cn(roleBadge({ role }), className)}
       onClick={onClick}
     >
       {children ?? role}
     </span>
   );
-}
+});

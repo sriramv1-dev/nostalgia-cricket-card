@@ -7,7 +7,7 @@ import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { PageHeader } from "@/components/layout";
 // import { StatsGrid } from "@/components/card/StatsGrid";
 import { StatCard } from "@/components/card/StatCard";
-import { PlayerStatsShowcase } from "@/components/showcase";
+import { PlayerStatsShowcaseLazy } from "@/components/showcase";
 import { ViewSwitcher } from "@/components/players";
 import {
   CARD_WIDTH,
@@ -160,7 +160,7 @@ export default async function PlayerDetailPage({
           </div>
         ) : (
           <div className="max-w-4xl mx-auto w-full overflow-y-auto h-full">
-            <PlayerStatsShowcase
+            <PlayerStatsShowcaseLazy
               player={{
                 name: player.name,
                 role: player.role,

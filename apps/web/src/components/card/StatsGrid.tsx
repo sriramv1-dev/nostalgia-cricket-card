@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { PlayerStats, StatValue } from "./StatCard";
 
 export interface StatsGridProps {
@@ -211,11 +212,11 @@ const SplitRow = ({
 
 // ─── StatsGrid ────────────────────────────────────────────────────────────────
 
-export const StatsGrid = ({
+export const StatsGrid = memo(function StatsGrid({
   stats,
   theme,
   variant = "page",
-}: StatsGridProps) => {
+}: StatsGridProps) {
   const t = tokens[theme];
   const v = variantTokens[variant];
 
@@ -408,4 +409,4 @@ export const StatsGrid = ({
       </div>
     </div>
   );
-};
+});

@@ -4,7 +4,13 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getCharacterSources, type PlayerRole } from "@/constants/characters";
 import { useCountryTheme } from "@/hooks/useCountryTheme";
-import { ColorPopover } from "@/components/card";
+import nextDynamic from "next/dynamic";
+
+// Canvas-adjacent UI — load client-side only, per NCC performance rules
+const ColorPopover = nextDynamic(
+  () => import("@/components/card/ColorPopover").then((m) => m.ColorPopover),
+  { ssr: false }
+);
 import { PageHeader } from "@/components/layout";
 import { BatSwitch, CardButton } from "@/components/ui";
 import type { CharacterColors } from "@/types/card";
@@ -299,6 +305,7 @@ function CustomizeContent() {
       <img
         ref={hitmapRef}
         src={hitmapSrc}
+        crossOrigin="anonymous"
         alt=""
         className="hidden"
         onLoad={handleHitmapLoad}
