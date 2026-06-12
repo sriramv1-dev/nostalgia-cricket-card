@@ -31,12 +31,12 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Pocket Cricket Cards",
+  title: "Nostalgia Cricket Card",
   description:
     "Relive the 90s. Collect legendary cricket cards inspired by Big Babol Pocket Cricket. Open packs, trade with friends, and battle with your collection.",
   keywords: ["cricket", "cards", "collecting", "90s", "nostalgia", "Big Babol"],
   openGraph: {
-    title: "Pocket Cricket Cards",
+    title: "Nostalgia Cricket Card",
     description: "Relive the 90s. Collect legends.",
     type: "website",
   },

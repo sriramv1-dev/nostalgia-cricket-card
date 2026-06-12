@@ -120,7 +120,7 @@ export default async function PlayerDetailPage({
               scroll={false}
               className="flex flex-col items-center gap-3 group cursor-pointer"
             >
-              <p className="text-zinc-600 text-[10px] tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+              <p className="text-zinc-600 text-[10px] tracking-widest font-body group-hover:text-pink-400 transition-colors">
                 Stat Card ↗
               </p>
               <div
@@ -148,7 +148,7 @@ export default async function PlayerDetailPage({
               href={`/card-builder?country=${encodeURIComponent(player.country)}&role=${player.role}&from=${encodeURIComponent(`/players/${player.id}`)}&fromLabel=${encodeURIComponent(player.name)}`}
               className="flex flex-col items-center gap-3 group cursor-pointer"
             >
-              <p className="text-zinc-600 text-[10px] tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+              <p className="text-zinc-600 text-[10px] tracking-widest font-body group-hover:text-pink-400 transition-colors">
                 Brand Card ↗
               </p>
               <CardScaleWrapper scale="detail">

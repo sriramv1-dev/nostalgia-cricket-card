@@ -179,7 +179,7 @@ function ColorField({ label, value, onChange, tabIndex }: ColorFieldProps) {
           onChange={(e) => setHex(`#${e.target.value}`)}
           onBlur={commit}
           onKeyDown={(e) => e.key === "Enter" && commit()}
-          className="flex-1 bg-transparent text-sm font-mono text-white focus:outline-none"
+          className="flex-1 bg-transparent text-sm font-body text-white focus:outline-none"
         />
       </div>
       <div
@@ -365,7 +365,7 @@ function CardBuilderPageInner() {
             <span className="font-display text-md tracking-widest text-white flex-shrink-0">
               {selectedCountry}
             </span>
-            <span className="text-zinc-500 text-sm font-mono ml-3 tracking-wide">
+            <span className="text-zinc-500 text-sm font-body ml-3 tracking-wide">
               — changes apply to all {selectedCountry} cards across the app
             </span>
           </>

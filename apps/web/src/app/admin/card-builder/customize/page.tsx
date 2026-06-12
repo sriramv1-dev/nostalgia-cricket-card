@@ -267,7 +267,7 @@ function CustomizeContent() {
         title="Customize"
         back={{ label: country }}
         subtitle={
-          <span className="text-zinc-500 text-sm font-mono tracking-wide">
+          <span className="text-zinc-500 text-sm font-body tracking-wide">
             — changes apply to all {country} cards across the app
           </span>
         }
@@ -304,7 +304,7 @@ function CustomizeContent() {
         className="flex-1 flex items-center justify-center overflow-hidden relative"
       >
         {!ready ? (
-          <p className="text-zinc-500 text-sm font-mono">Loading…</p>
+          <p className="text-zinc-500 text-sm font-body">Loading…</p>
         ) : (
           <div
             ref={containerRef}
@@ -388,7 +388,7 @@ function CustomizeContent() {
 
       {/* Bottom action bar */}
       <div className="flex-shrink-0 flex items-center justify-between px-8 py-4 border-t border-zinc-800">
-        <p className="text-zinc-500 text-xs font-mono tracking-wide">
+        <p className="text-zinc-500 text-xs font-body tracking-wide">
           {isDone
             ? "colours locked in — looking good!"
             : "tap any part of the character to change its colour"}

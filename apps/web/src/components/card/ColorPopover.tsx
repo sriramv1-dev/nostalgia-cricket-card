@@ -63,7 +63,7 @@ export function ColorPopover({ label, value, onChange, onClose }: ColorPopoverPr
           onChange={(e) => setHex(`#${e.target.value}`)}
           onBlur={handleHexCommit}
           onKeyDown={(e) => e.key === "Enter" && handleHexCommit()}
-          className="flex-1 bg-transparent text-sm font-mono text-white focus:outline-none uppercase"
+          className="flex-1 bg-transparent text-sm font-body text-white focus:outline-none uppercase"
         />
         <div
           className="w-6 h-6 rounded-md border border-zinc-600 flex-shrink-0"

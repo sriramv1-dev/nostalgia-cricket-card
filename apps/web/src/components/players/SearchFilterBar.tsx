@@ -81,8 +81,7 @@ export function SearchFilterBar({
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-white/30 text-[15px] px-2"
-          style={{ fontFamily: "var(--font-barlow, sans-serif)" }}
+          className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-white/30 text-[15px] px-2 font-barlow"
         />
 
         {/* Divider */}
