@@ -225,7 +225,7 @@ function StatCell({ value, format, isActive, animated, onClick }: StatCellProps)
     <button
       className={cn(
         "relative flex items-center justify-center w-full h-9 rounded-md transition-colors duration-150 select-none",
-        animated && !isActive && "[background-color:#e8257a0d]",
+        animated && !isActive && "bg-brand-pink/5",
         !isActive && "hover:bg-neutral-100 dark:hover:bg-neutral-800"
       )}
       onClick={onClick}
@@ -233,9 +233,9 @@ function StatCell({ value, format, isActive, animated, onClick }: StatCellProps)
       <span
         className={cn(
           "font-bangers text-[17px] leading-none tracking-[0.04em]",
-          format === "test" && "text-[#92400e] dark:text-[#fcd34d]",
-          format === "odi" && "text-[#1e40af] dark:text-[#93c5fd]",
-          format === "t20i" && "text-[#9d174d] dark:text-[#f9a8d4]"
+          format === "test" && "text-amber-800 dark:text-amber-300",
+          format === "odi" && "text-blue-800 dark:text-blue-300",
+          format === "t20i" && "text-pink-800 dark:text-pink-300"
         )}
       >
         {value}
@@ -281,9 +281,9 @@ function StatsTable({ rows, formats, section, activeCell, onCellClick }: StatsTa
             key={fmt}
             className={cn(
               "font-barlow flex-1 text-center text-xs font-semibold uppercase tracking-widest pb-2",
-              fmt === "test" && "text-[#92400e] dark:text-[#fcd34d]",
-              fmt === "odi" && "text-[#1e40af] dark:text-[#93c5fd]",
-              fmt === "t20i" && "text-[#9d174d] dark:text-[#f9a8d4]"
+              fmt === "test" && "text-amber-800 dark:text-amber-300",
+              fmt === "odi" && "text-blue-800 dark:text-blue-300",
+              fmt === "t20i" && "text-pink-800 dark:text-pink-300"
             )}
           >
             {FORMAT_LABEL[fmt]}

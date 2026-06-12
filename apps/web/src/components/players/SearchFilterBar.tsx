@@ -114,7 +114,7 @@ export function SearchFilterBar({
         {/* Search button */}
         <button
           onClick={handleSearch}
-          className="bg-[#e8257a] text-white font-bold text-[13px] tracking-wide px-4 py-1.5 rounded-xl shrink-0"
+          className="bg-brand-pink text-white font-bold text-[13px] tracking-wide px-4 py-1.5 rounded-xl shrink-0"
         >
           Search
         </button>

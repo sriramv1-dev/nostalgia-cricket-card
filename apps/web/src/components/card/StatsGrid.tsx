@@ -8,52 +8,52 @@ export interface StatsGridProps {
 
 const tokens = {
   light: {
-    bg: "bg-[#fdf8ef]",
-    fmtTestBg: "bg-[#166534]",
-    fmtTestName: "bg-[#dcfce7] text-[#166534]",
-    fmtTestCount: "text-[#dcfce7]",
-    fmtOdiBg: "bg-[#1d4ed8]",
-    fmtOdiName: "bg-[#eff6ff] text-[#1d4ed8]",
-    fmtOdiCount: "text-[#eff6ff]",
-    fmtT20Bg: "bg-[#be185d]",
-    fmtT20Name: "bg-[#fdf2f8] text-[#be185d]",
-    fmtT20Count: "text-[#fdf2f8]",
-    secBat: "bg-[#fed7aa]",
-    secBwl: "bg-[#ddd6fe]",
-    secFld: "bg-[#fde68a]",
-    labelBat: "text-[#c2410c] border-l-4 border-[#ea580c] bg-[#fdf8efcc]",
-    labelBwl: "text-[#6d28d9] border-l-4 border-[#7c3aed] bg-[#fdf8efcc]",
-    labelFld: "text-[#92400e] border-l-4 border-[#d97706] bg-[#fdf8efcc]",
-    splitLabelBat: "text-[#c2410c] bg-[#fdf8ef8c]",
-    splitLabelBwl: "text-[#6d28d9] bg-[#fdf8ef8c]",
-    bubble: "bg-[#fdf8ef]",
-    tvColor: "text-[#78350f]",
-    ovColor: "text-[#1e40af]",
-    pvColor: "text-[#9d174d]",
+    bg: "bg-parchment",
+    fmtTestBg: "bg-green-800",
+    fmtTestName: "bg-green-100 text-green-800",
+    fmtTestCount: "text-green-100",
+    fmtOdiBg: "bg-format-odi",
+    fmtOdiName: "bg-blue-50 text-format-odi",
+    fmtOdiCount: "text-blue-50",
+    fmtT20Bg: "bg-format-t20i",
+    fmtT20Name: "bg-pink-50 text-format-t20i",
+    fmtT20Count: "text-pink-50",
+    secBat: "bg-orange-200",
+    secBwl: "bg-violet-200",
+    secFld: "bg-amber-200",
+    labelBat: "text-orange-700 border-l-4 border-section-batting bg-parchment/80",
+    labelBwl: "text-violet-700 border-l-4 border-section-bowling bg-parchment/80",
+    labelFld: "text-amber-800 border-l-4 border-section-fielding bg-parchment/80",
+    splitLabelBat: "text-orange-700 bg-parchment/55",
+    splitLabelBwl: "text-violet-700 bg-parchment/55",
+    bubble: "bg-parchment",
+    tvColor: "text-format-test",
+    ovColor: "text-blue-800",
+    pvColor: "text-pink-800",
   },
   dark: {
     bg: "bg-zinc-900",
-    fmtTestBg: "bg-[#14532d]",
-    fmtTestName: "bg-[#166534] text-[#bbf7d0]",
-    fmtTestCount: "text-[#bbf7d0]",
-    fmtOdiBg: "bg-[#1e3a8a]",
-    fmtOdiName: "bg-[#1d4ed8] text-[#bfdbfe]",
-    fmtOdiCount: "text-[#bfdbfe]",
-    fmtT20Bg: "bg-[#831843]",
-    fmtT20Name: "bg-[#be185d] text-[#fce7f3]",
-    fmtT20Count: "text-[#fce7f3]",
-    secBat: "bg-[#431407]",
-    secBwl: "bg-[#2e1065]",
-    secFld: "bg-[#422006]",
-    labelBat: "text-[#fb923c] border-l-4 border-[#ea580c] bg-zinc-800",
-    labelBwl: "text-[#a78bfa] border-l-4 border-[#7c3aed] bg-zinc-800",
-    labelFld: "text-[#fbbf24] border-l-4 border-[#d97706] bg-zinc-800",
-    splitLabelBat: "text-[#fb923c] bg-zinc-800",
-    splitLabelBwl: "text-[#a78bfa] bg-zinc-800",
+    fmtTestBg: "bg-green-900",
+    fmtTestName: "bg-green-800 text-green-200",
+    fmtTestCount: "text-green-200",
+    fmtOdiBg: "bg-blue-900",
+    fmtOdiName: "bg-format-odi text-blue-200",
+    fmtOdiCount: "text-blue-200",
+    fmtT20Bg: "bg-pink-900",
+    fmtT20Name: "bg-format-t20i text-pink-100",
+    fmtT20Count: "text-pink-100",
+    secBat: "bg-orange-950",
+    secBwl: "bg-violet-950",
+    secFld: "bg-yellow-950",
+    labelBat: "text-orange-400 border-l-4 border-section-batting bg-zinc-800",
+    labelBwl: "text-violet-400 border-l-4 border-section-bowling bg-zinc-800",
+    labelFld: "text-amber-400 border-l-4 border-section-fielding bg-zinc-800",
+    splitLabelBat: "text-orange-400 bg-zinc-800",
+    splitLabelBwl: "text-violet-400 bg-zinc-800",
     bubble: "bg-zinc-800",
-    tvColor: "text-[#86efac]",
-    ovColor: "text-[#93c5fd]",
-    pvColor: "text-[#f9a8d4]",
+    tvColor: "text-green-300",
+    ovColor: "text-blue-300",
+    pvColor: "text-pink-300",
   },
 };
 
@@ -66,7 +66,7 @@ const variantTokens = {
     szHeader: "text-[22px]",
   },
   page: {
-    font: "font-inconsolata",
+    font: "font-body",
     szLabel: "text-[17px]",
     szValue: "text-[17px]",
     szSplit: "text-[16px]",
@@ -306,7 +306,7 @@ export const StatsGrid = ({
           lbl1="50s"
           lbl2="100s"
           splitLabelClass={t.splitLabelBat}
-          borderClass="border-[#ea580c]"
+          borderClass="border-section-batting"
           val1Test={stats.batting.halfCenturies.test}
           val2Test={stats.batting.centuries.test}
           val1Odi={stats.batting.halfCenturies.odi}
@@ -320,7 +320,7 @@ export const StatsGrid = ({
           lbl1="4s"
           lbl2="6s"
           splitLabelClass={t.splitLabelBat}
-          borderClass="border-[#ea580c]"
+          borderClass="border-section-batting"
           val1Test={stats.batting.fours.test}
           val2Test={stats.batting.sixes.test}
           val1Odi={stats.batting.fours.odi}
@@ -368,7 +368,7 @@ export const StatsGrid = ({
           lbl1="4W"
           lbl2="5W"
           splitLabelClass={t.splitLabelBwl}
-          borderClass="border-[#7c3aed]"
+          borderClass="border-section-bowling"
           val1Test={stats.bowling.fourWkts.test}
           val2Test={stats.bowling.fiveWkts.test}
           val1Odi={stats.bowling.fourWkts.odi}

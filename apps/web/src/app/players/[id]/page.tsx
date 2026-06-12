@@ -6,7 +6,7 @@ import { CricketCard } from "@/components/card/CricketCard";
 import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { PageHeader } from "@/components/layout";
 // import { StatsGrid } from "@/components/card/StatsGrid";
-import StatCard from "@/components/card/StatCard";
+import { StatCard } from "@/components/card/StatCard";
 import { PlayerStatsShowcase } from "@/components/PlayerStatsShowcase";
 import { ViewSwitcher } from "./ViewSwitcher";
 import {

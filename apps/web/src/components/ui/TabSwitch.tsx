@@ -23,7 +23,7 @@ export function TabSwitch({
   value,
   onChange,
   className,
-  ballColor = "#e8257a",
+  ballColor = "var(--brand-pink)",
 }: TabSwitchProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);

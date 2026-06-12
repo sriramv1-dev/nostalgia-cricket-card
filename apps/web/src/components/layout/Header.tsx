@@ -47,7 +47,7 @@ export function Header() {
                 href={href}
                 className={`relative px-4 py-1.5 text-lg tracking-wider font-medium transition-colors ${
                   pathname === href || pathname.startsWith(href + "/")
-                    ? "text-white after:absolute after:bottom-[-17px] after:left-0 after:right-0 after:h-[2px] after:bg-[#e8257a] after:rounded-full"
+                    ? "text-white after:absolute after:bottom-[-17px] after:left-0 after:right-0 after:h-[2px] after:bg-brand-pink after:rounded-full"
                     : "text-zinc-400 hover:text-zinc-100"
                 }`}
               >

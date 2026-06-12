@@ -53,14 +53,14 @@ export default function HomePage() {
           {/* Heading block */}
           <div className="flex flex-col items-center lg:items-start">
             <div className="mb-4">
-              <span className="inline-block bg-[#e8257a] text-white text-xs font-bold tracking-widest px-3 py-1 rounded-full">
+              <span className="inline-block bg-brand-pink text-white text-xs font-bold tracking-widest px-3 py-1 rounded-full">
                 Est. 1990s
               </span>
             </div>
             <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-cream leading-none tracking-wider mb-2 text-shadow-retro">
               POCKET
             </h1>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-[#e8257a] leading-none tracking-wider mb-1 text-shadow-retro">
+            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-brand-pink leading-none tracking-wider mb-1 text-shadow-retro">
               CRICKET
             </h1>
             <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-gold leading-none tracking-wider mb-6 text-shadow-retro">
@@ -80,7 +80,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full">
               <Link
                 href="/players"
-                className="w-full bg-[#e8257a] hover:bg-pink-600 text-white font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 shadow-lg shadow-brand/20 text-center"
+                className="w-full bg-brand-pink hover:bg-pink-600 text-white font-bold py-3.5 px-6 rounded-xl text-base transition-all duration-200 active:scale-95 shadow-lg shadow-brand/20 text-center"
               >
                 Start Collecting
               </Link>

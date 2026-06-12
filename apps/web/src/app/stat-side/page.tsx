@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import StatCard, { PlayerStats } from "@/components/card/StatCard";
+import { StatCard, type PlayerStats } from "@/components/card/StatCard";
 import { CardWrapper } from "@/components/card/CardWrapper";
 
 const KALLIS_DATA: PlayerStats = {
@@ -41,7 +41,7 @@ const KALLIS_DATA: PlayerStats = {
 
 export default function StatSidePage() {
   return (
-    <main className="min-h-screen bg-[#0a0f1e] flex flex-col items-center justify-center p-8 gap-8">
+    <main className="min-h-screen bg-night flex flex-col items-center justify-center p-8 gap-8">
       <div className="text-center mb-4">
         <h1 className="text-white text-3xl font-bold tracking-tight mb-2 font-body">
           Stat Side Preview
