@@ -3,19 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RoleBadge, MultiSelect } from "@/components/ui";
-
-const COUNTRIES = [
-  "India",
-  "Australia",
-  "Pakistan",
-  "England",
-  "South Africa",
-  "West Indies",
-  "Sri Lanka",
-  "New Zealand",
-];
-
-const ROLES = ["Batter", "Bowler", "Allrounder", "Keeper"];
+import { FILTERABLE_COUNTRIES as COUNTRIES } from "@/constants/countries";
+import { ROLE_LABELS as ROLES } from "@/constants/roles";
 
 
 interface SearchFilterBarProps {

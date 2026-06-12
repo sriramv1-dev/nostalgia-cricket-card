@@ -13,19 +13,7 @@ import {
   DEFAULT_SHOT,
   type ShotType,
 } from "@/constants/characters";
-
-const COUNTRIES = [
-  "India",
-  "Australia",
-  "England",
-  "Pakistan",
-  "South Africa",
-  "West Indies",
-  "Sri Lanka",
-  "New Zealand",
-  "Zimbabwe",
-  "Bangladesh",
-];
+import { COUNTRY_NAMES } from "@/constants/countries";
 
 function getActiveKeys(
   role: PlayerRole,
@@ -495,7 +483,7 @@ function CardBuilderPageInner() {
             {activeTab === "presets" && (
               <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1 min-h-0">
                 <Select
-                  options={COUNTRIES}
+                  options={COUNTRY_NAMES}
                   value={selectedCountry}
                   onChange={setSelectedCountry}
                   className="w-full"

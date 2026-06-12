@@ -65,7 +65,7 @@ export default function RootLayout({
           <PageHeaderProvider>
             <Header />
             <PageHeaderSlot />
-            <main className="pt-[112px] pb-[60px] md:pb-0">{children}</main>
+            <main className="pt-28 pb-nav md:pb-0">{children}</main>
           </PageHeaderProvider>
         </PageTitleProvider>
       </body>

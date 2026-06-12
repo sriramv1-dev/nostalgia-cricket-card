@@ -1,0 +1,1 @@
+export { playerToStatCard } from "./playerToStatCard";

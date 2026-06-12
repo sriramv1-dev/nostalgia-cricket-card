@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
-import { StatCard, type PlayerStats } from "@/components/card/StatCard";
-import { CardWrapper } from "@/components/card/CardWrapper";
+import {
+  StatCard,
+  StatCardWrapper,
+  type PlayerStats,
+} from "@/components/card";
 
 const KALLIS_DATA: PlayerStats = {
   info: {
@@ -51,9 +54,9 @@ export default function StatSidePage() {
         </p>
       </div>
 
-      <CardWrapper scale={0.45}>
+      <StatCardWrapper scale={0.45}>
         <StatCard stats={KALLIS_DATA} />
-      </CardWrapper>
+      </StatCardWrapper>
 
       <footer className="mt-12 text-zinc-600 font-body text-[10px] space-y-1 text-center opacity-50">
         <p>750 x 1050 px (Scaled to 0.45)</p>

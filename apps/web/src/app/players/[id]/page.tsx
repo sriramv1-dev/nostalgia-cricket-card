@@ -7,8 +7,8 @@ import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { PageHeader } from "@/components/layout";
 // import { StatsGrid } from "@/components/card/StatsGrid";
 import { StatCard } from "@/components/card/StatCard";
-import { PlayerStatsShowcase } from "@/components/PlayerStatsShowcase";
-import { ViewSwitcher } from "./ViewSwitcher";
+import { PlayerStatsShowcase } from "@/components/showcase";
+import { ViewSwitcher } from "@/components/players";
 import {
   CARD_WIDTH,
   CARD_HEIGHT,

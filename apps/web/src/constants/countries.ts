@@ -230,6 +230,32 @@ export const COUNTRIES: Record<string, CountryData> = {
   },
 };
 
+/** All playable countries, in card-builder display order. */
+export const COUNTRY_NAMES: string[] = [
+  "India",
+  "Australia",
+  "England",
+  "Pakistan",
+  "South Africa",
+  "West Indies",
+  "Sri Lanka",
+  "New Zealand",
+  "Zimbabwe",
+  "Bangladesh",
+];
+
+/** Subset shown in the players search filter bar. */
+export const FILTERABLE_COUNTRIES: string[] = [
+  "India",
+  "Australia",
+  "Pakistan",
+  "England",
+  "South Africa",
+  "West Indies",
+  "Sri Lanka",
+  "New Zealand",
+];
+
 export function getCountryStyles(country: string): CountryStyles {
   return (COUNTRIES[country] ?? FALLBACK).styles;
 }

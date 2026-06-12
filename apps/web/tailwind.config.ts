@@ -30,6 +30,9 @@ const config: Config = {
         night: '#0a0f1e',
         'card-border': '#d1c9b8',
       },
+      spacing: {
+        nav: '60px',
+      },
       fontFamily: {
         display: ['var(--font-sour-gummy)', 'sans-serif'],
         body: ['var(--font-inconsolata)', 'monospace'],
