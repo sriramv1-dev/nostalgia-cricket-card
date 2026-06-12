@@ -13,19 +13,7 @@ import {
   DEFAULT_SHOT,
   type ShotType,
 } from "@/constants/characters";
-
-const COUNTRIES = [
-  "India",
-  "Australia",
-  "England",
-  "Pakistan",
-  "South Africa",
-  "West Indies",
-  "Sri Lanka",
-  "New Zealand",
-  "Zimbabwe",
-  "Bangladesh",
-];
+import { COUNTRY_NAMES } from "@/constants/countries";
 
 function getActiveKeys(
   role: PlayerRole,
@@ -179,7 +167,7 @@ function ColorField({ label, value, onChange, tabIndex }: ColorFieldProps) {
           onChange={(e) => setHex(`#${e.target.value}`)}
           onBlur={commit}
           onKeyDown={(e) => e.key === "Enter" && commit()}
-          className="flex-1 bg-transparent text-sm font-mono text-white focus:outline-none"
+          className="flex-1 bg-transparent text-sm font-body text-white focus:outline-none"
         />
       </div>
       <div
@@ -365,13 +353,13 @@ function CardBuilderPageInner() {
             <span className="font-display text-md tracking-widest text-white flex-shrink-0">
               {selectedCountry}
             </span>
-            <span className="text-zinc-500 text-sm font-mono ml-3 tracking-wide">
+            <span className="text-zinc-500 text-sm font-body ml-3 tracking-wide">
               — changes apply to all {selectedCountry} cards across the app
             </span>
           </>
         }
         right={
-          <div className="h-12 w-[160px] overflow-visible">
+          <div className="h-12 w-full sm:w-40 overflow-visible">
             <BatSwitch
               options={MODE_OPTIONS}
               value={editMode}
@@ -495,7 +483,7 @@ function CardBuilderPageInner() {
             {activeTab === "presets" && (
               <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1 min-h-0">
                 <Select
-                  options={COUNTRIES}
+                  options={COUNTRY_NAMES}
                   value={selectedCountry}
                   onChange={setSelectedCountry}
                   className="w-full"

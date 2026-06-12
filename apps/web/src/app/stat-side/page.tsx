@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
-import StatCard, { PlayerStats } from "@/components/card/StatCard";
-import { CardWrapper } from "@/components/card/CardWrapper";
+import {
+  StatCard,
+  StatCardWrapper,
+  type PlayerStats,
+} from "@/components/card";
 
 const KALLIS_DATA: PlayerStats = {
   info: {
@@ -41,21 +44,21 @@ const KALLIS_DATA: PlayerStats = {
 
 export default function StatSidePage() {
   return (
-    <main className="min-h-screen bg-[#0a0f1e] flex flex-col items-center justify-center p-8 gap-8">
+    <main className="min-h-screen bg-night flex flex-col items-center justify-center p-8 gap-8">
       <div className="text-center mb-4">
-        <h1 className="text-white text-3xl font-bold tracking-tight mb-2 font-mono">
+        <h1 className="text-white text-3xl font-bold tracking-tight mb-2 font-body">
           Stat Side Preview
         </h1>
-        <p className="text-zinc-500 text-sm tracking-[0.3em] font-mono">
+        <p className="text-zinc-500 text-sm tracking-[0.3em] font-body">
           HTML v7 → React Conversion
         </p>
       </div>
 
-      <CardWrapper scale={0.45}>
+      <StatCardWrapper scale={0.45}>
         <StatCard stats={KALLIS_DATA} />
-      </CardWrapper>
+      </StatCardWrapper>
 
-      <footer className="mt-12 text-zinc-600 font-mono text-[10px] space-y-1 text-center opacity-50">
+      <footer className="mt-12 text-zinc-600 font-body text-[10px] space-y-1 text-center opacity-50">
         <p>750 x 1050 px (Scaled to 0.45)</p>
         <p>Dynamic Data Mapping Enabled</p>
       </footer>

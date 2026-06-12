@@ -4,7 +4,13 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getCharacterSources, type PlayerRole } from "@/constants/characters";
 import { useCountryTheme } from "@/hooks/useCountryTheme";
-import { ColorPopover } from "@/components/card";
+import nextDynamic from "next/dynamic";
+
+// Canvas-adjacent UI — load client-side only, per NCC performance rules
+const ColorPopover = nextDynamic(
+  () => import("@/components/card/ColorPopover").then((m) => m.ColorPopover),
+  { ssr: false }
+);
 import { PageHeader } from "@/components/layout";
 import { BatSwitch, CardButton } from "@/components/ui";
 import type { CharacterColors } from "@/types/card";
@@ -83,6 +89,12 @@ const IDLE_GLOW =
   "drop-shadow(0 0 5px #e8257a) drop-shadow(0 0 2px #e8257a)";
 const ACTIVE_GLOW =
   "drop-shadow(0 0 14px #e8257a) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #e8257a)";
+
+function getLayerGlow(isDone: boolean, isActive: boolean): string {
+  if (isDone) return "none";
+  if (isActive) return ACTIVE_GLOW;
+  return IDLE_GLOW;
+}
 
 function deriveRole(shot: string): PlayerRole {
   if (shot === "pace" || shot === "spin") return "bowler";
@@ -267,12 +279,12 @@ function CustomizeContent() {
         title="Customize"
         back={{ label: country }}
         subtitle={
-          <span className="text-zinc-500 text-sm font-mono tracking-wide">
+          <span className="text-zinc-500 text-sm font-body tracking-wide">
             — changes apply to all {country} cards across the app
           </span>
         }
         right={
-          <div className="h-12 w-[160px] overflow-visible">
+          <div className="h-12 w-full sm:w-40 overflow-visible">
             <BatSwitch
               options={MODE_OPTIONS}
               value="tap"
@@ -293,6 +305,7 @@ function CustomizeContent() {
       <img
         ref={hitmapRef}
         src={hitmapSrc}
+        crossOrigin="anonymous"
         alt=""
         className="hidden"
         onLoad={handleHitmapLoad}
@@ -304,7 +317,7 @@ function CustomizeContent() {
         className="flex-1 flex items-center justify-center overflow-hidden relative"
       >
         {!ready ? (
-          <p className="text-zinc-500 text-sm font-mono">Loading…</p>
+          <p className="text-zinc-500 text-sm font-body">Loading…</p>
         ) : (
           <div
             ref={containerRef}
@@ -330,11 +343,7 @@ function CustomizeContent() {
                   aria-hidden
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    filter: isDone
-                      ? "none"
-                      : activeKey === key
-                        ? ACTIVE_GLOW
-                        : IDLE_GLOW,
+                    filter: getLayerGlow(isDone, activeKey === key),
                     transition: "filter 0.15s ease",
                     isolation: "isolate",
                   }}
@@ -388,7 +397,7 @@ function CustomizeContent() {
 
       {/* Bottom action bar */}
       <div className="flex-shrink-0 flex items-center justify-between px-8 py-4 border-t border-zinc-800">
-        <p className="text-zinc-500 text-xs font-mono tracking-wide">
+        <p className="text-zinc-500 text-xs font-body tracking-wide">
           {isDone
             ? "colours locked in — looking good!"
             : "tap any part of the character to change its colour"}

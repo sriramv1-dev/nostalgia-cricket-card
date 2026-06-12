@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
-interface ColorPopoverProps {
+export interface ColorPopoverProps {
   label: string;
   value: string;
   onChange: (color: string) => void;
@@ -42,7 +42,7 @@ export function ColorPopover({ label, value, onChange, onClose }: ColorPopoverPr
         <button
           type="button"
           onClick={onClose}
-          className="text-zinc-500 hover:text-white text-lg leading-none"
+          className="text-zinc-500 hover:text-white text-lg leading-none flex min-h-[44px] min-w-[44px] items-center justify-center -m-3"
           aria-label="Close"
         >
           ×
@@ -63,7 +63,7 @@ export function ColorPopover({ label, value, onChange, onClose }: ColorPopoverPr
           onChange={(e) => setHex(`#${e.target.value}`)}
           onBlur={handleHexCommit}
           onKeyDown={(e) => e.key === "Enter" && handleHexCommit()}
-          className="flex-1 bg-transparent text-sm font-mono text-white focus:outline-none uppercase"
+          className="flex-1 bg-transparent text-sm font-body text-white focus:outline-none uppercase"
         />
         <div
           className="w-6 h-6 rounded-md border border-zinc-600 flex-shrink-0"

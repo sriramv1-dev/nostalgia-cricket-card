@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CARD_WIDTH, CARD_HEIGHT, CARD_SCALES } from "@/constants/card";
 
-interface CardWrapperProps {
+export interface CardWrapperProps {
   children: React.ReactNode;
 }
 

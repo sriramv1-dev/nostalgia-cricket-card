@@ -26,7 +26,7 @@ export function Header() {
     <>
       {/* Desktop / tablet top header */}
       <header
-        className="flex fixed top-0 left-0 right-0 z-50 h-[60px] items-center px-4 md:px-8 border-b border-zinc-800 backdrop-blur-md overflow-visible"
+        className="flex fixed top-0 left-0 right-0 z-50 h-nav items-center px-4 md:px-8 border-b border-zinc-800 backdrop-blur-md overflow-visible"
         style={{
           background:
             "linear-gradient(135deg, rgba(10,10,15,0.97) 0%, rgba(20,10,18,0.97) 40%, rgba(232,37,122,0.06) 70%, rgba(10,10,15,0.97) 100%)",
@@ -47,7 +47,7 @@ export function Header() {
                 href={href}
                 className={`relative px-4 py-1.5 text-lg tracking-wider font-medium transition-colors ${
                   pathname === href || pathname.startsWith(href + "/")
-                    ? "text-white after:absolute after:bottom-[-17px] after:left-0 after:right-0 after:h-[2px] after:bg-[#e8257a] after:rounded-full"
+                    ? "text-white after:absolute after:bottom-[-17px] after:left-0 after:right-0 after:h-[2px] after:bg-brand-pink after:rounded-full"
                     : "text-zinc-400 hover:text-zinc-100"
                 }`}
               >
@@ -63,7 +63,7 @@ export function Header() {
       </header>
 
       {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-[60px] flex items-stretch border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-nav flex items-stretch border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
         {MOBILE_TABS.map(({ href, label, enabled, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
 

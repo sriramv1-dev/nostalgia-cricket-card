@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --brand-pink: #e8257a;
   --brand: #e63946;
   --gold: #f4a261;
   --pitch: #2d6a4f;

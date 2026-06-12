@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-interface MultiSelectProps {
+export interface MultiSelectProps {
   label: string;
   options: string[];
   selected: string[];
@@ -15,7 +15,7 @@ export function MultiSelect({
   selected,
   onChange,
   allLabel = "All",
-  badgeColor = "#e8257a",
+  badgeColor = "var(--brand-pink)",
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -116,7 +116,7 @@ export function MultiSelect({
                   {/* Select Only Feature */}
                   <button
                     onClick={(e) => handleSelectOnly(e, option)}
-                    className="opacity-0 group-hover:opacity-100 px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] text-white/70 hover:text-white transition-all shrink-0"
+                    className="opacity-60 hover:opacity-100 min-h-[44px] px-2.5 -my-2.5 rounded bg-transparent hover:bg-white/20 text-[10px] text-white/70 hover:text-white transition-all shrink-0"
                   >
                     only
                   </button>

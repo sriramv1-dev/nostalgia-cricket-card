@@ -24,36 +24,45 @@ export default async function AdminQueuePage() {
         </span>
       </div>
 
-      {error && (
-        <p className="text-red-400 text-sm">
-          Failed to load queue: {error.message}
-        </p>
-      )}
-
-      {!error && (!players || players.length === 0) && (
-        <p className="text-gray-500 text-sm">Queue is empty.</p>
-      )}
-
-      {players && players.length > 0 && (
-        <div className="flex flex-col gap-3">
-          {players.map((player) => (
-            <div
-              key={player.id}
-              className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-xl px-5 py-4"
-            >
-              <div>
-                <p className="text-white font-medium">{player.name}</p>
-                <p className="text-gray-400 text-sm">
-                  {player.country} · {player.role}
-                </p>
-              </div>
-              <span className="text-xs text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 rounded-full px-3 py-1">
-                pending
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+      {renderQueue(players, error)}
     </main>
+  );
+}
+
+function renderQueue(
+  players: { id: string; name: string; country: string; role: string }[] | null,
+  error: { message: string } | null
+) {
+  if (error) {
+    return (
+      <p className="text-red-400 text-sm">
+        Failed to load queue: {error.message}
+      </p>
+    );
+  }
+
+  if (!players || players.length === 0) {
+    return <p className="text-gray-500 text-sm">Queue is empty.</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {players.map((player) => (
+        <div
+          key={player.id}
+          className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-xl px-5 py-4"
+        >
+          <div>
+            <p className="text-white font-medium">{player.name}</p>
+            <p className="text-gray-400 text-sm">
+              {player.country} · {player.role}
+            </p>
+          </div>
+          <span className="text-xs text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 rounded-full px-3 py-1">
+            pending
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }

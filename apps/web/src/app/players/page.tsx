@@ -7,6 +7,8 @@ import { CardWrapper } from "@/components/ui/CardWrapper";
 import { PageHeader } from "@/components/layout";
 import { SearchFilterBar } from "@/components/players";
 
+export const dynamic = "force-dynamic";
+
 type SearchParams = Promise<{
   country?: string | string[];
   role?: string | string[];
@@ -66,7 +68,7 @@ export default async function PlayersPage({
       />
 
       {/* Result count */}
-      <p className="text-zinc-600 text-xs font-mono mb-2">
+      <p className="text-zinc-600 text-xs font-body mb-2">
         Showing {players.length} player{players.length !== 1 ? "s" : ""}
         {search && <span> for &ldquo;{search}&rdquo;</span>}
       </p>

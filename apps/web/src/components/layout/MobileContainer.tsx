@@ -1,6 +1,6 @@
 import React from "react";
 
-interface MobileContainerProps {
+export interface MobileContainerProps {
   children: React.ReactNode;
   className?: string;
 }

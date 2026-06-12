@@ -7,7 +7,7 @@ interface Crumb {
   href?: string;
 }
 
-interface PageTitleProps {
+export interface PageTitleProps {
   crumbs: Crumb[];
 }
 

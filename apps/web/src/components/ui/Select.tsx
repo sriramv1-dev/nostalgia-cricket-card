@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
-interface SelectProps {
+export interface SelectProps {
   options: string[];
   value: string;
   onChange: (value: string) => void;

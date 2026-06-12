@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-interface CountrySelectProps {
+export interface CountrySelectProps {
   countries: string[];
   selected: string | undefined;
 }

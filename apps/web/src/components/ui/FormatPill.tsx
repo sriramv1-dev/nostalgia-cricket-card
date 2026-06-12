@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -14,16 +15,20 @@ const formatPill = cva(
   }
 );
 
-interface FormatPillProps extends VariantProps<typeof formatPill> {
+export interface FormatPillProps extends VariantProps<typeof formatPill> {
   format: "test" | "odi" | "t20i";
   children?: React.ReactNode;
   className?: string;
 }
 
-export function FormatPill({ format, children, className }: FormatPillProps) {
+export const FormatPill = memo(function FormatPill({
+  format,
+  children,
+  className,
+}: FormatPillProps) {
   return (
     <span className={cn(formatPill({ format }), className)}>
       {children ?? format.toUpperCase()}
     </span>
   );
-}
+});

@@ -6,9 +6,9 @@ import { CricketCard } from "@/components/card/CricketCard";
 import { CardScaleWrapper } from "@/components/card/CardScaleWrapper";
 import { PageHeader } from "@/components/layout";
 // import { StatsGrid } from "@/components/card/StatsGrid";
-import StatCard from "@/components/card/StatCard";
-import { PlayerStatsShowcase } from "@/components/PlayerStatsShowcase";
-import { ViewSwitcher } from "./ViewSwitcher";
+import { StatCard } from "@/components/card/StatCard";
+import { PlayerStatsShowcaseLazy } from "@/components/showcase";
+import { ViewSwitcher } from "@/components/players";
 import {
   CARD_WIDTH,
   CARD_HEIGHT,
@@ -17,6 +17,8 @@ import {
 } from "@/constants/card";
 import type { PlayerFormatStats } from "@/types/player-stats";
 import type { PlayerStatsRow } from "@/types/database.types";
+
+export const dynamic = "force-dynamic";
 
 function toFormatStats(row: PlayerStatsRow): PlayerFormatStats {
   return {
@@ -120,7 +122,7 @@ export default async function PlayerDetailPage({
               scroll={false}
               className="flex flex-col items-center gap-3 group cursor-pointer"
             >
-              <p className="text-zinc-600 text-[10px] tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+              <p className="text-zinc-600 text-[10px] tracking-widest font-body group-hover:text-pink-400 transition-colors">
                 Stat Card ↗
               </p>
               <div
@@ -148,7 +150,7 @@ export default async function PlayerDetailPage({
               href={`/card-builder?country=${encodeURIComponent(player.country)}&role=${player.role}&from=${encodeURIComponent(`/players/${player.id}`)}&fromLabel=${encodeURIComponent(player.name)}`}
               className="flex flex-col items-center gap-3 group cursor-pointer"
             >
-              <p className="text-zinc-600 text-[10px] tracking-widest font-mono group-hover:text-pink-400 transition-colors">
+              <p className="text-zinc-600 text-[10px] tracking-widest font-body group-hover:text-pink-400 transition-colors">
                 Brand Card ↗
               </p>
               <CardScaleWrapper scale="detail">
@@ -158,7 +160,7 @@ export default async function PlayerDetailPage({
           </div>
         ) : (
           <div className="max-w-4xl mx-auto w-full overflow-y-auto h-full">
-            <PlayerStatsShowcase
+            <PlayerStatsShowcaseLazy
               player={{
                 name: player.name,
                 role: player.role,

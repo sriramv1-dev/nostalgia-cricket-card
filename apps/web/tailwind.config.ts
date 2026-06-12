@@ -5,10 +5,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: '#e63946',
+        brand: {
+          DEFAULT: '#e8257a',
+          pink: '#e8257a',
+          navy: '#1a3a8a',
+          yellow: '#ffd600',
+        },
+        section: {
+          batting: '#ea580c',
+          bowling: '#7c3aed',
+          fielding: '#d97706',
+        },
+        format: {
+          test: '#78350f',
+          odi: '#1d4ed8',
+          t20i: '#be185d',
+        },
+        // Legacy retro palette — still referenced by globals.css effects
         gold: '#f4a261',
         pitch: '#2d6a4f',
         cream: '#fdf8f0',
+        // Card surface palette (native card design colors)
+        parchment: '#fdf8ef',
+        night: '#0a0f1e',
+        'card-border': '#d1c9b8',
+      },
+      spacing: {
+        nav: '60px',
       },
       fontFamily: {
         display: ['var(--font-sour-gummy)', 'sans-serif'],

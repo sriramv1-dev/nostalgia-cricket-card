@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { type ReactNode } from "react";
 
-interface SectionLabelProps {
+export interface SectionLabelProps {
   children: ReactNode;
   className?: string;
 }

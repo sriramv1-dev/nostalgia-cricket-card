@@ -10,7 +10,7 @@ interface BatSwitchOption {
   icon: React.ReactNode;
 }
 
-interface BatSwitchProps {
+export interface BatSwitchProps {
   options: BatSwitchOption[];
   value: string;
   onChange: (id: string) => void;

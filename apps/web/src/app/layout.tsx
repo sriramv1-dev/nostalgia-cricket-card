@@ -31,12 +31,12 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Pocket Cricket Cards",
+  title: "Nostalgia Cricket Card",
   description:
     "Relive the 90s. Collect legendary cricket cards inspired by Big Babol Pocket Cricket. Open packs, trade with friends, and battle with your collection.",
   keywords: ["cricket", "cards", "collecting", "90s", "nostalgia", "Big Babol"],
   openGraph: {
-    title: "Pocket Cricket Cards",
+    title: "Nostalgia Cricket Card",
     description: "Relive the 90s. Collect legends.",
     type: "website",
   },
@@ -65,7 +65,7 @@ export default function RootLayout({
           <PageHeaderProvider>
             <Header />
             <PageHeaderSlot />
-            <main className="pt-[112px] pb-[60px] md:pb-0">{children}</main>
+            <main className="pt-28 pb-nav md:pb-0">{children}</main>
           </PageHeaderProvider>
         </PageTitleProvider>
       </body>
