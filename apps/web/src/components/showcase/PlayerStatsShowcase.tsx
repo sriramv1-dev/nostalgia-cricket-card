@@ -20,6 +20,8 @@ function animateWickets(
   colors: { main: string; trail: string },
   val: string
 ) {
+  // Non-null safe: "2d" context is always available on an HTMLCanvasElement
+  // unless the same canvas was already locked to a different context type.
   const ctx = canvas.getContext("2d")!;
   const W = canvas.width;
   const H = canvas.height;

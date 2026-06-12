@@ -7,7 +7,7 @@ import { FILTERABLE_COUNTRIES as COUNTRIES } from "@/constants/countries";
 import { ROLE_LABELS as ROLES } from "@/constants/roles";
 
 
-interface SearchFilterBarProps {
+export interface SearchFilterBarProps {
   initialSearch: string;
   initialCountries: string[];
   initialRoles: string[];
@@ -48,6 +48,50 @@ export function SearchFilterBar({
 
   const removeRole = (r: string) => {
     setSelectedRoles((prev) => prev.filter((x) => x !== r));
+  };
+
+  // Pill click in "all mode" (no explicit selection) means "deselect this one":
+  // select everything except the clicked item.
+  const handleCountryPillClick = (c: string, isAllMode: boolean) => {
+    if (isAllMode) {
+      setSelectedCountries(COUNTRIES.filter((x) => x !== c));
+      return;
+    }
+    toggleCountry(c);
+  };
+
+  const handleCountryDismiss = (
+    e: React.MouseEvent,
+    c: string,
+    isAllMode: boolean
+  ) => {
+    e.stopPropagation();
+    if (isAllMode) {
+      setSelectedCountries(COUNTRIES.filter((x) => x !== c));
+      return;
+    }
+    removeCountry(c);
+  };
+
+  const handleRolePillClick = (r: string, isAllMode: boolean) => {
+    if (isAllMode) {
+      setSelectedRoles(ROLES.filter((x) => x !== r));
+      return;
+    }
+    toggleRole(r);
+  };
+
+  const handleRoleDismiss = (
+    e: React.MouseEvent,
+    r: string,
+    isAllMode: boolean
+  ) => {
+    e.stopPropagation();
+    if (isAllMode) {
+      setSelectedRoles(ROLES.filter((x) => x !== r));
+      return;
+    }
+    removeRole(r);
   };
 
   const handleSearch = () => {
@@ -118,7 +162,7 @@ export function SearchFilterBar({
           return (
             <span
               key={c}
-              onClick={() => isAllMode ? setSelectedCountries(COUNTRIES.filter(x => x !== c)) : toggleCountry(c)}
+              onClick={() => handleCountryPillClick(c, isAllMode)}
               className={`inline-flex items-center gap-1.5 rounded-full text-xs font-bold tracking-wide px-3 py-1 cursor-pointer transition-colors ${
                 isAllMode || isSelected
                   ? "bg-blue-900/50 text-blue-300 border border-blue-700/50"
@@ -128,14 +172,7 @@ export function SearchFilterBar({
               {c}
               {(isAllMode || isSelected) && (
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isAllMode) {
-                      setSelectedCountries(COUNTRIES.filter(x => x !== c));
-                    } else {
-                      removeCountry(c);
-                    }
-                  }}
+                  onClick={(e) => handleCountryDismiss(e, c, isAllMode)}
                   className="opacity-60 hover:opacity-100 text-[11px] leading-none p-2.5 -m-2.5"
                 >
                   ✕
@@ -157,19 +194,12 @@ export function SearchFilterBar({
               <RoleBadge
                 key={r}
                 role={roleKey}
-                onClick={() => isAllMode ? setSelectedRoles(ROLES.filter(x => x !== r)) : toggleRole(r)}
+                onClick={() => handleRolePillClick(r, isAllMode)}
                 className="cursor-pointer"
               >
                 {r}
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isAllMode) {
-                      setSelectedRoles(ROLES.filter(x => x !== r));
-                    } else {
-                      removeRole(r);
-                    }
-                  }}
+                  onClick={(e) => handleRoleDismiss(e, r, isAllMode)}
                   className="opacity-60 hover:opacity-100 text-[11px] leading-none p-2.5 -m-2.5"
                 >
                   ✕

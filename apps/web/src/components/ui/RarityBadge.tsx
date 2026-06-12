@@ -37,7 +37,7 @@ const DOT_SIZES = {
   md: "w-2 h-2",
 };
 
-interface RarityBadgeProps extends VariantProps<typeof rarityBadge> {
+export interface RarityBadgeProps extends VariantProps<typeof rarityBadge> {
   rarity: Rarity;
   showDot?: boolean;
   className?: string;

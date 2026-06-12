@@ -14,7 +14,7 @@ const formatPill = cva(
   }
 );
 
-interface FormatPillProps extends VariantProps<typeof formatPill> {
+export interface FormatPillProps extends VariantProps<typeof formatPill> {
   format: "test" | "odi" | "t20i";
   children?: React.ReactNode;
   className?: string;

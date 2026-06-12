@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
-interface ColorPopoverProps {
+export interface ColorPopoverProps {
   label: string;
   value: string;
   onChange: (color: string) => void;

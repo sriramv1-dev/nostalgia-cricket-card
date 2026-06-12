@@ -10,7 +10,7 @@ interface TabOption {
   icon?: React.ReactNode;
 }
 
-interface TabSwitchProps {
+export interface TabSwitchProps {
   options: TabOption[];
   value: string;
   onChange: (id: string) => void;

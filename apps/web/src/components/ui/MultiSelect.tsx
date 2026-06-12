@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-interface MultiSelectProps {
+export interface MultiSelectProps {
   label: string;
   options: string[];
   selected: string[];
@@ -15,7 +15,7 @@ export function MultiSelect({
   selected,
   onChange,
   allLabel = "All",
-  badgeColor = "#e8257a",
+  badgeColor = "var(--brand-pink)",
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

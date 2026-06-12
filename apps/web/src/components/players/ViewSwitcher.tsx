@@ -38,7 +38,7 @@ const TABLE_ICON = (
   </svg>
 );
 
-interface ViewSwitcherProps {
+export interface ViewSwitcherProps {
   playerId: string;
   view: string;
 }

@@ -18,7 +18,7 @@ const roleBadge = cva(
 
 type RoleKey = "batter" | "bowler" | "allrounder" | "keeper";
 
-interface RoleBadgeProps extends VariantProps<typeof roleBadge> {
+export interface RoleBadgeProps extends VariantProps<typeof roleBadge> {
   role: RoleKey;
   children?: ReactNode;
   className?: string;

@@ -22,7 +22,7 @@ const KEY_TO_SOURCE: Array<{
 const FILTER_IDLE   = "drop-shadow(0 0 5px #e8257a) drop-shadow(0 0 2px #e8257a)";
 const FILTER_ACTIVE = "drop-shadow(0 0 14px #e8257a) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #e8257a)";
 
-interface CustomizableLayeredCharacterProps {
+export interface CustomizableLayeredCharacterProps {
   sources: LayeredCharacterSources & { scale?: number };
   colors: Partial<CharacterColors>;
   width?: number;

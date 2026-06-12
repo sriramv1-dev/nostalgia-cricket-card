@@ -84,6 +84,12 @@ const IDLE_GLOW =
 const ACTIVE_GLOW =
   "drop-shadow(0 0 14px #e8257a) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #e8257a)";
 
+function getLayerGlow(isDone: boolean, isActive: boolean): string {
+  if (isDone) return "none";
+  if (isActive) return ACTIVE_GLOW;
+  return IDLE_GLOW;
+}
+
 function deriveRole(shot: string): PlayerRole {
   if (shot === "pace" || shot === "spin") return "bowler";
   if (shot === "keeping1" || shot === "keeping2") return "keeper";
@@ -330,11 +336,7 @@ function CustomizeContent() {
                   aria-hidden
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    filter: isDone
-                      ? "none"
-                      : activeKey === key
-                        ? ACTIVE_GLOW
-                        : IDLE_GLOW,
+                    filter: getLayerGlow(isDone, activeKey === key),
                     transition: "filter 0.15s ease",
                     isolation: "isolate",
                   }}

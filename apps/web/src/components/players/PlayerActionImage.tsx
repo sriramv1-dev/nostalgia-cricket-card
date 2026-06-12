@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { PlayerRow } from "@/types/database.types";
 import { getCharacterSources } from "@/constants/characters";
 
-interface PlayerActionImageProps {
+export interface PlayerActionImageProps {
   player: PlayerRow;
 }
 

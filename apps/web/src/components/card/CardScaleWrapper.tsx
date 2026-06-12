@@ -7,7 +7,7 @@ import {
   type CardScale,
 } from "@/constants/card";
 
-interface CardScaleWrapperProps {
+export interface CardScaleWrapperProps {
   scale: CardScale;
   children: ReactNode;
 }

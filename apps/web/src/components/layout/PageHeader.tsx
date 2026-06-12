@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { usePageHeaderContent } from "@/hooks/usePageHeaderContent";
 
-interface PageHeaderProps {
+export interface PageHeaderProps {
   title: string;
   subtitle?: ReactNode;
   subtitleFill?: boolean;

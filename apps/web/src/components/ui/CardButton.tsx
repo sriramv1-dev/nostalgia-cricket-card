@@ -13,7 +13,7 @@ const cardButton = cva(
   }
 );
 
-interface CardButtonProps extends VariantProps<typeof cardButton> {
+export interface CardButtonProps extends VariantProps<typeof cardButton> {
   variant: "primary" | "secondary";
   onClick?: () => void;
   children: ReactNode;
