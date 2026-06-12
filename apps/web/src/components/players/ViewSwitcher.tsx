@@ -46,7 +46,7 @@ interface ViewSwitcherProps {
 export function ViewSwitcher({ playerId, view }: ViewSwitcherProps) {
   const router = useRouter();
   return (
-    <div className="h-12 w-[160px] overflow-visible">
+    <div className="h-12 w-full sm:w-40 overflow-visible">
       <BatSwitch
         options={[
           { id: "card", label: "Card", icon: CARD_ICON },

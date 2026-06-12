@@ -272,7 +272,7 @@ function CustomizeContent() {
           </span>
         }
         right={
-          <div className="h-12 w-[160px] overflow-visible">
+          <div className="h-12 w-full sm:w-40 overflow-visible">
             <BatSwitch
               options={MODE_OPTIONS}
               value="tap"

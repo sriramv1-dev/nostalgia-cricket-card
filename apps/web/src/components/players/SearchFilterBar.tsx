@@ -103,7 +103,7 @@ export function SearchFilterBar({
         {/* Search button */}
         <button
           onClick={handleSearch}
-          className="bg-brand-pink text-white font-bold text-[13px] tracking-wide px-4 py-1.5 rounded-xl shrink-0"
+          className="bg-brand-pink text-white font-bold text-[13px] tracking-wide min-h-[44px] px-6 py-1.5 rounded-xl shrink-0"
         >
           Search
         </button>
@@ -136,7 +136,7 @@ export function SearchFilterBar({
                       removeCountry(c);
                     }
                   }}
-                  className="opacity-60 hover:opacity-100 text-[11px] leading-none"
+                  className="opacity-60 hover:opacity-100 text-[11px] leading-none p-2.5 -m-2.5"
                 >
                   ✕
                 </button>
@@ -170,7 +170,7 @@ export function SearchFilterBar({
                       removeRole(r);
                     }
                   }}
-                  className="opacity-60 hover:opacity-100 text-[11px] leading-none"
+                  className="opacity-60 hover:opacity-100 text-[11px] leading-none p-2.5 -m-2.5"
                 >
                   ✕
                 </button>

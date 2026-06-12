@@ -7,6 +7,8 @@ import { CardWrapper } from "@/components/ui/CardWrapper";
 import { PageHeader } from "@/components/layout";
 import { SearchFilterBar } from "@/components/players";
 
+export const dynamic = "force-dynamic";
+
 type SearchParams = Promise<{
   country?: string | string[];
   role?: string | string[];

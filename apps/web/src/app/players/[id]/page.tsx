@@ -18,6 +18,8 @@ import {
 import type { PlayerFormatStats } from "@/types/player-stats";
 import type { PlayerStatsRow } from "@/types/database.types";
 
+export const dynamic = "force-dynamic";
+
 function toFormatStats(row: PlayerStatsRow): PlayerFormatStats {
   return {
     format: row.format,

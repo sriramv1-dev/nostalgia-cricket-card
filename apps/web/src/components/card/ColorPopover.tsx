@@ -42,7 +42,7 @@ export function ColorPopover({ label, value, onChange, onClose }: ColorPopoverPr
         <button
           type="button"
           onClick={onClose}
-          className="text-zinc-500 hover:text-white text-lg leading-none"
+          className="text-zinc-500 hover:text-white text-lg leading-none flex min-h-[44px] min-w-[44px] items-center justify-center -m-3"
           aria-label="Close"
         >
           ×
