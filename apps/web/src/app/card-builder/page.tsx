@@ -377,23 +377,24 @@ function CardBuilderPageInner() {
         }
       />
 
-      {/* Body */}
-      <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-8 px-8 py-4 justify-center overflow-hidden">
-        {/* Left — Card Preview, centred vertically */}
-        <div className="flex flex-col items-center gap-4 flex-shrink-0 self-center">
-          <CardScaleWrapper scale="detail">
-            <CricketCard
-              player={PREVIEW_PLAYER}
-              stats={null}
-              variant="brand"
-              themeOverride={styles}
-            />
-          </CardScaleWrapper>
-        </div>
+      {/* Body — card + form panel travel as one centred group */}
+      <div className="flex-1 min-h-0 flex items-center justify-center px-8 py-4 overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-8 items-center md:items-start min-h-0 max-h-full">
+          {/* Card Preview */}
+          <div className="flex-shrink-0">
+            <CardScaleWrapper scale="detail">
+              <CricketCard
+                player={PREVIEW_PLAYER}
+                stats={null}
+                variant="brand"
+                themeOverride={styles}
+              />
+            </CardScaleWrapper>
+          </div>
 
-        {/* Right — Form Panel, scrolls internally */}
-        {editMode === "form" && (
-          <div className="flex-1 min-w-0 min-h-0 max-w-md flex flex-col gap-2 overflow-y-auto">
+          {/* Form Panel — fixed width on md+ so the group centres predictably */}
+          {editMode === "form" && (
+            <div className="w-full md:w-[400px] min-h-0 max-h-full flex flex-col gap-2 overflow-y-auto">
             {/* Tabs */}
             <div className="h-14 w-full overflow-visible">
               <TabSwitch
@@ -515,8 +516,9 @@ function CardBuilderPageInner() {
                 </CardButton>
               </div>
             )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
