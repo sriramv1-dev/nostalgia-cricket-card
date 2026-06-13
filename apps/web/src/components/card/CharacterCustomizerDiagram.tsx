@@ -66,11 +66,11 @@ const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
   shoes:     "bottom",
 };
 
-const CHAR_W = 340;
-const CHAR_H = 460;
+const CHAR_W = 300;
+const CHAR_H = 400;
 const CURVE_BEND = 60;
 const PANEL_COL_W = 140; // px — fixed width for left/right panel columns
-const PANEL_ROW_H = 120; // px — fixed height for top/bottom panel rows
+const PANEL_ROW_H = 96;  // px — fixed height for top/bottom panel rows
 
 const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
   { shotType: "alpha",    label: "Alpha" },
@@ -248,12 +248,11 @@ function ConnectorLine({ x1, y1, x2, y2, side, dotColor, isActive }: ConnectorLi
   );
 }
 
-// ─── PanelEntry ──────────────────────────────────────────────────────────────
+// ─── PanelCard — uniform vertical layout for every accessory ─────────────────
 
-interface PanelEntryProps {
+interface PanelCardProps {
   accessoryKey: keyof CharacterColors;
   color: string;
-  side: PanelSide;
   isActive: boolean;
   onSelect: () => void;
   onColorChange: (c: string) => void;
@@ -261,99 +260,84 @@ interface PanelEntryProps {
   entryRef: (el: HTMLDivElement | null) => void;
 }
 
-function PanelEntry({
+function PanelCard({
   accessoryKey,
   color,
-  side,
   isActive,
   onSelect,
   onColorChange,
   onResetKey,
   entryRef,
-}: PanelEntryProps) {
+}: PanelCardProps) {
   const swatches = ACCESSORY_SWATCHES[accessoryKey];
   const idx = findSwatchIndex(color, swatches);
-  const isHorizontal = side === "left" || side === "right";
-  // Slider on the character-facing edge:
-  // right panel → character is to the left → slider goes to the left (flex-row-reverse)
-  // bottom panel → character is above → slider goes to the top (flex-col-reverse)
-  const sliderFirst = side === "right" || side === "bottom";
-
-  const infoSection = (
-    <div className={cn("flex flex-col gap-0.5 min-w-0", isHorizontal && "flex-1")}>
-      <div className="flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1 min-w-0">
-          <div
-            className="w-2.5 h-2.5 rounded-full border border-zinc-600 flex-shrink-0"
-            style={{ backgroundColor: color }}
-          />
-          <span className="text-[11px] font-body tracking-widest uppercase text-zinc-300 truncate">
-            {KEY_LABELS[accessoryKey]}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onResetKey(); }}
-          className="text-zinc-500 hover:text-white text-xs transition-colors min-h-[24px] min-w-[24px] flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
-          title="Reset to default"
-        >
-          ↺
-        </button>
-      </div>
-      <span className="text-[10px] font-mono text-zinc-500 tracking-wider pl-[14px]">
-        {color}
-      </span>
-    </div>
-  );
-
-  const sliderSection = (
-    <div className={cn("flex flex-col gap-1 flex-shrink-0", isHorizontal ? "w-[64px]" : "")}>
-      <input
-        type="range"
-        min={0}
-        max={swatches.length - 1}
-        step={1}
-        value={idx}
-        onChange={(e) => onColorChange(swatches[parseInt(e.target.value, 10)])}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full h-1.5 rounded-full cursor-pointer appearance-none"
-        style={{
-          background: `linear-gradient(to right, ${swatches.join(", ")})`,
-        }}
-      />
-      <div className={cn("flex flex-wrap", isHorizontal ? "gap-0.5" : "gap-1")}>
-        {swatches.map((swatch, i) => (
-          <button
-            key={swatch}
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
-            className={cn(
-              "rounded-full border-2 flex-shrink-0 transition-transform",
-              isHorizontal ? "w-3 h-3" : "w-3.5 h-3.5",
-              i === idx ? "border-white scale-125" : "border-transparent hover:scale-110"
-            )}
-            style={{ backgroundColor: swatch }}
-            aria-label={swatch}
-          />
-        ))}
-      </div>
-    </div>
-  );
 
   return (
     <div
       ref={entryRef}
       onClick={onSelect}
       className={cn(
-        "rounded-2xl border cursor-pointer transition-colors",
-        isHorizontal
-          ? cn("p-2 flex gap-2 items-center", sliderFirst ? "flex-row-reverse" : "flex-row")
-          : cn("p-2.5 flex flex-col gap-2", sliderFirst ? "flex-col-reverse" : "flex-col"),
+        "flex flex-col gap-1 rounded-xl border p-2 cursor-pointer transition-colors flex-shrink-0",
         isActive ? "border-zinc-500 bg-zinc-800" : "border-zinc-700 bg-zinc-900 hover:border-zinc-600"
       )}
+      style={{ width: PANEL_COL_W }}
     >
-      {infoSection}
-      {sliderSection}
+      {/* Row 1: name + reset — always visible */}
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-[10px] font-body tracking-widest uppercase text-zinc-300 truncate">
+          {KEY_LABELS[accessoryKey]}
+        </span>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onResetKey(); }}
+          className="text-zinc-500 hover:text-white text-xs transition-colors w-5 h-5 flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
+          title="Reset to default"
+        >
+          ↺
+        </button>
+      </div>
+
+      {/* Row 2: hex code — fades in when selected */}
+      <span
+        className={cn(
+          "text-[9px] font-mono text-zinc-500 tracking-wide transition-opacity duration-150",
+          isActive ? "opacity-100" : "opacity-0"
+        )}
+      >
+        {color}
+      </span>
+
+      {/* Row 3: swatch row — fades in when selected; always in DOM to hold card height */}
+      <div
+        className={cn(
+          "flex flex-wrap gap-0.5 transition-opacity duration-150",
+          isActive ? "opacity-100" : "opacity-0"
+        )}
+      >
+        {swatches.map((swatch, i) => {
+          const isSelected = i === idx;
+          return (
+            <button
+              key={swatch}
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
+              className="flex flex-col items-center gap-px"
+              aria-label={swatch}
+            >
+              {/* Notch: downward-pointing triangle, visible only for active swatch */}
+              <span
+                className="block w-0 h-0"
+                style={{
+                  borderLeft: "3px solid transparent",
+                  borderRight: "3px solid transparent",
+                  borderTop: `4px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
+                }}
+              />
+              <span className="block w-3 h-3 rounded-full" style={{ backgroundColor: swatch }} />
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -555,16 +539,15 @@ export function CharacterCustomizerDiagram({
     []
   );
 
-  // Helper: render a panel entry for a given side
+  // Helper: render a uniform panel card (no side dependency)
   const renderEntry = useCallback(
-    (key: keyof CharacterColors, side: PanelSide) => {
+    (key: keyof CharacterColors) => {
       const color = (colors[key] as string | undefined) ?? "#888888";
       return (
-        <PanelEntry
+        <PanelCard
           key={key}
           accessoryKey={key}
           color={color}
-          side={side}
           isActive={activeKey === key}
           onSelect={() => setActiveKey(activeKey === key ? null : key)}
           onColorChange={(c) => { updateColor(key, c); setActiveKey(key); }}
@@ -577,7 +560,10 @@ export function CharacterCustomizerDiagram({
   );
 
   return (
-    <div className={cn("flex flex-row items-center justify-center", className)}>
+    <div className={cn("flex flex-col items-center gap-3", className)}>
+
+      {/* ── 3-section row: pose strip + center grid + country strip ── */}
+      <div className="flex flex-row items-center">
 
       {/* ── Pose strip ── */}
       <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
@@ -598,13 +584,13 @@ export function CharacterCustomizerDiagram({
       <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
 
       {/* ── Center: fixed-size grid in a border wrapper ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-3">
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
         <div
           ref={containerRef}
-          className="relative grid gap-3"
+          className="relative grid gap-2"
           style={{
             gridTemplateColumns: `${PANEL_COL_W}px ${CHAR_W}px ${PANEL_COL_W}px`,
-            gridTemplateRows: `${PANEL_ROW_H}px ${CHAR_H}px ${PANEL_ROW_H}px auto`,
+            gridTemplateRows: `${PANEL_ROW_H}px ${CHAR_H}px ${PANEL_ROW_H}px`,
           }}
         >
           {/* ── SVG connector overlay ── */}
@@ -630,7 +616,7 @@ export function CharacterCustomizerDiagram({
             className="flex items-end justify-center gap-2 overflow-hidden"
             style={{ gridColumn: "1 / 4", gridRow: 1 }}
           >
-            {panelGroups.top.map((key) => renderEntry(key, "top"))}
+            {panelGroups.top.map(renderEntry)}
           </div>
 
           {/* ── Left panel column — always present ── */}
@@ -638,7 +624,7 @@ export function CharacterCustomizerDiagram({
             className="flex flex-col justify-center gap-2 overflow-hidden"
             style={{ gridColumn: 1, gridRow: 2 }}
           >
-            {panelGroups.left.map((key) => renderEntry(key, "left"))}
+            {panelGroups.left.map(renderEntry)}
           </div>
 
           {/* ── Character cell — col 2, row 2 ── */}
@@ -692,6 +678,7 @@ export function CharacterCustomizerDiagram({
                 </div>
               );
             })}
+
           </div>
 
           {/* ── Right panel column — always present ── */}
@@ -699,7 +686,7 @@ export function CharacterCustomizerDiagram({
             className="flex flex-col justify-center gap-2 overflow-hidden"
             style={{ gridColumn: 3, gridRow: 2 }}
           >
-            {panelGroups.right.map((key) => renderEntry(key, "right"))}
+            {panelGroups.right.map(renderEntry)}
           </div>
 
           {/* ── Bottom panel row — always present ── */}
@@ -707,21 +694,7 @@ export function CharacterCustomizerDiagram({
             className="flex items-start justify-center gap-2 overflow-hidden"
             style={{ gridColumn: "1 / 4", gridRow: 3 }}
           >
-            {panelGroups.bottom.map((key) => renderEntry(key, "bottom"))}
-          </div>
-
-          {/* ── Reset all ── */}
-          <div
-            className="flex justify-center pt-1"
-            style={{ gridColumn: "1 / 4", gridRow: 4 }}
-          >
-            <button
-              type="button"
-              onClick={reset}
-              className="rounded-full border border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-6 py-2 transition-colors"
-            >
-              Reset All
-            </button>
+            {panelGroups.bottom.map(renderEntry)}
           </div>
         </div>
       </div>
@@ -745,6 +718,18 @@ export function CharacterCustomizerDiagram({
           ))}
         </div>
       </div>
+
+      </div>{/* end 3-section row */}
+
+      {/* ── Reset All — sits below the full diagram row ── */}
+      <button
+        type="button"
+        onClick={reset}
+        className="rounded-full border border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-8 py-2 transition-colors"
+      >
+        reset all
+      </button>
+
     </div>
   );
 }
