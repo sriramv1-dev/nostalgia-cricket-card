@@ -67,10 +67,10 @@ const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
 };
 
 const CHAR_W = 300;
-const CHAR_H = 400;
+const CHAR_H = 500;
 const CURVE_BEND = 60;
-const PANEL_COL_W = 140; // px — fixed width for left/right panel columns
-const PANEL_ROW_H = 96;  // px — fixed height for top/bottom panel rows
+const PANEL_COL_W = 152; // px — fixed width for left/right panel columns
+const PANEL_ROW_H = 128; // px — fixed height for top/bottom panel rows
 
 const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
   { shotType: "alpha",    label: "Alpha" },
@@ -324,15 +324,15 @@ function PanelCard({
       ref={entryRef}
       onClick={onSelect}
       className={cn(
-        "flex flex-col gap-1 rounded-xl border p-2 cursor-pointer transition-colors flex-shrink-0",
+        "flex flex-col gap-1.5 rounded-xl border p-2.5 cursor-pointer transition-colors flex-shrink-0",
         isActive ? "bg-zinc-800" : "bg-zinc-900 hover:bg-zinc-800/50"
       )}
       style={{ width: PANEL_COL_W, borderColor: color }}
     >
-      {/* Row 1: name colored with accessory color + reset */}
+      {/* Row 1: name (in accessory color) + reset */}
       <div className="flex items-center justify-between gap-1">
         <span
-          className="text-[10px] font-body tracking-widest uppercase truncate font-semibold"
+          className="text-xs font-body tracking-widest uppercase truncate font-semibold"
           style={{ color }}
         >
           {KEY_LABELS[accessoryKey]}
@@ -340,7 +340,7 @@ function PanelCard({
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onResetKey(); }}
-          className="text-zinc-500 hover:text-white text-xs transition-colors w-5 h-5 flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
+          className="text-zinc-500 hover:text-white text-sm transition-colors w-6 h-6 flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
           title="Reset to default"
         >
           ↺
@@ -348,33 +348,33 @@ function PanelCard({
       </div>
 
       {/* Row 2: hex code — always visible */}
-      <span className="text-[9px] font-mono text-zinc-400 tracking-wide">{color}</span>
+      <span className="text-[11px] font-mono text-zinc-400 tracking-wide">{color}</span>
 
       {/* Rows 3+4: hue slider + swatches — only when active */}
       {isActive && (
         <>
-          {/* Hue slider */}
-          <div onClick={(e) => e.stopPropagation()}>
+          {/* Hue slider — gradient div provides the track; input provides the draggable thumb */}
+          <div
+            className="relative flex items-center h-5 mt-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="absolute inset-x-0 h-2 rounded-full pointer-events-none"
+              style={{ background: `linear-gradient(to right,${sliderGradient})` }}
+            />
             <input
               type="range"
               min={0}
               max={360}
               value={h}
               onChange={(e) => onColorChange(hslToHex(parseInt(e.target.value), s, l))}
-              className="w-full cursor-pointer"
-              style={{
-                accentColor: color,
-                background: `linear-gradient(to right,${sliderGradient})`,
-                height: "6px",
-                appearance: "none" as React.CSSProperties["appearance"],
-                WebkitAppearance: "none",
-                borderRadius: "3px",
-              }}
+              className="hue-slider w-full"
+              style={{ color }}
             />
           </div>
 
           {/* Swatch row */}
-          <div className="flex flex-wrap gap-0.5" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-wrap gap-1 mt-0.5" onClick={(e) => e.stopPropagation()}>
             {swatches.map((swatch, i) => {
               const isSelected = i === idx;
               return (
@@ -388,12 +388,12 @@ function PanelCard({
                   <span
                     className="block w-0 h-0"
                     style={{
-                      borderLeft: "3px solid transparent",
-                      borderRight: "3px solid transparent",
-                      borderTop: `4px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
+                      borderLeft: "4px solid transparent",
+                      borderRight: "4px solid transparent",
+                      borderTop: `5px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
                     }}
                   />
-                  <span className="block w-3 h-3 rounded-full" style={{ backgroundColor: swatch }} />
+                  <span className="block w-4 h-4 rounded-full" style={{ backgroundColor: swatch }} />
                 </button>
               );
             })}
