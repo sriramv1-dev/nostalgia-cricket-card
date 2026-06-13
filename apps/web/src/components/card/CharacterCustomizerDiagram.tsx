@@ -10,9 +10,16 @@ import {
 } from "react";
 import {
   ACCESSORY_SWATCHES,
+  getAvailableKeys,
   type UseAccessoryCustomizationResult,
 } from "@/hooks/useAccessoryCustomization";
 import { SHOT_SOURCES, type ShotType } from "@/constants/characters";
+import {
+  COUNTRY_NAMES,
+  getCountryStyles,
+  getCountryFlag,
+  getCountryCode,
+} from "@/constants/countries";
 import type { CharacterColors } from "@/types/card";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +36,8 @@ type PanelSide = "top" | "left" | "right" | "bottom";
 export interface CharacterCustomizerDiagramProps {
   shotType: ShotType;
   customization: UseAccessoryCustomizationResult;
+  /** Called when the user picks a different pose from the thumbnail strip. */
+  onShotTypeChange?: (shotType: ShotType) => void;
   className?: string;
 }
 
@@ -45,8 +54,7 @@ const KEY_LABELS: Record<keyof CharacterColors, string> = {
   wickets: "Wickets",
 };
 
-// Anatomical grouping — determines which grid cell a panel entry sits in.
-// Keys on the character's body top → top cell, hands/bat → left, ball/wickets → right, legs → bottom.
+// Fallback anatomical grouping used before centroid data loads.
 const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
   cap:       "top",
   capAccent: "top",
@@ -60,9 +68,29 @@ const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
 
 const CHAR_W = 340;
 const CHAR_H = 460;
-const CURVE_BEND = 60; // control-point offset for bezier curves
+const CURVE_BEND = 60;
+const PANEL_COL_W = 140; // px — fixed width for left/right panel columns
+const PANEL_ROW_H = 120; // px — fixed height for top/bottom panel rows
+
+const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
+  { shotType: "alpha",    label: "Alpha" },
+  { shotType: "loft",     label: "Loft" },
+  { shotType: "scoop",    label: "Scoop" },
+  { shotType: "sweep",    label: "Sweep" },
+  { shotType: "uppercut", label: "Uppercut" },
+  { shotType: "keeping1", label: "Keep 1" },
+  { shotType: "keeping2", label: "Keep 2" },
+  { shotType: "pace",     label: "Pace" },
+  { shotType: "spin",     label: "Spin" },
+];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+
+function sideFromCentroid(cx: number, cy: number): PanelSide {
+  if (cy < 0.35) return "top";
+  if (cy > 0.65) return "bottom";
+  return cx < 0.5 ? "left" : "right";
+}
 
 function objectContainPoint(
   nx: number,
@@ -86,6 +114,95 @@ function findSwatchIndex(color: string, swatches: string[]): number {
     (s) => s.toLowerCase() === color.toLowerCase()
   );
   return idx === -1 ? 0 : idx;
+}
+
+// ─── PoseThumbnail ────────────────────────────────────────────────────────────
+
+interface PoseThumbnailProps {
+  shotType: ShotType;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+function PoseThumbnail({ shotType, label, isActive, onClick }: PoseThumbnailProps) {
+  const src = SHOT_SOURCES[shotType].base;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center gap-1 flex-shrink-0 rounded-xl p-1.5 transition-colors",
+        isActive
+          ? "border border-zinc-400 bg-zinc-800"
+          : "border border-zinc-800 bg-zinc-900 hover:border-zinc-600 hover:bg-zinc-850"
+      )}
+    >
+      <div className="w-12 h-[66px] relative overflow-hidden rounded-lg bg-zinc-950">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={label}
+          className="absolute inset-0 w-full h-full object-contain select-none"
+          draggable={false}
+        />
+      </div>
+      <span
+        className={cn(
+          "text-[9px] font-body tracking-widest uppercase",
+          isActive ? "text-zinc-200" : "text-zinc-500"
+        )}
+      >
+        {label}
+      </span>
+    </button>
+  );
+}
+
+// ─── CountryThumbnail ────────────────────────────────────────────────────────
+
+interface CountryThumbnailProps {
+  country: string;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+function CountryThumbnail({ country, isActive, onClick }: CountryThumbnailProps) {
+  const { character } = getCountryStyles(country);
+  const flag = getCountryFlag(country);
+  const code = getCountryCode(country);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center gap-1 flex-shrink-0 rounded-xl p-1.5 transition-colors",
+        isActive
+          ? "border border-zinc-400 bg-zinc-800"
+          : "border border-zinc-800 bg-zinc-900 hover:border-zinc-600"
+      )}
+    >
+      <div
+        className="w-12 h-[66px] rounded-lg relative overflow-hidden flex items-center justify-center"
+        style={{ backgroundColor: character.cap }}
+      >
+        <div
+          className="absolute bottom-0 inset-x-0 h-3"
+          style={{ backgroundColor: character.capAccent }}
+        />
+        <span className="text-2xl relative z-10 select-none">{flag}</span>
+      </div>
+      <span
+        className={cn(
+          "text-[9px] font-body tracking-widest uppercase",
+          isActive ? "text-zinc-200" : "text-zinc-500"
+        )}
+      >
+        {code}
+      </span>
+    </button>
+  );
 }
 
 // ─── ConnectorLine ───────────────────────────────────────────────────────────
@@ -131,20 +248,66 @@ function ConnectorLine({ x1, y1, x2, y2, side, dotColor, isActive }: ConnectorLi
   );
 }
 
-// ─── SwatchSlider ────────────────────────────────────────────────────────────
+// ─── PanelEntry ──────────────────────────────────────────────────────────────
 
-interface SwatchSliderProps {
+interface PanelEntryProps {
   accessoryKey: keyof CharacterColors;
-  currentColor: string;
-  onColorChange: (color: string) => void;
+  color: string;
+  side: PanelSide;
+  isActive: boolean;
+  onSelect: () => void;
+  onColorChange: (c: string) => void;
+  onResetKey: () => void;
+  entryRef: (el: HTMLDivElement | null) => void;
 }
 
-function SwatchSlider({ accessoryKey, currentColor, onColorChange }: SwatchSliderProps) {
+function PanelEntry({
+  accessoryKey,
+  color,
+  side,
+  isActive,
+  onSelect,
+  onColorChange,
+  onResetKey,
+  entryRef,
+}: PanelEntryProps) {
   const swatches = ACCESSORY_SWATCHES[accessoryKey];
-  const idx = findSwatchIndex(currentColor, swatches);
+  const idx = findSwatchIndex(color, swatches);
+  const isHorizontal = side === "left" || side === "right";
+  // Slider on the character-facing edge:
+  // right panel → character is to the left → slider goes to the left (flex-row-reverse)
+  // bottom panel → character is above → slider goes to the top (flex-col-reverse)
+  const sliderFirst = side === "right" || side === "bottom";
 
-  return (
-    <div className="flex flex-col gap-1.5">
+  const infoSection = (
+    <div className={cn("flex flex-col gap-0.5 min-w-0", isHorizontal && "flex-1")}>
+      <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center gap-1 min-w-0">
+          <div
+            className="w-2.5 h-2.5 rounded-full border border-zinc-600 flex-shrink-0"
+            style={{ backgroundColor: color }}
+          />
+          <span className="text-[11px] font-body tracking-widest uppercase text-zinc-300 truncate">
+            {KEY_LABELS[accessoryKey]}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onResetKey(); }}
+          className="text-zinc-500 hover:text-white text-xs transition-colors min-h-[24px] min-w-[24px] flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
+          title="Reset to default"
+        >
+          ↺
+        </button>
+      </div>
+      <span className="text-[10px] font-mono text-zinc-500 tracking-wider pl-[14px]">
+        {color}
+      </span>
+    </div>
+  );
+
+  const sliderSection = (
+    <div className={cn("flex flex-col gap-1 flex-shrink-0", isHorizontal ? "w-[64px]" : "")}>
       <input
         type="range"
         min={0}
@@ -152,19 +315,21 @@ function SwatchSlider({ accessoryKey, currentColor, onColorChange }: SwatchSlide
         step={1}
         value={idx}
         onChange={(e) => onColorChange(swatches[parseInt(e.target.value, 10)])}
-        className="w-full h-2 rounded-full cursor-pointer appearance-none"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full h-1.5 rounded-full cursor-pointer appearance-none"
         style={{
           background: `linear-gradient(to right, ${swatches.join(", ")})`,
         }}
       />
-      <div className="flex gap-1">
+      <div className={cn("flex flex-wrap", isHorizontal ? "gap-0.5" : "gap-1")}>
         {swatches.map((swatch, i) => (
           <button
             key={swatch}
             type="button"
-            onClick={() => onColorChange(swatch)}
+            onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
             className={cn(
-              "w-4 h-4 rounded-full border-2 flex-shrink-0 transition-transform",
+              "rounded-full border-2 flex-shrink-0 transition-transform",
+              isHorizontal ? "w-3 h-3" : "w-3.5 h-3.5",
               i === idx ? "border-white scale-125" : "border-transparent hover:scale-110"
             )}
             style={{ backgroundColor: swatch }}
@@ -174,65 +339,21 @@ function SwatchSlider({ accessoryKey, currentColor, onColorChange }: SwatchSlide
       </div>
     </div>
   );
-}
 
-// ─── PanelEntry ──────────────────────────────────────────────────────────────
-
-interface PanelEntryProps {
-  accessoryKey: keyof CharacterColors;
-  color: string;
-  isActive: boolean;
-  onSelect: () => void;
-  onColorChange: (c: string) => void;
-  onReset: () => void;
-  entryRef: (el: HTMLDivElement | null) => void;
-}
-
-function PanelEntry({
-  accessoryKey,
-  color,
-  isActive,
-  onSelect,
-  onColorChange,
-  onReset,
-  entryRef,
-}: PanelEntryProps) {
   return (
     <div
       ref={entryRef}
       onClick={onSelect}
       className={cn(
-        "flex flex-col gap-2 rounded-2xl border p-3 cursor-pointer transition-colors",
+        "rounded-2xl border cursor-pointer transition-colors",
+        isHorizontal
+          ? cn("p-2 flex gap-2 items-center", sliderFirst ? "flex-row-reverse" : "flex-row")
+          : cn("p-2.5 flex flex-col gap-2", sliderFirst ? "flex-col-reverse" : "flex-col"),
         isActive ? "border-zinc-500 bg-zinc-800" : "border-zinc-700 bg-zinc-900 hover:border-zinc-600"
       )}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <div
-            className="w-3 h-3 rounded-full border border-zinc-600 flex-shrink-0"
-            style={{ backgroundColor: color }}
-          />
-          <span className="text-xs font-body tracking-widest uppercase text-zinc-300 whitespace-nowrap">
-            {KEY_LABELS[accessoryKey]}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onReset();
-          }}
-          className="text-zinc-500 hover:text-white text-xs font-body transition-colors min-h-[28px] min-w-[28px] flex items-center justify-center rounded-lg hover:bg-zinc-700 flex-shrink-0"
-          aria-label="Reset"
-        >
-          ↺
-        </button>
-      </div>
-      <SwatchSlider
-        accessoryKey={accessoryKey}
-        currentColor={color}
-        onColorChange={onColorChange}
-      />
+      {infoSection}
+      {sliderSection}
     </div>
   );
 }
@@ -242,33 +363,49 @@ function PanelEntry({
 export function CharacterCustomizerDiagram({
   shotType,
   customization,
+  onShotTypeChange,
   className,
 }: CharacterCustomizerDiagramProps) {
-  const { colors, updateColor, reset, activeKey, setActiveKey, availableKeys } =
+  const { colors, updateColor, reset, resetKey, applyCountryPreset, country, activeKey, setActiveKey } =
     customization;
 
-  const sources = SHOT_SOURCES[shotType];
+  // Internal shot type state — the pose strip drives this; prop changes sync it.
+  const [activeShotType, setActiveShotType] = useState<ShotType>(shotType);
+  useEffect(() => { setActiveShotType(shotType); }, [shotType]);
 
-  // Centroid payload
+  // Active country — tracks which country template was last applied.
+  const [activeCountry, setActiveCountry] = useState<string>(country);
+  useEffect(() => { setActiveCountry(country); }, [country]);
+
+  // Available accessory keys for the currently displayed pose.
+  const availableKeys = useMemo(() => getAvailableKeys(activeShotType), [activeShotType]);
+
+  const sources = SHOT_SOURCES[activeShotType];
+
+  // Centroid payload — reload whenever the active pose changes.
   const [centroidData, setCentroidData] = useState<CentroidPayload | null>(null);
   useEffect(() => {
     setCentroidData(null);
-    fetch(`/data/centroids/${shotType}.json`)
+    fetch(`/data/centroids/${activeShotType}.json`)
       .then((r) => r.json())
       .then(setCentroidData)
       .catch(() => null);
-  }, [shotType]);
+  }, [activeShotType]);
 
-  // Group available keys by anatomical side
+  // Group available keys by side — derived from centroids when loaded, anatomical fallback otherwise.
   const panelGroups = useMemo((): Record<PanelSide, Array<keyof CharacterColors>> => {
     const groups: Record<PanelSide, Array<keyof CharacterColors>> = {
       top: [], left: [], right: [], bottom: [],
     };
     for (const key of availableKeys) {
-      groups[ANATOMICAL_SIDE[key]].push(key);
+      const centroid = centroidData?.centroids[key];
+      const side = centroid
+        ? sideFromCentroid(centroid.x, centroid.y)
+        : ANATOMICAL_SIDE[key];
+      groups[side].push(key);
     }
     return groups;
-  }, [availableKeys]);
+  }, [availableKeys, centroidData]);
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -312,7 +449,7 @@ export function CharacterCustomizerDiagram({
       );
 
       const entryRect = entryEl.getBoundingClientRect();
-      const side = ANATOMICAL_SIDE[key];
+      const side = sideFromCentroid(centroid.x, centroid.y);
 
       let x2: number, y2: number;
       switch (side) {
@@ -399,6 +536,17 @@ export function CharacterCustomizerDiagram({
     [centroidData, setActiveKey]
   );
 
+  // Pose switch: update internal state, clear active accessory, notify parent.
+  const handleShotTypeSwitch = useCallback(
+    (newType: ShotType) => {
+      setActiveShotType(newType);
+      setActiveKey(null);
+      entryRefs.current.clear();
+      onShotTypeChange?.(newType);
+    },
+    [setActiveKey, onShotTypeChange]
+  );
+
   // Helper: register entry ref
   const setEntryRef = useCallback(
     (key: keyof CharacterColors) => (el: HTMLDivElement | null) => {
@@ -407,180 +555,194 @@ export function CharacterCustomizerDiagram({
     []
   );
 
-  // Helper: render a panel entry
+  // Helper: render a panel entry for a given side
   const renderEntry = useCallback(
-    (key: keyof CharacterColors) => {
+    (key: keyof CharacterColors, side: PanelSide) => {
       const color = (colors[key] as string | undefined) ?? "#888888";
       return (
         <PanelEntry
           key={key}
           accessoryKey={key}
           color={color}
+          side={side}
           isActive={activeKey === key}
           onSelect={() => setActiveKey(activeKey === key ? null : key)}
           onColorChange={(c) => { updateColor(key, c); setActiveKey(key); }}
-          onReset={reset}
+          onResetKey={() => resetKey(key)}
           entryRef={setEntryRef(key)}
         />
       );
     },
-    [colors, activeKey, setActiveKey, updateColor, reset, setEntryRef]
+    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef]
   );
 
   return (
-    // Outer wrapper: centers the grid inside whatever container is provided.
-    // The grid has equal left/right columns (1fr each) so the character cell
-    // is always horizontally centered regardless of panel entry counts.
-    <div className={cn("flex items-start justify-center", className)}>
-      <div
-        ref={containerRef}
-        className="relative grid gap-3"
-        style={{
-          gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
-          gridTemplateRows: "auto auto auto",
-          minWidth: 0,
-        }}
-      >
-        {/* ── SVG connector overlay ── */}
-        <svg
-          className="absolute inset-0 pointer-events-none"
-          style={{ width: "100%", height: "100%", overflow: "visible" }}
-          aria-hidden
-        >
-          {lines.map(({ key, x1, y1, x2, y2, side, dotColor }) => (
-            <ConnectorLine
-              key={key}
-              x1={x1} y1={y1}
-              x2={x2} y2={y2}
-              side={side}
-              dotColor={dotColor}
-              isActive={activeKey === key}
+    <div className={cn("flex flex-row items-center justify-center", className)}>
+
+      {/* ── Pose strip ── */}
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
+        <div className="grid grid-cols-2 gap-1.5">
+          {ALL_SHOTS.map(({ shotType: st, label }) => (
+            <PoseThumbnail
+              key={st}
+              shotType={st}
+              label={label}
+              isActive={activeShotType === st}
+              onClick={() => handleShotTypeSwitch(st)}
             />
           ))}
-        </svg>
+        </div>
+      </div>
 
-        {/* ── Top panel (cap, capAccent) ── */}
-        {panelGroups.top.length > 0 && (
+      {/* connector */}
+      <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
+
+      {/* ── Center: fixed-size grid in a border wrapper ── */}
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-3">
+        <div
+          ref={containerRef}
+          className="relative grid gap-3"
+          style={{
+            gridTemplateColumns: `${PANEL_COL_W}px ${CHAR_W}px ${PANEL_COL_W}px`,
+            gridTemplateRows: `${PANEL_ROW_H}px ${CHAR_H}px ${PANEL_ROW_H}px auto`,
+          }}
+        >
+          {/* ── SVG connector overlay ── */}
+          <svg
+            className="absolute inset-0 pointer-events-none"
+            style={{ width: "100%", height: "100%", overflow: "visible" }}
+            aria-hidden
+          >
+            {lines.map(({ key, x1, y1, x2, y2, side, dotColor }) => (
+              <ConnectorLine
+                key={key}
+                x1={x1} y1={y1}
+                x2={x2} y2={y2}
+                side={side}
+                dotColor={dotColor}
+                isActive={activeKey === key}
+              />
+            ))}
+          </svg>
+
+          {/* ── Top panel row — always present for stable layout ── */}
           <div
-            className="flex flex-row gap-2 items-end"
+            className="flex items-end justify-center gap-2 overflow-hidden"
             style={{ gridColumn: "1 / 4", gridRow: 1 }}
           >
-            {/* spacer to align entries above the character center */}
-            <div className="flex-1" />
-            <div className="flex flex-row gap-2">
-              {panelGroups.top.map(renderEntry)}
-            </div>
-            <div className="flex-1" />
+            {panelGroups.top.map((key) => renderEntry(key, "top"))}
           </div>
-        )}
 
-        {/* ── Left panel (gloves, bat) ── */}
-        {panelGroups.left.length > 0 && (
+          {/* ── Left panel column — always present ── */}
           <div
-            className="flex flex-col gap-2 justify-center"
-            style={{ gridColumn: 1, gridRow: 2, minWidth: 160 }}
+            className="flex flex-col justify-center gap-2 overflow-hidden"
+            style={{ gridColumn: 1, gridRow: 2 }}
           >
-            {panelGroups.left.map(renderEntry)}
+            {panelGroups.left.map((key) => renderEntry(key, "left"))}
           </div>
-        )}
-        {/* Placeholder if left is empty — keeps character in col 2 */}
-        {panelGroups.left.length === 0 && (
-          <div style={{ gridColumn: 1, gridRow: 2 }} />
-        )}
 
-        {/* ── Character cell — always col 2, row 2 ── */}
-        <div
-          ref={charAreaRef}
-          className="relative cursor-crosshair touch-none"
-          style={{ gridColumn: 2, gridRow: 2, width: CHAR_W, height: CHAR_H }}
-          onClick={handleCharClick}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={sources.base}
-            alt="Character base"
-            className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
-            draggable={false}
-          />
-          {coloredLayers.map(({ key, src }) => {
-            const color = colors[key];
-            return (
-              <div
-                key={src}
-                aria-hidden
-                className="absolute inset-0 pointer-events-none"
-                style={{ isolation: "isolate" }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-contain select-none"
-                  draggable={false}
-                />
-                {color && (
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundColor: color,
-                      mixBlendMode: "hue",
-                      WebkitMaskImage: `url(${src})`,
-                      maskImage: `url(${src})`,
-                      WebkitMaskSize: "contain",
-                      maskSize: "contain",
-                      WebkitMaskRepeat: "no-repeat",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskPosition: "center",
-                      maskPosition: "center",
-                      opacity: 0.9,
-                    }}
+          {/* ── Character cell — col 2, row 2 ── */}
+          <div
+            ref={charAreaRef}
+            className="relative cursor-crosshair touch-none"
+            style={{ gridColumn: 2, gridRow: 2, width: CHAR_W, height: CHAR_H }}
+            onClick={handleCharClick}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={sources.base}
+              alt="Character base"
+              className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
+              draggable={false}
+            />
+            {coloredLayers.map(({ key, src }) => {
+              const color = colors[key];
+              return (
+                <div
+                  key={src}
+                  aria-hidden
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ isolation: "isolate" }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-contain select-none"
+                    draggable={false}
                   />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* ── Right panel (ball, wickets) ── */}
-        {panelGroups.right.length > 0 && (
-          <div
-            className="flex flex-col gap-2 justify-center"
-            style={{ gridColumn: 3, gridRow: 2, minWidth: 160 }}
-          >
-            {panelGroups.right.map(renderEntry)}
+                  {color && (
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundColor: color,
+                        mixBlendMode: "hue",
+                        WebkitMaskImage: `url(${src})`,
+                        maskImage: `url(${src})`,
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                        opacity: 0.9,
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
-        )}
-        {/* Placeholder if right is empty */}
-        {panelGroups.right.length === 0 && (
-          <div style={{ gridColumn: 3, gridRow: 2 }} />
-        )}
 
-        {/* ── Bottom panel (pads, shoes) ── */}
-        {panelGroups.bottom.length > 0 && (
+          {/* ── Right panel column — always present ── */}
           <div
-            className="flex flex-row gap-2 items-start"
+            className="flex flex-col justify-center gap-2 overflow-hidden"
+            style={{ gridColumn: 3, gridRow: 2 }}
+          >
+            {panelGroups.right.map((key) => renderEntry(key, "right"))}
+          </div>
+
+          {/* ── Bottom panel row — always present ── */}
+          <div
+            className="flex items-start justify-center gap-2 overflow-hidden"
             style={{ gridColumn: "1 / 4", gridRow: 3 }}
           >
-            <div className="flex-1" />
-            <div className="flex flex-row gap-2">
-              {panelGroups.bottom.map(renderEntry)}
-            </div>
-            <div className="flex-1" />
+            {panelGroups.bottom.map((key) => renderEntry(key, "bottom"))}
           </div>
-        )}
 
-        {/* ── Reset all ── */}
-        <div
-          className="flex justify-center pt-1"
-          style={{ gridColumn: "1 / 4", gridRow: 4 }}
-        >
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-full border border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-6 py-2 transition-colors"
+          {/* ── Reset all ── */}
+          <div
+            className="flex justify-center pt-1"
+            style={{ gridColumn: "1 / 4", gridRow: 4 }}
           >
-            Reset All
-          </button>
+            <button
+              type="button"
+              onClick={reset}
+              className="rounded-full border border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-6 py-2 transition-colors"
+            >
+              Reset All
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* connector */}
+      <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
+
+      {/* ── Country strip ── */}
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
+        <div className="grid grid-cols-2 gap-1.5">
+          {COUNTRY_NAMES.map((c) => (
+            <CountryThumbnail
+              key={c}
+              country={c}
+              isActive={activeCountry === c}
+              onClick={() => {
+                setActiveCountry(c);
+                applyCountryPreset(c);
+              }}
+            />
+          ))}
         </div>
       </div>
     </div>

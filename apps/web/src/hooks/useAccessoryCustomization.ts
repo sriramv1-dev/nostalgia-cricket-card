@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useCountryTheme } from "@/hooks/useCountryTheme";
+import { getCountryStyles } from "@/constants/countries";
 import type { CharacterColors } from "@/types/card";
 import { SHOT_SOURCES, type ShotType } from "@/constants/characters";
 
@@ -63,6 +64,9 @@ export interface UseAccessoryCustomizationResult {
   colors: Partial<CharacterColors>;
   updateColor: (key: keyof CharacterColors, color: string) => void;
   reset: () => void;
+  resetKey: (key: keyof CharacterColors) => void;
+  applyCountryPreset: (country: string) => void;
+  country: string;
   activeKey: keyof CharacterColors | null;
   setActiveKey: (key: keyof CharacterColors | null) => void;
   swatches: Record<keyof CharacterColors, string[]>;
@@ -88,10 +92,28 @@ export function useAccessoryCustomization(
     setActiveKey(null);
   }, [resetTheme]);
 
+  const resetKey = useCallback(
+    (key: keyof CharacterColors) => {
+      const defaultColor = getCountryStyles(country).character[key];
+      update({ character: { ...styles.character, [key]: defaultColor } });
+    },
+    [country, styles.character, update]
+  );
+
+  const applyCountryPreset = useCallback(
+    (targetCountry: string) => {
+      update({ character: getCountryStyles(targetCountry).character });
+    },
+    [update]
+  );
+
   return {
     colors: styles.character,
     updateColor,
     reset,
+    resetKey,
+    applyCountryPreset,
+    country,
     activeKey,
     setActiveKey,
     swatches: ACCESSORY_SWATCHES,
