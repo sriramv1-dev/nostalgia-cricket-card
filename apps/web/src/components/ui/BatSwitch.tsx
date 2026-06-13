@@ -47,10 +47,15 @@ export function BatSwitch({
     return () => observer.disconnect();
   }, [options.length, handlePosition]);
 
+  // Horizontal inset on the options row (matches px-2) so the first and
+  // last labels don't butt against the blade edges. The ball math mirrors
+  // it so the ball stays centred over the active option.
+  const EDGE_PADDING = 8;
+
   const activeIndex = options.findIndex((o) => o.id === value);
   const step = 100 / options.length;
-  const slotWidth = containerWidth / options.length;
-  const activeX = (activeIndex + 0.5) * slotWidth;
+  const slotWidth = (containerWidth - EDGE_PADDING * 2) / options.length;
+  const activeX = EDGE_PADDING + (activeIndex + 0.5) * slotWidth;
 
   const isLeft = handlePosition === "left";
 
@@ -167,45 +172,40 @@ export function BatSwitch({
               </div>
             </motion.div>
 
-            {/* Tab buttons */}
-            {options.map((option, index) => {
-              const isActive = value === option.id;
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => onChange(option.id)}
-                  className={cn(
-                    "absolute top-0 flex flex-col items-center justify-center z-30 transition-all duration-300 h-full"
-                    // isActive ? "opacity-100" : "opacity-80 hover:opacity-100"
-                  )}
-                  style={{
-                    left: `${(index / options.length) * 100}%`,
-                    width: `${100 / options.length}%`,
-                  }}
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    {(option.icon || isActive) && (
-                      <div
-                        className="flex items-center justify-center text-zinc-300"
-                        style={{ width: iconSize, height: iconSize }}
-                      >
-                        {option.icon && !isActive && <>{option.icon}</>}
-                      </div>
-                    )}
-                    <span
-                      className={cn(
-                        "font-bold tracking-widest",
-                        isActive
-                          ? "text-[9px] text-zinc-400"
-                          : "text-[12px] text-zinc-200"
+            {/* Tab buttons — equal flex slots so options distribute evenly */}
+            <div className="absolute inset-0 z-30 flex justify-evenly items-center px-2">
+              {options.map((option) => {
+                const isActive = value === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => onChange(option.id)}
+                    className="flex-1 min-w-0 h-full flex flex-col items-center justify-center text-center transition-all duration-300"
+                  >
+                    <div className="flex flex-col items-center justify-center">
+                      {(option.icon || isActive) && (
+                        <div
+                          className="flex items-center justify-center text-zinc-300"
+                          style={{ width: iconSize, height: iconSize }}
+                        >
+                          {option.icon && !isActive && <>{option.icon}</>}
+                        </div>
                       )}
-                    >
-                      {option.label}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+                      <span
+                        className={cn(
+                          "font-bold tracking-widest",
+                          isActive
+                            ? "text-[9px] text-zinc-400"
+                            : "text-[12px] text-zinc-200"
+                        )}
+                      >
+                        {option.label}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
