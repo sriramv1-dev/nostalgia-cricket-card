@@ -67,10 +67,8 @@ const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
 };
 
 const CHAR_W = 300;
-const CHAR_H = 500;
 const CURVE_BEND = 60;
 const PANEL_COL_W = 152; // px — fixed width for left/right panel columns
-const PANEL_ROW_H = 128; // px — fixed height for top/bottom panel rows
 
 const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
   { shotType: "alpha",    label: "Alpha" },
@@ -454,9 +452,15 @@ export function CharacterCustomizerDiagram({
   }, [availableKeys, centroidData]);
 
   // Refs
+  const outerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const charAreaRef = useRef<HTMLDivElement>(null);
   const entryRefs = useRef<Map<keyof CharacterColors, HTMLDivElement>>(new Map());
+
+  // Dynamic grid dimensions — computed from available height so the diagram fills
+  // the viewport without scrolling. Overhead = border(2) + padding(16) + grid-gaps(16)
+  // + gap-to-reset(8) + reset-btn(32) = 74px.
+  const [gridDims, setGridDims] = useState({ charH: 400, panelRowH: 100 });
 
   // Connector-line state
   interface LineData {
@@ -490,8 +494,8 @@ export function CharacterCustomizerDiagram({
         centroid.y,
         centroidData.imageWidth,
         centroidData.imageHeight,
-        CHAR_W,
-        CHAR_H
+        charRect.width,
+        charRect.height
       );
 
       const entryRect = entryEl.getBoundingClientRect();
@@ -541,6 +545,25 @@ export function CharacterCustomizerDiagram({
     return () => observer.disconnect();
   }, [recomputeLines]);
 
+  // Measure available height from the outer wrapper (h-full fills the parent) and
+  // compute charH / panelRowH so the grid always fills the viewport without scrolling.
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    const compute = () => {
+      const h = el.clientHeight;
+      if (h < 200) return;
+      const usable = h - 74; // total overhead of center border wrapper non-grid parts
+      const prh = Math.max(100, Math.floor(usable * 0.18));
+      const ch = Math.max(200, usable - 2 * prh);
+      setGridDims({ charH: ch, panelRowH: prh });
+    };
+    const obs = new ResizeObserver(compute);
+    obs.observe(el);
+    compute();
+    return () => obs.disconnect();
+  }, []);
+
   // Character layers
   const coloredLayers = useMemo(() => {
     const layers: Array<{ key: keyof CharacterColors; src: string }> = [];
@@ -564,11 +587,11 @@ export function CharacterCustomizerDiagram({
       const posX = e.clientX - rect.left;
       const posY = e.clientY - rect.top;
 
-      const scale = Math.min(CHAR_W / centroidData.imageWidth, CHAR_H / centroidData.imageHeight);
+      const scale = Math.min(rect.width / centroidData.imageWidth, rect.height / centroidData.imageHeight);
       const renderW = centroidData.imageWidth * scale;
       const renderH = centroidData.imageHeight * scale;
-      const nx = (posX - (CHAR_W - renderW) / 2) / renderW;
-      const ny = (posY - (CHAR_H - renderH) / 2) / renderH;
+      const nx = (posX - (rect.width - renderW) / 2) / renderW;
+      const ny = (posY - (rect.height - renderH) / 2) / renderH;
 
       let closest: keyof CharacterColors | null = null;
       let minDist = Infinity;
@@ -622,7 +645,7 @@ export function CharacterCustomizerDiagram({
   );
 
   return (
-    <div className={cn("flex flex-row items-center justify-center", className)}>
+    <div ref={outerRef} className={cn("flex flex-row items-center justify-center h-full", className)}>
 
       {/* ── Pose strip ── */}
       <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
@@ -649,7 +672,7 @@ export function CharacterCustomizerDiagram({
           className="relative grid gap-2"
           style={{
             gridTemplateColumns: `${PANEL_COL_W}px ${CHAR_W}px ${PANEL_COL_W}px`,
-            gridTemplateRows: `${PANEL_ROW_H}px ${CHAR_H}px ${PANEL_ROW_H}px`,
+            gridTemplateRows: `${gridDims.panelRowH}px ${gridDims.charH}px ${gridDims.panelRowH}px`,
           }}
         >
           {/* ── SVG connector overlay ── */}
@@ -690,7 +713,7 @@ export function CharacterCustomizerDiagram({
           <div
             ref={charAreaRef}
             className="relative cursor-crosshair touch-none"
-            style={{ gridColumn: 2, gridRow: 2, width: CHAR_W, height: CHAR_H }}
+            style={{ gridColumn: 2, gridRow: 2, width: CHAR_W, height: gridDims.charH }}
             onClick={handleCharClick}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

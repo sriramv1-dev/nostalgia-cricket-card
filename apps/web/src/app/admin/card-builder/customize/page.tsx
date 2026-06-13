@@ -321,12 +321,12 @@ function CustomizeContent() {
         onLoad={handleHitmapLoad}
       />
 
-      {/* ── Tablet+ diagram — hidden on mobile ── */}
-      <div className="hidden md:flex flex-1 items-start justify-center overflow-y-auto p-6">
+      {/* ── Tablet+ diagram — hidden on mobile; no scroll, diagram fills the space ── */}
+      <div className="hidden md:flex flex-1 items-center justify-center overflow-hidden p-4">
         <CharacterCustomizerDiagram
           shotType={shot as ShotType}
           customization={diagramCustomization}
-          className="w-full max-w-4xl"
+          className="h-full"
         />
       </div>
 
