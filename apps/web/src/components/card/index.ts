@@ -4,6 +4,8 @@ export { MemoizedCricketCard } from "./MemoizedCricketCard";
 export { CardScaleWrapper } from "./CardScaleWrapper";
 export { LayeredCharacter } from "./LayeredCharacter";
 export { CustomizableLayeredCharacter } from "./CustomizableLayeredCharacter";
+export { CharacterCustomizerDiagram } from "./CharacterCustomizerDiagram";
+export { CharacterCustomizationWrapper } from "./CharacterCustomizationWrapper";
 export { StatCard, type PlayerStats, type StatValue } from "./StatCard";
 export { StatCardWrapper } from "./StatCardWrapper";
 export { StatsGrid } from "./StatsGrid";

@@ -2,13 +2,22 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getCharacterSources, type PlayerRole } from "@/constants/characters";
+import { getCharacterSources, type PlayerRole, type ShotType } from "@/constants/characters";
 import { useCountryTheme } from "@/hooks/useCountryTheme";
+import { useAccessoryCustomization } from "@/hooks/useAccessoryCustomization";
 import nextDynamic from "next/dynamic";
 
 // Canvas-adjacent UI — load client-side only, per NCC performance rules
 const ColorPopover = nextDynamic(
   () => import("@/components/card/ColorPopover").then((m) => m.ColorPopover),
+  { ssr: false }
+);
+
+const CharacterCustomizerDiagram = nextDynamic(
+  () =>
+    import("@/components/card/CharacterCustomizerDiagram").then(
+      (m) => m.CharacterCustomizerDiagram
+    ),
   { ssr: false }
 );
 import { PageHeader } from "@/components/layout";
@@ -85,15 +94,13 @@ const MODE_OPTIONS = [
   },
 ];
 
-const IDLE_GLOW =
-  "drop-shadow(0 0 5px #e8257a) drop-shadow(0 0 2px #e8257a)";
 const ACTIVE_GLOW =
   "drop-shadow(0 0 14px #e8257a) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #e8257a)";
 
+// Idle layers get zero glow — only the actively-selected accessory lights up.
 function getLayerGlow(isDone: boolean, isActive: boolean): string {
-  if (isDone) return "none";
-  if (isActive) return ACTIVE_GLOW;
-  return IDLE_GLOW;
+  if (!isDone && isActive) return ACTIVE_GLOW;
+  return "none";
 }
 
 function deriveRole(shot: string): PlayerRole {
@@ -113,6 +120,9 @@ function CustomizeContent() {
   const hitmapSrc = `${sources.base.slice(0, sources.base.lastIndexOf("/") + 1)}hitmap.png`;
 
   const { styles, update, reset } = useCountryTheme(country);
+
+  // Tablet+ diagram — shares the same country localStorage slot as useCountryTheme above.
+  const diagramCustomization = useAccessoryCustomization(shot as ShotType, country);
 
   const [dims, setDims] = useState<{ width: number; height: number } | null>(
     null
@@ -311,10 +321,20 @@ function CustomizeContent() {
         onLoad={handleHitmapLoad}
       />
 
+      {/* ── Tablet+ diagram — hidden on mobile ── */}
+      <div className="hidden md:flex flex-1 items-start justify-center overflow-y-auto p-6">
+        <CharacterCustomizerDiagram
+          shotType={shot as ShotType}
+          customization={diagramCustomization}
+          className="w-full max-w-4xl"
+        />
+      </div>
+
+      {/* ── Mobile: tap-to-select character — hidden on tablet+ ── */}
       {/* Character area — fills remaining height */}
       <div
         ref={characterAreaRef}
-        className="flex-1 flex items-center justify-center overflow-hidden relative"
+        className="md:hidden flex-1 flex items-center justify-center overflow-hidden relative"
       >
         {!ready ? (
           <p className="text-zinc-500 text-sm font-body">Loading…</p>
@@ -395,8 +415,8 @@ function CustomizeContent() {
         )}
       </div>
 
-      {/* Bottom action bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-8 py-4 border-t border-zinc-800">
+      {/* Bottom action bar — mobile only */}
+      <div className="md:hidden flex-shrink-0 flex items-center justify-between px-8 py-4 border-t border-zinc-800">
         <p className="text-zinc-500 text-xs font-body tracking-wide">
           {isDone
             ? "colours locked in — looking good!"
