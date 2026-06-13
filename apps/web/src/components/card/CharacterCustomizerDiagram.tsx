@@ -116,6 +116,48 @@ function findSwatchIndex(color: string, swatches: string[]): number {
   return idx === -1 ? 0 : idx;
 }
 
+function hexToHSL(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return [0, 0, Math.round(l * 100)];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  switch (max) {
+    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+    case g: h = ((b - r) / d + 2) / 6; break;
+    case b: h = ((r - g) / d + 4) / 6; break;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const hN = h / 360, sN = s / 100, lN = l / 100;
+  const hue2rgb = (p: number, q: number, t: number) => {
+    const tc = ((t % 1) + 1) % 1;
+    if (tc < 1 / 6) return p + (q - p) * 6 * tc;
+    if (tc < 1 / 2) return q;
+    if (tc < 2 / 3) return p + (q - p) * (2 / 3 - tc) * 6;
+    return p;
+  };
+  let r: number, g: number, b: number;
+  if (s === 0) {
+    r = g = b = lN;
+  } else {
+    const q = lN < 0.5 ? lN * (1 + sN) : lN + sN - lN * sN;
+    const p = 2 * lN - q;
+    r = hue2rgb(p, q, hN + 1 / 3);
+    g = hue2rgb(p, q, hN);
+    b = hue2rgb(p, q, hN - 1 / 3);
+  }
+  const hex = (x: number) => Math.round(x * 255).toString(16).padStart(2, "0");
+  return `#${hex(r)}${hex(g)}${hex(b)}`;
+}
+
 // ─── PoseThumbnail ────────────────────────────────────────────────────────────
 
 interface PoseThumbnailProps {
@@ -271,6 +313,11 @@ function PanelCard({
 }: PanelCardProps) {
   const swatches = ACCESSORY_SWATCHES[accessoryKey];
   const idx = findSwatchIndex(color, swatches);
+  const [h, s, l] = hexToHSL(color);
+
+  const sliderGradient = [0, 60, 120, 180, 240, 300, 360]
+    .map((deg) => `hsl(${deg},${s}%,${l}%)`)
+    .join(",");
 
   return (
     <div
@@ -278,13 +325,16 @@ function PanelCard({
       onClick={onSelect}
       className={cn(
         "flex flex-col gap-1 rounded-xl border p-2 cursor-pointer transition-colors flex-shrink-0",
-        isActive ? "border-zinc-500 bg-zinc-800" : "border-zinc-700 bg-zinc-900 hover:border-zinc-600"
+        isActive ? "bg-zinc-800" : "bg-zinc-900 hover:bg-zinc-800/50"
       )}
-      style={{ width: PANEL_COL_W }}
+      style={{ width: PANEL_COL_W, borderColor: color }}
     >
-      {/* Row 1: name + reset — always visible */}
+      {/* Row 1: name colored with accessory color + reset */}
       <div className="flex items-center justify-between gap-1">
-        <span className="text-[10px] font-body tracking-widest uppercase text-zinc-300 truncate">
+        <span
+          className="text-[10px] font-body tracking-widest uppercase truncate font-semibold"
+          style={{ color }}
+        >
           {KEY_LABELS[accessoryKey]}
         </span>
         <button
@@ -297,47 +347,59 @@ function PanelCard({
         </button>
       </div>
 
-      {/* Row 2: hex code — fades in when selected */}
-      <span
-        className={cn(
-          "text-[9px] font-mono text-zinc-500 tracking-wide transition-opacity duration-150",
-          isActive ? "opacity-100" : "opacity-0"
-        )}
-      >
-        {color}
-      </span>
+      {/* Row 2: hex code — always visible */}
+      <span className="text-[9px] font-mono text-zinc-400 tracking-wide">{color}</span>
 
-      {/* Row 3: swatch row — fades in when selected; always in DOM to hold card height */}
-      <div
-        className={cn(
-          "flex flex-wrap gap-0.5 transition-opacity duration-150",
-          isActive ? "opacity-100" : "opacity-0"
-        )}
-      >
-        {swatches.map((swatch, i) => {
-          const isSelected = i === idx;
-          return (
-            <button
-              key={swatch}
-              type="button"
-              onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
-              className="flex flex-col items-center gap-px"
-              aria-label={swatch}
-            >
-              {/* Notch: downward-pointing triangle, visible only for active swatch */}
-              <span
-                className="block w-0 h-0"
-                style={{
-                  borderLeft: "3px solid transparent",
-                  borderRight: "3px solid transparent",
-                  borderTop: `4px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
-                }}
-              />
-              <span className="block w-3 h-3 rounded-full" style={{ backgroundColor: swatch }} />
-            </button>
-          );
-        })}
-      </div>
+      {/* Rows 3+4: hue slider + swatches — only when active */}
+      {isActive && (
+        <>
+          {/* Hue slider */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <input
+              type="range"
+              min={0}
+              max={360}
+              value={h}
+              onChange={(e) => onColorChange(hslToHex(parseInt(e.target.value), s, l))}
+              className="w-full cursor-pointer"
+              style={{
+                accentColor: color,
+                background: `linear-gradient(to right,${sliderGradient})`,
+                height: "6px",
+                appearance: "none" as React.CSSProperties["appearance"],
+                WebkitAppearance: "none",
+                borderRadius: "3px",
+              }}
+            />
+          </div>
+
+          {/* Swatch row */}
+          <div className="flex flex-wrap gap-0.5" onClick={(e) => e.stopPropagation()}>
+            {swatches.map((swatch, i) => {
+              const isSelected = i === idx;
+              return (
+                <button
+                  key={swatch}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
+                  className="flex flex-col items-center gap-px"
+                  aria-label={swatch}
+                >
+                  <span
+                    className="block w-0 h-0"
+                    style={{
+                      borderLeft: "3px solid transparent",
+                      borderRight: "3px solid transparent",
+                      borderTop: `4px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
+                    }}
+                  />
+                  <span className="block w-3 h-3 rounded-full" style={{ backgroundColor: swatch }} />
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -560,10 +622,7 @@ export function CharacterCustomizerDiagram({
   );
 
   return (
-    <div className={cn("flex flex-col items-center gap-3", className)}>
-
-      {/* ── 3-section row: pose strip + center grid + country strip ── */}
-      <div className="flex flex-row items-center">
+    <div className={cn("flex flex-row items-center justify-center", className)}>
 
       {/* ── Pose strip ── */}
       <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
@@ -583,8 +642,8 @@ export function CharacterCustomizerDiagram({
       {/* connector */}
       <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
 
-      {/* ── Center: fixed-size grid in a border wrapper ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
+      {/* ── Center: fixed-size grid + Reset All, wrapped in one border ── */}
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2 flex flex-col gap-2">
         <div
           ref={containerRef}
           className="relative grid gap-2"
@@ -697,6 +756,17 @@ export function CharacterCustomizerDiagram({
             {panelGroups.bottom.map(renderEntry)}
           </div>
         </div>
+
+        {/* ── Reset All — inside the center border, below the grid ── */}
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={reset}
+            className="rounded-full border border-zinc-700 bg-zinc-900/60 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-8 py-1.5 transition-colors"
+          >
+            reset all
+          </button>
+        </div>
       </div>
 
       {/* connector */}
@@ -718,17 +788,6 @@ export function CharacterCustomizerDiagram({
           ))}
         </div>
       </div>
-
-      </div>{/* end 3-section row */}
-
-      {/* ── Reset All — sits below the full diagram row ── */}
-      <button
-        type="button"
-        onClick={reset}
-        className="rounded-full border border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-8 py-2 transition-colors"
-      >
-        reset all
-      </button>
 
     </div>
   );
