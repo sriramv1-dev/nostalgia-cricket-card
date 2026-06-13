@@ -97,9 +97,10 @@ interface ConnectorLineProps {
   y2: number;
   side: PanelSide;
   dotColor: string;
+  isActive: boolean;
 }
 
-function ConnectorLine({ x1, y1, x2, y2, side, dotColor }: ConnectorLineProps) {
+function ConnectorLine({ x1, y1, x2, y2, side, dotColor, isActive }: ConnectorLineProps) {
   let d: string;
   switch (side) {
     case "left":
@@ -116,14 +117,14 @@ function ConnectorLine({ x1, y1, x2, y2, side, dotColor }: ConnectorLineProps) {
       break;
   }
   return (
-    <g>
+    <g className="transition-all duration-200">
       <path
         d={d}
         fill="none"
-        stroke="#52525b"
-        strokeWidth={1}
-        strokeDasharray="4 3"
-        opacity={0.55}
+        stroke="#71717a"
+        strokeWidth={isActive ? 1.5 : 1}
+        strokeDasharray={isActive ? undefined : "4 3"}
+        opacity={isActive ? 0.85 : 0.45}
       />
       <circle cx={x1} cy={y1} r={3} fill={dotColor} stroke="#27272a" strokeWidth={1} />
     </g>
@@ -180,6 +181,7 @@ function SwatchSlider({ accessoryKey, currentColor, onColorChange }: SwatchSlide
 interface PanelEntryProps {
   accessoryKey: keyof CharacterColors;
   color: string;
+  isActive: boolean;
   onSelect: () => void;
   onColorChange: (c: string) => void;
   onReset: () => void;
@@ -189,6 +191,7 @@ interface PanelEntryProps {
 function PanelEntry({
   accessoryKey,
   color,
+  isActive,
   onSelect,
   onColorChange,
   onReset,
@@ -198,7 +201,10 @@ function PanelEntry({
     <div
       ref={entryRef}
       onClick={onSelect}
-      className="flex flex-col gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 p-3 cursor-pointer hover:border-zinc-500 transition-colors"
+      className={cn(
+        "flex flex-col gap-2 rounded-2xl border p-3 cursor-pointer transition-colors",
+        isActive ? "border-zinc-500 bg-zinc-800" : "border-zinc-700 bg-zinc-900 hover:border-zinc-600"
+      )}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
@@ -410,6 +416,7 @@ export function CharacterCustomizerDiagram({
           key={key}
           accessoryKey={key}
           color={color}
+          isActive={activeKey === key}
           onSelect={() => setActiveKey(activeKey === key ? null : key)}
           onColorChange={(c) => { updateColor(key, c); setActiveKey(key); }}
           onReset={reset}
@@ -447,6 +454,7 @@ export function CharacterCustomizerDiagram({
               x2={x2} y2={y2}
               side={side}
               dotColor={dotColor}
+              isActive={activeKey === key}
             />
           ))}
         </svg>
