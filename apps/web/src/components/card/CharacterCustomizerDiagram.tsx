@@ -66,9 +66,11 @@ const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
   shoes:     "bottom",
 };
 
-const CHAR_W = 300;
 const CURVE_BEND = 60;
-const PANEL_COL_W = 152; // px — fixed width for left/right panel columns
+const MIN_CHAR_W     = 320;   // px — never shrink the character below this
+const MAX_CHAR_W     = 540;   // px — caps growth on very wide screens
+const MIN_PANEL_COL_W = 152;  // px — min width of left/right accessory columns
+const MAX_PANEL_COL_W = 220;  // px — max width, so panels don't balloon
 
 const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
   { shotType: "alpha",    label: "Alpha" },
@@ -298,6 +300,7 @@ interface PanelCardProps {
   onColorChange: (c: string) => void;
   onResetKey: () => void;
   entryRef: (el: HTMLDivElement | null) => void;
+  panelColW: number;
 }
 
 function PanelCard({
@@ -308,6 +311,7 @@ function PanelCard({
   onColorChange,
   onResetKey,
   entryRef,
+  panelColW,
 }: PanelCardProps) {
   const swatches = ACCESSORY_SWATCHES[accessoryKey];
   const idx = findSwatchIndex(color, swatches);
@@ -325,7 +329,7 @@ function PanelCard({
         "flex flex-col gap-1.5 rounded-xl border p-2.5 cursor-pointer transition-colors flex-shrink-0",
         isActive ? "bg-zinc-800" : "bg-zinc-900 hover:bg-zinc-800/50"
       )}
-      style={{ width: PANEL_COL_W, borderColor: color }}
+      style={{ width: panelColW, borderColor: color }}
     >
       {/* Row 1: name (in accessory color) + reset */}
       <div className="flex items-center justify-between gap-1">
@@ -457,10 +461,15 @@ export function CharacterCustomizerDiagram({
   const charAreaRef = useRef<HTMLDivElement>(null);
   const entryRefs = useRef<Map<keyof CharacterColors, HTMLDivElement>>(new Map());
 
-  // Dynamic grid dimensions — computed from available height so the diagram fills
-  // the viewport without scrolling. Overhead = border(2) + padding(16) + grid-gaps(16)
-  // + gap-to-reset(8) + reset-btn(32) = 74px.
-  const [gridDims, setGridDims] = useState({ charH: 400, panelRowH: 100 });
+  // Dynamic grid dimensions — computed from available space so the diagram fills
+  // the viewport without scrolling. Height overhead = border(2) + padding(16) +
+  // grid-gaps(16) + gap-to-reset(8) + reset-btn(32) = 74px.
+  // Width fixed elements = pose-strip(144) + connectors(12) + country-strip(144) +
+  // center-border+padding(18) + col-gaps(16) = 334px.
+  const [gridDims, setGridDims] = useState({
+    charH: 400, panelRowH: 100,
+    charW: MIN_CHAR_W, panelColW: MIN_PANEL_COL_W,
+  });
 
   // Connector-line state
   interface LineData {
@@ -551,12 +560,23 @@ export function CharacterCustomizerDiagram({
     const el = outerRef.current;
     if (!el) return;
     const compute = () => {
-      const h = el.clientHeight;
-      if (h < 200) return;
-      const usable = h - 74; // total overhead of center border wrapper non-grid parts
-      const prh = Math.max(100, Math.floor(usable * 0.18));
-      const ch = Math.max(200, usable - 2 * prh);
-      setGridDims({ charH: ch, panelRowH: prh });
+      const availH = el.clientHeight;
+      const availW = el.clientWidth;
+      if (availH < 200) return;
+
+      // Height: overhead = border(2)+padding(16)+grid-gaps(16)+gap-to-reset(8)+reset-btn(32) = 74px
+      const usableH = availH - 74;
+      const prh = Math.max(100, Math.floor(usableH * 0.18));
+      const ch  = Math.max(200, usableH - 2 * prh);
+
+      // Width: fixed elements = pose-strip(144)+connectors(12)+country-strip(144)
+      //        + center-border+padding(18) + col-gaps(16) = 334px
+      // Distribute remaining: panels get 22% each, char gets the rest.
+      const available = Math.max(0, availW - 334);
+      const pcw = Math.max(MIN_PANEL_COL_W, Math.min(MAX_PANEL_COL_W, Math.floor(available * 0.22)));
+      const cw  = Math.max(MIN_CHAR_W,      Math.min(MAX_CHAR_W,      available - 2 * pcw));
+
+      setGridDims({ charH: ch, panelRowH: prh, charW: cw, panelColW: pcw });
     };
     const obs = new ResizeObserver(compute);
     obs.observe(el);
@@ -638,14 +658,16 @@ export function CharacterCustomizerDiagram({
           onColorChange={(c) => { updateColor(key, c); setActiveKey(key); }}
           onResetKey={() => resetKey(key)}
           entryRef={setEntryRef(key)}
+          panelColW={gridDims.panelColW}
         />
       );
     },
-    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef]
+    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef, gridDims.panelColW]
   );
 
   return (
-    <div ref={outerRef} className={cn("flex flex-row items-center justify-center h-full", className)}>
+    <div ref={outerRef} className={cn("w-full h-full", className)}>
+    <div className="flex flex-row items-center justify-center h-full">
 
       {/* ── Pose strip ── */}
       <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
@@ -671,7 +693,7 @@ export function CharacterCustomizerDiagram({
           ref={containerRef}
           className="relative grid gap-2"
           style={{
-            gridTemplateColumns: `${PANEL_COL_W}px ${CHAR_W}px ${PANEL_COL_W}px`,
+            gridTemplateColumns: `${gridDims.panelColW}px ${gridDims.charW}px ${gridDims.panelColW}px`,
             gridTemplateRows: `${gridDims.panelRowH}px ${gridDims.charH}px ${gridDims.panelRowH}px`,
           }}
         >
@@ -713,7 +735,7 @@ export function CharacterCustomizerDiagram({
           <div
             ref={charAreaRef}
             className="relative cursor-crosshair touch-none"
-            style={{ gridColumn: 2, gridRow: 2, width: CHAR_W, height: gridDims.charH }}
+            style={{ gridColumn: 2, gridRow: 2, width: gridDims.charW, height: gridDims.charH, minWidth: MIN_CHAR_W }}
             onClick={handleCharClick}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -812,6 +834,7 @@ export function CharacterCustomizerDiagram({
         </div>
       </div>
 
+    </div>{/* end inner flex row */}
     </div>
   );
 }
