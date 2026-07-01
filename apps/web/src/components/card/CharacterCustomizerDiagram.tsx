@@ -31,7 +31,7 @@ interface CentroidPayload {
   centroids: Partial<Record<keyof CharacterColors, { x: number; y: number }>>;
 }
 
-type PanelSide = "top" | "left" | "right" | "bottom";
+type PanelSide = "left" | "right";
 
 export interface CharacterCustomizerDiagramProps {
   shotType: ShotType;
@@ -54,23 +54,23 @@ const KEY_LABELS: Record<keyof CharacterColors, string> = {
   wickets: "Wickets",
 };
 
-// Fallback anatomical grouping used before centroid data loads.
+// Anatomical left/right grouping — 4 per side.
 const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
-  cap:       "top",
-  capAccent: "top",
+  cap:       "left",
+  capAccent: "left",
   gloves:    "left",
   bat:       "left",
   ball:      "right",
   wickets:   "right",
-  pads:      "bottom",
-  shoes:     "bottom",
+  pads:      "right",
+  shoes:     "right",
 };
 
-const CHAR_W = 340;
-const CHAR_H = 460;
 const CURVE_BEND = 60;
-const PANEL_COL_W = 140; // px — fixed width for left/right panel columns
-const PANEL_ROW_H = 120; // px — fixed height for top/bottom panel rows
+const MIN_CHAR_W      = 320;  // px — never shrink character below this
+const MAX_CHAR_W      = 540;  // px — caps growth on very wide screens
+const MIN_PANEL_COL_W = 152;  // px — min width of left/right accessory columns
+const MAX_PANEL_COL_W = 220;  // px — max width so panels don't balloon
 
 const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
   { shotType: "alpha",    label: "Alpha" },
@@ -86,9 +86,7 @@ const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function sideFromCentroid(cx: number, cy: number): PanelSide {
-  if (cy < 0.35) return "top";
-  if (cy > 0.65) return "bottom";
+function sideFromCentroid(cx: number): PanelSide {
   return cx < 0.5 ? "left" : "right";
 }
 
@@ -114,6 +112,48 @@ function findSwatchIndex(color: string, swatches: string[]): number {
     (s) => s.toLowerCase() === color.toLowerCase()
   );
   return idx === -1 ? 0 : idx;
+}
+
+function hexToHSL(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return [0, 0, Math.round(l * 100)];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  switch (max) {
+    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+    case g: h = ((b - r) / d + 2) / 6; break;
+    case b: h = ((r - g) / d + 4) / 6; break;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const hN = h / 360, sN = s / 100, lN = l / 100;
+  const hue2rgb = (p: number, q: number, t: number) => {
+    const tc = ((t % 1) + 1) % 1;
+    if (tc < 1 / 6) return p + (q - p) * 6 * tc;
+    if (tc < 1 / 2) return q;
+    if (tc < 2 / 3) return p + (q - p) * (2 / 3 - tc) * 6;
+    return p;
+  };
+  let r: number, g: number, b: number;
+  if (s === 0) {
+    r = g = b = lN;
+  } else {
+    const q = lN < 0.5 ? lN * (1 + sN) : lN + sN - lN * sN;
+    const p = 2 * lN - q;
+    r = hue2rgb(p, q, hN + 1 / 3);
+    g = hue2rgb(p, q, hN);
+    b = hue2rgb(p, q, hN - 1 / 3);
+  }
+  const hex = (x: number) => Math.round(x * 255).toString(16).padStart(2, "0");
+  return `#${hex(r)}${hex(g)}${hex(b)}`;
 }
 
 // ─── PoseThumbnail ────────────────────────────────────────────────────────────
@@ -218,21 +258,10 @@ interface ConnectorLineProps {
 }
 
 function ConnectorLine({ x1, y1, x2, y2, side, dotColor, isActive }: ConnectorLineProps) {
-  let d: string;
-  switch (side) {
-    case "left":
-      d = `M ${x1} ${y1} C ${x1 - CURVE_BEND} ${y1}, ${x2 + CURVE_BEND} ${y2}, ${x2} ${y2}`;
-      break;
-    case "right":
-      d = `M ${x1} ${y1} C ${x1 + CURVE_BEND} ${y1}, ${x2 - CURVE_BEND} ${y2}, ${x2} ${y2}`;
-      break;
-    case "top":
-      d = `M ${x1} ${y1} C ${x1} ${y1 - CURVE_BEND}, ${x2} ${y2 + CURVE_BEND}, ${x2} ${y2}`;
-      break;
-    case "bottom":
-      d = `M ${x1} ${y1} C ${x1} ${y1 + CURVE_BEND}, ${x2} ${y2 - CURVE_BEND}, ${x2} ${y2}`;
-      break;
-  }
+  const d = side === "left"
+    ? `M ${x1} ${y1} C ${x1 - CURVE_BEND} ${y1}, ${x2 + CURVE_BEND} ${y2}, ${x2} ${y2}`
+    : `M ${x1} ${y1} C ${x1 + CURVE_BEND} ${y1}, ${x2 - CURVE_BEND} ${y2}, ${x2} ${y2}`;
+
   return (
     <g className="transition-all duration-200">
       <path
@@ -248,112 +277,113 @@ function ConnectorLine({ x1, y1, x2, y2, side, dotColor, isActive }: ConnectorLi
   );
 }
 
-// ─── PanelEntry ──────────────────────────────────────────────────────────────
+// ─── PanelCard ───────────────────────────────────────────────────────────────
 
-interface PanelEntryProps {
+interface PanelCardProps {
   accessoryKey: keyof CharacterColors;
   color: string;
-  side: PanelSide;
   isActive: boolean;
   onSelect: () => void;
   onColorChange: (c: string) => void;
   onResetKey: () => void;
   entryRef: (el: HTMLDivElement | null) => void;
+  panelColW: number;
 }
 
-function PanelEntry({
+function PanelCard({
   accessoryKey,
   color,
-  side,
   isActive,
   onSelect,
   onColorChange,
   onResetKey,
   entryRef,
-}: PanelEntryProps) {
+  panelColW,
+}: PanelCardProps) {
   const swatches = ACCESSORY_SWATCHES[accessoryKey];
   const idx = findSwatchIndex(color, swatches);
-  const isHorizontal = side === "left" || side === "right";
-  // Slider on the character-facing edge:
-  // right panel → character is to the left → slider goes to the left (flex-row-reverse)
-  // bottom panel → character is above → slider goes to the top (flex-col-reverse)
-  const sliderFirst = side === "right" || side === "bottom";
+  const [h, s, l] = hexToHSL(color);
 
-  const infoSection = (
-    <div className={cn("flex flex-col gap-0.5 min-w-0", isHorizontal && "flex-1")}>
-      <div className="flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1 min-w-0">
-          <div
-            className="w-2.5 h-2.5 rounded-full border border-zinc-600 flex-shrink-0"
-            style={{ backgroundColor: color }}
-          />
-          <span className="text-[11px] font-body tracking-widest uppercase text-zinc-300 truncate">
-            {KEY_LABELS[accessoryKey]}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onResetKey(); }}
-          className="text-zinc-500 hover:text-white text-xs transition-colors min-h-[24px] min-w-[24px] flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
-          title="Reset to default"
-        >
-          ↺
-        </button>
-      </div>
-      <span className="text-[10px] font-mono text-zinc-500 tracking-wider pl-[14px]">
-        {color}
-      </span>
-    </div>
-  );
-
-  const sliderSection = (
-    <div className={cn("flex flex-col gap-1 flex-shrink-0", isHorizontal ? "w-[64px]" : "")}>
-      <input
-        type="range"
-        min={0}
-        max={swatches.length - 1}
-        step={1}
-        value={idx}
-        onChange={(e) => onColorChange(swatches[parseInt(e.target.value, 10)])}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full h-1.5 rounded-full cursor-pointer appearance-none"
-        style={{
-          background: `linear-gradient(to right, ${swatches.join(", ")})`,
-        }}
-      />
-      <div className={cn("flex flex-wrap", isHorizontal ? "gap-0.5" : "gap-1")}>
-        {swatches.map((swatch, i) => (
-          <button
-            key={swatch}
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
-            className={cn(
-              "rounded-full border-2 flex-shrink-0 transition-transform",
-              isHorizontal ? "w-3 h-3" : "w-3.5 h-3.5",
-              i === idx ? "border-white scale-125" : "border-transparent hover:scale-110"
-            )}
-            style={{ backgroundColor: swatch }}
-            aria-label={swatch}
-          />
-        ))}
-      </div>
-    </div>
-  );
+  const sliderGradient = [0, 60, 120, 180, 240, 300, 360]
+    .map((deg) => `hsl(${deg},${s}%,${l}%)`)
+    .join(",");
 
   return (
     <div
       ref={entryRef}
       onClick={onSelect}
       className={cn(
-        "rounded-2xl border cursor-pointer transition-colors",
-        isHorizontal
-          ? cn("p-2 flex gap-2 items-center", sliderFirst ? "flex-row-reverse" : "flex-row")
-          : cn("p-2.5 flex flex-col gap-2", sliderFirst ? "flex-col-reverse" : "flex-col"),
-        isActive ? "border-zinc-500 bg-zinc-800" : "border-zinc-700 bg-zinc-900 hover:border-zinc-600"
+        "flex flex-col rounded-xl border px-2.5 py-2 cursor-pointer transition-colors flex-shrink-0",
+        isActive ? "bg-zinc-800" : "bg-zinc-900 hover:bg-zinc-800/50"
       )}
+      style={{ width: panelColW, borderColor: color }}
     >
-      {infoSection}
-      {sliderSection}
+      {/* Single row: name + dot + hex + reset */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs font-body tracking-widest uppercase truncate text-zinc-300 flex-1">
+          {KEY_LABELS[accessoryKey]}
+        </span>
+        <span className="flex items-center gap-1 flex-shrink-0">
+          <span style={{ color }} className="text-[13px] leading-none select-none">●</span>
+          <span style={{ color }} className="text-[10px] font-mono tracking-wide">{color}</span>
+        </span>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onResetKey(); }}
+          className="text-zinc-500 hover:text-white text-sm transition-colors w-5 h-5 flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
+          title="Reset to default"
+        >
+          ↺
+        </button>
+      </div>
+
+      {/* Hue slider + swatch row — only when active, no animation */}
+      {isActive && (
+        <>
+          <div
+            className="relative flex items-center h-5 mt-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="absolute inset-x-0 h-2 rounded-full pointer-events-none"
+              style={{ background: `linear-gradient(to right,${sliderGradient})` }}
+            />
+            <input
+              type="range"
+              min={0}
+              max={360}
+              value={h}
+              onChange={(e) => onColorChange(hslToHex(parseInt(e.target.value), s, l))}
+              className="hue-slider w-full"
+              style={{ color }}
+            />
+          </div>
+          <div className="flex gap-1.5 mt-2" onClick={(e) => e.stopPropagation()}>
+          {swatches.map((swatch, i) => {
+            const isSelected = i === idx;
+            return (
+              <button
+                key={swatch}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
+                className="flex flex-col items-center gap-px"
+                aria-label={swatch}
+              >
+                <span
+                  className="block w-0 h-0"
+                  style={{
+                    borderLeft: "4px solid transparent",
+                    borderRight: "4px solid transparent",
+                    borderBottom: `5px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
+                  }}
+                />
+                <span className="block w-4 h-4 rounded-full" style={{ backgroundColor: swatch }} />
+              </button>
+            );
+          })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -369,20 +399,16 @@ export function CharacterCustomizerDiagram({
   const { colors, updateColor, reset, resetKey, applyCountryPreset, country, activeKey, setActiveKey } =
     customization;
 
-  // Internal shot type state — the pose strip drives this; prop changes sync it.
   const [activeShotType, setActiveShotType] = useState<ShotType>(shotType);
   useEffect(() => { setActiveShotType(shotType); }, [shotType]);
 
-  // Active country — tracks which country template was last applied.
   const [activeCountry, setActiveCountry] = useState<string>(country);
   useEffect(() => { setActiveCountry(country); }, [country]);
 
-  // Available accessory keys for the currently displayed pose.
   const availableKeys = useMemo(() => getAvailableKeys(activeShotType), [activeShotType]);
 
   const sources = SHOT_SOURCES[activeShotType];
 
-  // Centroid payload — reload whenever the active pose changes.
   const [centroidData, setCentroidData] = useState<CentroidPayload | null>(null);
   useEffect(() => {
     setCentroidData(null);
@@ -392,27 +418,33 @@ export function CharacterCustomizerDiagram({
       .catch(() => null);
   }, [activeShotType]);
 
-  // Group available keys by side — derived from centroids when loaded, anatomical fallback otherwise.
+  // Group available keys by left/right side.
   const panelGroups = useMemo((): Record<PanelSide, Array<keyof CharacterColors>> => {
-    const groups: Record<PanelSide, Array<keyof CharacterColors>> = {
-      top: [], left: [], right: [], bottom: [],
-    };
+    const groups: Record<PanelSide, Array<keyof CharacterColors>> = { left: [], right: [] };
     for (const key of availableKeys) {
       const centroid = centroidData?.centroids[key];
-      const side = centroid
-        ? sideFromCentroid(centroid.x, centroid.y)
-        : ANATOMICAL_SIDE[key];
+      const side = centroid ? sideFromCentroid(centroid.x) : ANATOMICAL_SIDE[key];
       groups[side].push(key);
     }
     return groups;
   }, [availableKeys, centroidData]);
 
   // Refs
+  const outerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const charAreaRef = useRef<HTMLDivElement>(null);
   const entryRefs = useRef<Map<keyof CharacterColors, HTMLDivElement>>(new Map());
 
-  // Connector-line state
+  // Dynamic grid dimensions.
+  // Overhead = border(2) + padding(16) + gap-to-reset(8) + reset-btn(32) = 58px
+  // Width fixed = pose-strip(144) + connectors(12) + country-strip(144)
+  //             + center-border+padding(18) + col-gaps(16) = 334px
+  const [gridDims, setGridDims] = useState({
+    charH: 400,
+    charW: MIN_CHAR_W,
+    panelColW: MIN_PANEL_COL_W,
+  });
+
   interface LineData {
     key: keyof CharacterColors;
     x1: number;
@@ -444,32 +476,17 @@ export function CharacterCustomizerDiagram({
         centroid.y,
         centroidData.imageWidth,
         centroidData.imageHeight,
-        CHAR_W,
-        CHAR_H
+        charRect.width,
+        charRect.height
       );
 
       const entryRect = entryEl.getBoundingClientRect();
-      const side = sideFromCentroid(centroid.x, centroid.y);
+      const side = sideFromCentroid(centroid.x);
 
-      let x2: number, y2: number;
-      switch (side) {
-        case "left":
-          x2 = entryRect.right - containerRect.left;
-          y2 = entryRect.top + entryRect.height / 2 - containerRect.top;
-          break;
-        case "right":
-          x2 = entryRect.left - containerRect.left;
-          y2 = entryRect.top + entryRect.height / 2 - containerRect.top;
-          break;
-        case "top":
-          x2 = entryRect.left + entryRect.width / 2 - containerRect.left;
-          y2 = entryRect.bottom - containerRect.top;
-          break;
-        case "bottom":
-          x2 = entryRect.left + entryRect.width / 2 - containerRect.left;
-          y2 = entryRect.top - containerRect.top;
-          break;
-      }
+      const x2 = side === "left"
+        ? entryRect.right - containerRect.left
+        : entryRect.left - containerRect.left;
+      const y2 = entryRect.top + entryRect.height / 2 - containerRect.top;
 
       next.push({
         key,
@@ -495,6 +512,29 @@ export function CharacterCustomizerDiagram({
     return () => observer.disconnect();
   }, [recomputeLines]);
 
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    const compute = () => {
+      const availH = el.clientHeight;
+      const availW = el.clientWidth;
+      if (availH < 200) return;
+
+      const usableH = availH - 58;
+      const ch = Math.max(200, usableH);
+
+      const available = Math.max(0, availW - 334);
+      const pcw = Math.max(MIN_PANEL_COL_W, Math.min(MAX_PANEL_COL_W, Math.floor(available * 0.22)));
+      const cw  = Math.max(MIN_CHAR_W,      Math.min(MAX_CHAR_W,      available - 2 * pcw));
+
+      setGridDims({ charH: ch, charW: cw, panelColW: pcw });
+    };
+    const obs = new ResizeObserver(compute);
+    obs.observe(el);
+    compute();
+    return () => obs.disconnect();
+  }, []);
+
   // Character layers
   const coloredLayers = useMemo(() => {
     const layers: Array<{ key: keyof CharacterColors; src: string }> = [];
@@ -510,7 +550,6 @@ export function CharacterCustomizerDiagram({
     return layers;
   }, [sources]);
 
-  // Click on character: find nearest centroid
   const handleCharClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!centroidData) return;
@@ -518,11 +557,11 @@ export function CharacterCustomizerDiagram({
       const posX = e.clientX - rect.left;
       const posY = e.clientY - rect.top;
 
-      const scale = Math.min(CHAR_W / centroidData.imageWidth, CHAR_H / centroidData.imageHeight);
+      const scale = Math.min(rect.width / centroidData.imageWidth, rect.height / centroidData.imageHeight);
       const renderW = centroidData.imageWidth * scale;
       const renderH = centroidData.imageHeight * scale;
-      const nx = (posX - (CHAR_W - renderW) / 2) / renderW;
-      const ny = (posY - (CHAR_H - renderH) / 2) / renderH;
+      const nx = (posX - (rect.width - renderW) / 2) / renderW;
+      const ny = (posY - (rect.height - renderH) / 2) / renderH;
 
       let closest: keyof CharacterColors | null = null;
       let minDist = Infinity;
@@ -536,7 +575,6 @@ export function CharacterCustomizerDiagram({
     [centroidData, setActiveKey]
   );
 
-  // Pose switch: update internal state, clear active accessory, notify parent.
   const handleShotTypeSwitch = useCallback(
     (newType: ShotType) => {
       setActiveShotType(newType);
@@ -547,7 +585,6 @@ export function CharacterCustomizerDiagram({
     [setActiveKey, onShotTypeChange]
   );
 
-  // Helper: register entry ref
   const setEntryRef = useCallback(
     (key: keyof CharacterColors) => (el: HTMLDivElement | null) => {
       if (el) entryRefs.current.set(key, el);
@@ -555,29 +592,29 @@ export function CharacterCustomizerDiagram({
     []
   );
 
-  // Helper: render a panel entry for a given side
   const renderEntry = useCallback(
-    (key: keyof CharacterColors, side: PanelSide) => {
+    (key: keyof CharacterColors) => {
       const color = (colors[key] as string | undefined) ?? "#888888";
       return (
-        <PanelEntry
+        <PanelCard
           key={key}
           accessoryKey={key}
           color={color}
-          side={side}
           isActive={activeKey === key}
           onSelect={() => setActiveKey(activeKey === key ? null : key)}
           onColorChange={(c) => { updateColor(key, c); setActiveKey(key); }}
           onResetKey={() => resetKey(key)}
           entryRef={setEntryRef(key)}
+          panelColW={gridDims.panelColW}
         />
       );
     },
-    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef]
+    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef, gridDims.panelColW]
   );
 
   return (
-    <div className={cn("flex flex-row items-center justify-center", className)}>
+    <div ref={outerRef} className={cn("w-full h-full", className)}>
+    <div className="flex flex-row items-center justify-center h-full">
 
       {/* ── Pose strip ── */}
       <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
@@ -597,15 +634,12 @@ export function CharacterCustomizerDiagram({
       {/* connector */}
       <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
 
-      {/* ── Center: fixed-size grid in a border wrapper ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-3">
+      {/* ── Center: 3-column grid + Reset All, wrapped in one border ── */}
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2 flex flex-col gap-2">
         <div
           ref={containerRef}
-          className="relative grid gap-3"
-          style={{
-            gridTemplateColumns: `${PANEL_COL_W}px ${CHAR_W}px ${PANEL_COL_W}px`,
-            gridTemplateRows: `${PANEL_ROW_H}px ${CHAR_H}px ${PANEL_ROW_H}px auto`,
-          }}
+          className="relative flex flex-row gap-2"
+          style={{ height: gridDims.charH }}
         >
           {/* ── SVG connector overlay ── */}
           <svg
@@ -625,27 +659,19 @@ export function CharacterCustomizerDiagram({
             ))}
           </svg>
 
-          {/* ── Top panel row — always present for stable layout ── */}
+          {/* ── Left panel column ── */}
           <div
-            className="flex items-end justify-center gap-2 overflow-hidden"
-            style={{ gridColumn: "1 / 4", gridRow: 1 }}
+            className="flex flex-col justify-between gap-1.5 flex-shrink-0"
+            style={{ width: gridDims.panelColW }}
           >
-            {panelGroups.top.map((key) => renderEntry(key, "top"))}
+            {panelGroups.left.map(renderEntry)}
           </div>
 
-          {/* ── Left panel column — always present ── */}
-          <div
-            className="flex flex-col justify-center gap-2 overflow-hidden"
-            style={{ gridColumn: 1, gridRow: 2 }}
-          >
-            {panelGroups.left.map((key) => renderEntry(key, "left"))}
-          </div>
-
-          {/* ── Character cell — col 2, row 2 ── */}
+          {/* ── Character cell ── */}
           <div
             ref={charAreaRef}
-            className="relative cursor-crosshair touch-none"
-            style={{ gridColumn: 2, gridRow: 2, width: CHAR_W, height: CHAR_H }}
+            className="relative cursor-crosshair touch-none flex-shrink-0"
+            style={{ width: gridDims.charW, height: gridDims.charH, minWidth: MIN_CHAR_W }}
             onClick={handleCharClick}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -694,35 +720,24 @@ export function CharacterCustomizerDiagram({
             })}
           </div>
 
-          {/* ── Right panel column — always present ── */}
+          {/* ── Right panel column ── */}
           <div
-            className="flex flex-col justify-center gap-2 overflow-hidden"
-            style={{ gridColumn: 3, gridRow: 2 }}
+            className="flex flex-col justify-between gap-1.5 flex-shrink-0"
+            style={{ width: gridDims.panelColW }}
           >
-            {panelGroups.right.map((key) => renderEntry(key, "right"))}
+            {panelGroups.right.map(renderEntry)}
           </div>
+        </div>
 
-          {/* ── Bottom panel row — always present ── */}
-          <div
-            className="flex items-start justify-center gap-2 overflow-hidden"
-            style={{ gridColumn: "1 / 4", gridRow: 3 }}
+        {/* ── Reset All — inside the center border, below the columns ── */}
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={reset}
+            className="rounded-full border border-zinc-700 bg-zinc-900/60 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-8 py-1.5 transition-colors"
           >
-            {panelGroups.bottom.map((key) => renderEntry(key, "bottom"))}
-          </div>
-
-          {/* ── Reset all ── */}
-          <div
-            className="flex justify-center pt-1"
-            style={{ gridColumn: "1 / 4", gridRow: 4 }}
-          >
-            <button
-              type="button"
-              onClick={reset}
-              className="rounded-full border border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-zinc-400 hover:text-white text-xs font-body tracking-widest uppercase px-6 py-2 transition-colors"
-            >
-              Reset All
-            </button>
-          </div>
+            reset all
+          </button>
         </div>
       </div>
 
@@ -745,6 +760,8 @@ export function CharacterCustomizerDiagram({
           ))}
         </div>
       </div>
+
+    </div>{/* end inner flex row */}
     </div>
   );
 }

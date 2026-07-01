@@ -82,3 +82,48 @@
   }
 }
 
+/* Hue slider — CharacterCustomizerDiagram */
+.hue-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 8px;
+  cursor: pointer;
+}
+.hue-slider:focus {
+  outline: none;
+}
+.hue-slider::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 8px;
+  border-radius: 4px;
+}
+.hue-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid currentColor;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+  margin-top: -4px;
+  cursor: grab;
+}
+.hue-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+.hue-slider::-moz-range-track {
+  background: transparent;
+  height: 8px;
+  border-radius: 4px;
+}
+.hue-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid currentColor;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+  cursor: grab;
+}
+
