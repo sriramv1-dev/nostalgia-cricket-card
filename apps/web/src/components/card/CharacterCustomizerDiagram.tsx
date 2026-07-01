@@ -683,7 +683,7 @@ export function CharacterCustomizerDiagram({
 
           {/* ── Left panel column ── */}
           <div
-            className="flex flex-col justify-between gap-1.5 flex-shrink-0"
+            className="flex flex-col justify-between gap-3 lg:gap-4 flex-shrink-0"
             style={{ width: gridDims.panelColW }}
           >
             {panelGroups.left.map(renderEntry)}
@@ -744,7 +744,7 @@ export function CharacterCustomizerDiagram({
 
           {/* ── Right panel column ── */}
           <div
-            className="flex flex-col justify-between gap-1.5 flex-shrink-0"
+            className="flex flex-col justify-between gap-3 lg:gap-4 flex-shrink-0"
             style={{ width: gridDims.panelColW }}
           >
             {panelGroups.right.map(renderEntry)}
