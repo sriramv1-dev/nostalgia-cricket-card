@@ -67,8 +67,8 @@ const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
 };
 
 const CURVE_BEND = 60;
-const MIN_CHAR_W      = 320;  // px — never shrink character below this
-const MAX_CHAR_W      = 540;  // px — caps growth on very wide screens
+const TABLET_CHAR_W: [number, number]  = [260, 300]; // px — md breakpoint char width range
+const DESKTOP_CHAR_W: [number, number] = [340, 380]; // px — lg+ breakpoint char width range
 const MIN_PANEL_COL_W = 152;  // px — min width of left/right accessory columns
 const MAX_PANEL_COL_W = 220;  // px — max width so panels don't balloon
 
@@ -172,13 +172,13 @@ function PoseThumbnail({ shotType, label, isActive, onClick }: PoseThumbnailProp
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-1 flex-shrink-0 rounded-xl p-1.5 transition-colors",
+        "flex flex-col items-center gap-1 w-full flex-shrink-0 rounded-xl p-1 lg:p-1.5 transition-colors",
         isActive
           ? "border border-zinc-400 bg-zinc-800"
           : "border border-zinc-800 bg-zinc-900 hover:border-zinc-600 hover:bg-zinc-850"
       )}
     >
-      <div className="w-12 h-[66px] relative overflow-hidden rounded-lg bg-zinc-950">
+      <div className="w-full aspect-[3/4] relative overflow-hidden rounded-lg bg-zinc-950">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
@@ -217,14 +217,14 @@ function CountryThumbnail({ country, isActive, onClick }: CountryThumbnailProps)
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-1 flex-shrink-0 rounded-xl p-1.5 transition-colors",
+        "flex flex-col items-center gap-1 w-full flex-shrink-0 rounded-xl p-1 lg:p-1.5 transition-colors",
         isActive
           ? "border border-zinc-400 bg-zinc-800"
           : "border border-zinc-800 bg-zinc-900 hover:border-zinc-600"
       )}
     >
       <div
-        className="w-12 h-[66px] rounded-lg relative overflow-hidden flex items-center justify-center"
+        className="w-full aspect-[3/4] rounded-lg relative overflow-hidden flex items-center justify-center"
         style={{ backgroundColor: character.cap }}
       >
         <div
@@ -313,7 +313,7 @@ function PanelCard({
       ref={entryRef}
       onClick={onSelect}
       className={cn(
-        "flex flex-col rounded-xl border px-2.5 py-2 cursor-pointer transition-colors flex-shrink-0",
+        "flex flex-col rounded-xl border px-2 py-1.5 lg:px-2.5 lg:py-2 cursor-pointer transition-colors flex-shrink-0",
         isActive ? "bg-zinc-800" : "bg-zinc-900 hover:bg-zinc-800/50"
       )}
       style={{ width: panelColW, borderColor: color }}
@@ -433,15 +433,16 @@ export function CharacterCustomizerDiagram({
   const outerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const charAreaRef = useRef<HTMLDivElement>(null);
+  const poseStripRef = useRef<HTMLDivElement>(null);
+  const countryStripRef = useRef<HTMLDivElement>(null);
   const entryRefs = useRef<Map<keyof CharacterColors, HTMLDivElement>>(new Map());
 
-  // Dynamic grid dimensions.
-  // Overhead = border(2) + padding(16) + gap-to-reset(8) + reset-btn(32) = 58px
-  // Width fixed = pose-strip(144) + connectors(12) + country-strip(144)
-  //             + center-border+padding(18) + col-gaps(16) = 334px
+  // Dynamic grid dimensions. Strip widths are measured from the DOM (they vary
+  // by breakpoint via Tailwind classes) rather than hardcoded, so this adapts
+  // correctly at every viewport size.
   const [gridDims, setGridDims] = useState({
     charH: 400,
-    charW: MIN_CHAR_W,
+    charW: TABLET_CHAR_W[0],
     panelColW: MIN_PANEL_COL_W,
   });
 
@@ -520,17 +521,29 @@ export function CharacterCustomizerDiagram({
       const availW = el.clientWidth;
       if (availH < 200) return;
 
+      const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+      const minCharW = isDesktop ? DESKTOP_CHAR_W[0] : TABLET_CHAR_W[0];
+      const maxCharW = isDesktop ? DESKTOP_CHAR_W[1] : TABLET_CHAR_W[1];
+
       const usableH = availH - 58;
       const ch = Math.max(200, usableH);
 
-      const available = Math.max(0, availW - 334);
+      const poseW = poseStripRef.current?.getBoundingClientRect().width ?? 0;
+      const countryW = countryStripRef.current?.getBoundingClientRect().width ?? 0;
+      // Fixed overhead that doesn't vary by breakpoint: 2 connectors (12px
+      // each) + center column border/padding(18) + inter-column gaps(16).
+      const centerFixedOverhead = 2 * 12 + 18 + 16;
+
+      const available = Math.max(0, availW - poseW - countryW - centerFixedOverhead);
       const pcw = Math.max(MIN_PANEL_COL_W, Math.min(MAX_PANEL_COL_W, Math.floor(available * 0.22)));
-      const cw  = Math.max(MIN_CHAR_W,      Math.min(MAX_CHAR_W,      available - 2 * pcw));
+      const cw  = Math.max(minCharW,        Math.min(maxCharW,        available - 2 * pcw));
 
       setGridDims({ charH: ch, charW: cw, panelColW: pcw });
     };
     const obs = new ResizeObserver(compute);
     obs.observe(el);
+    if (poseStripRef.current) obs.observe(poseStripRef.current);
+    if (countryStripRef.current) obs.observe(countryStripRef.current);
     compute();
     return () => obs.disconnect();
   }, []);
@@ -613,12 +626,15 @@ export function CharacterCustomizerDiagram({
   );
 
   return (
-    <div ref={outerRef} className={cn("w-full h-full", className)}>
-    <div className="flex flex-row items-center justify-center h-full">
+    <div ref={outerRef} className={cn("w-full h-full overflow-hidden", className)}>
+    <div className="flex flex-row items-stretch justify-center h-full min-h-0 overflow-hidden">
 
       {/* ── Pose strip ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
-        <div className="grid grid-cols-2 gap-1.5">
+      <div
+        ref={poseStripRef}
+        className="flex-shrink-0 w-12 lg:w-16 border border-zinc-800 rounded-2xl p-1.5 lg:p-2 overflow-y-auto overflow-x-hidden"
+      >
+        <div className="grid grid-cols-1 gap-1.5">
           {ALL_SHOTS.map(({ shotType: st, label }) => (
             <PoseThumbnail
               key={st}
@@ -632,13 +648,13 @@ export function CharacterCustomizerDiagram({
       </div>
 
       {/* connector */}
-      <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
+      <div className="flex-shrink-0 self-center w-3 h-px bg-zinc-700" />
 
       {/* ── Center: 3-column grid + Reset All, wrapped in one border ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2 flex flex-col gap-2">
+      <div className="flex-shrink-0 self-center border border-zinc-800 rounded-2xl p-2 flex flex-col gap-2">
         <div
           ref={containerRef}
-          className="relative flex flex-row gap-2"
+          className="relative flex flex-row items-center gap-2"
           style={{ height: gridDims.charH }}
         >
           {/* ── SVG connector overlay ── */}
@@ -671,7 +687,7 @@ export function CharacterCustomizerDiagram({
           <div
             ref={charAreaRef}
             className="relative cursor-crosshair touch-none flex-shrink-0"
-            style={{ width: gridDims.charW, height: gridDims.charH, minWidth: MIN_CHAR_W }}
+            style={{ width: gridDims.charW, height: gridDims.charH }}
             onClick={handleCharClick}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -742,11 +758,14 @@ export function CharacterCustomizerDiagram({
       </div>
 
       {/* connector */}
-      <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
+      <div className="flex-shrink-0 self-center w-3 h-px bg-zinc-700" />
 
       {/* ── Country strip ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
-        <div className="grid grid-cols-2 gap-1.5">
+      <div
+        ref={countryStripRef}
+        className="flex-shrink-0 w-12 lg:w-16 border border-zinc-800 rounded-2xl p-1.5 lg:p-2 overflow-y-auto overflow-x-hidden"
+      >
+        <div className="grid grid-cols-1 gap-1.5">
           {COUNTRY_NAMES.map((c) => (
             <CountryThumbnail
               key={c}
