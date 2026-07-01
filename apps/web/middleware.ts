@@ -19,7 +19,10 @@ export async function middleware(request: NextRequest) {
 
   // Admin routes use cookie-based auth, independent of Supabase
   if (pathname.startsWith('/admin')) {
-    if (pathname !== '/admin/login') {
+    // TODO: re-enable admin passphrase gate before public launch
+    const isCardBuilder = pathname.startsWith('/admin/card-builder')
+
+    if (pathname !== '/admin/login' && !isCardBuilder) {
       const token = request.cookies.get(ADMIN_COOKIE_NAME)?.value
       const secret = process.env.ADMIN_COOKIE_SECRET ?? ''
       const valid = token ? await verifyAdminToken(token, secret) : false
