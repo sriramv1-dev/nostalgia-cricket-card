@@ -503,12 +503,18 @@ export function CharacterCustomizerDiagram({
     setLines(next);
   }, [centroidData, availableKeys, colors]);
 
+  // rAF ensures we read rects after the browser has committed layout for
+  // this frame — reading synchronously in useLayoutEffect can catch stale
+  // (zero-size) rects on first mount before images/fonts settle layout.
   useLayoutEffect(() => {
-    recomputeLines();
+    const raf = requestAnimationFrame(recomputeLines);
+    return () => cancelAnimationFrame(raf);
   }, [recomputeLines]);
 
   useEffect(() => {
-    const observer = new ResizeObserver(recomputeLines);
+    const observer = new ResizeObserver(() => {
+      requestAnimationFrame(recomputeLines);
+    });
     if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, [recomputeLines]);
@@ -632,9 +638,9 @@ export function CharacterCustomizerDiagram({
       {/* ── Pose strip ── */}
       <div
         ref={poseStripRef}
-        className="flex-shrink-0 w-12 lg:w-16 border border-zinc-800 rounded-2xl p-1.5 lg:p-2 overflow-y-auto overflow-x-hidden"
+        className="flex-shrink-0 w-12 lg:w-32 border border-zinc-800 rounded-2xl p-1.5 lg:p-2 overflow-y-auto overflow-x-hidden"
       >
-        <div className="grid grid-cols-1 gap-1.5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
           {ALL_SHOTS.map(({ shotType: st, label }) => (
             <PoseThumbnail
               key={st}
@@ -763,9 +769,9 @@ export function CharacterCustomizerDiagram({
       {/* ── Country strip ── */}
       <div
         ref={countryStripRef}
-        className="flex-shrink-0 w-12 lg:w-16 border border-zinc-800 rounded-2xl p-1.5 lg:p-2 overflow-y-auto overflow-x-hidden"
+        className="flex-shrink-0 w-12 lg:w-32 border border-zinc-800 rounded-2xl p-1.5 lg:p-2 overflow-y-auto overflow-x-hidden"
       >
-        <div className="grid grid-cols-1 gap-1.5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
           {COUNTRY_NAMES.map((c) => (
             <CountryThumbnail
               key={c}
