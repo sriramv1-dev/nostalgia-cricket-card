@@ -32,6 +32,7 @@ interface CentroidPayload {
 }
 
 type PanelSide = "left" | "right";
+type PanelGroup = "top" | "bottom";
 
 export interface CharacterCustomizerDiagramProps {
   shotType: ShotType;
@@ -58,19 +59,35 @@ const KEY_LABELS: Record<keyof CharacterColors, string> = {
 const ANATOMICAL_SIDE: Record<keyof CharacterColors, PanelSide> = {
   cap:       "left",
   capAccent: "left",
-  gloves:    "left",
-  bat:       "left",
-  ball:      "right",
-  wickets:   "right",
-  pads:      "right",
+  pads:      "left",
+  wickets:   "left",
+  gloves:    "right",
   shoes:     "right",
+  bat:       "right",
+  ball:      "right",
+};
+
+// Top/bottom pairing within each side column — purely a layout grouping,
+// independent of centroid data.
+const ANATOMICAL_GROUP: Record<keyof CharacterColors, PanelGroup> = {
+  cap:       "top",
+  capAccent: "top",
+  gloves:    "top",
+  shoes:     "top",
+  pads:      "bottom",
+  wickets:   "bottom",
+  bat:       "bottom",
+  ball:      "bottom",
 };
 
 const CURVE_BEND = 60;
-const MIN_CHAR_W      = 320;  // px — never shrink character below this
-const MAX_CHAR_W      = 540;  // px — caps growth on very wide screens
-const MIN_PANEL_COL_W = 152;  // px — min width of left/right accessory columns
-const MAX_PANEL_COL_W = 220;  // px — max width so panels don't balloon
+const MIN_CHAR_W    = 200;  // px — never shrink character below this
+const MAX_CHAR_W    = 420;  // px — caps growth on very wide screens
+const MIN_CARD_W    = 84;   // px — min width of a single accessory card
+const MAX_CARD_W    = 140;  // px — max width so cards don't balloon
+const STRIP_W       = 54;   // px — fixed width of the shot/country strips
+const PAIR_GAP       = 4;    // px — gap between the two cards in a top/bottom pair
+const COL_GAP        = 8;    // px — gap between the 5 layout columns
 
 const ALL_SHOTS: Array<{ shotType: ShotType; label: string }> = [
   { shotType: "alpha",    label: "Alpha" },
@@ -156,7 +173,7 @@ function hslToHex(h: number, s: number, l: number): string {
   return `#${hex(r)}${hex(g)}${hex(b)}`;
 }
 
-// ─── PoseThumbnail ────────────────────────────────────────────────────────────
+// ─── PoseThumbnail — compact vertical-strip variant ──────────────────────────
 
 interface PoseThumbnailProps {
   shotType: ShotType;
@@ -172,13 +189,13 @@ function PoseThumbnail({ shotType, label, isActive, onClick }: PoseThumbnailProp
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-1 flex-shrink-0 rounded-xl p-1.5 transition-colors",
+        "flex flex-col items-center gap-0.5 flex-shrink-0 rounded-lg p-1 transition-colors w-full",
         isActive
           ? "border border-zinc-400 bg-zinc-800"
           : "border border-zinc-800 bg-zinc-900 hover:border-zinc-600 hover:bg-zinc-850"
       )}
     >
-      <div className="w-12 h-[66px] relative overflow-hidden rounded-lg bg-zinc-950">
+      <div className="w-10 h-11 relative overflow-hidden rounded-md bg-zinc-950">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
@@ -189,7 +206,7 @@ function PoseThumbnail({ shotType, label, isActive, onClick }: PoseThumbnailProp
       </div>
       <span
         className={cn(
-          "text-[9px] font-body tracking-widest uppercase",
+          "text-[7px] font-body tracking-widest uppercase truncate w-full text-center",
           isActive ? "text-zinc-200" : "text-zinc-500"
         )}
       >
@@ -199,7 +216,7 @@ function PoseThumbnail({ shotType, label, isActive, onClick }: PoseThumbnailProp
   );
 }
 
-// ─── CountryThumbnail ────────────────────────────────────────────────────────
+// ─── CountryThumbnail — compact vertical-strip variant ───────────────────────
 
 interface CountryThumbnailProps {
   country: string;
@@ -217,25 +234,25 @@ function CountryThumbnail({ country, isActive, onClick }: CountryThumbnailProps)
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-1 flex-shrink-0 rounded-xl p-1.5 transition-colors",
+        "flex flex-col items-center gap-0.5 flex-shrink-0 rounded-lg p-1 transition-colors w-full",
         isActive
           ? "border border-zinc-400 bg-zinc-800"
           : "border border-zinc-800 bg-zinc-900 hover:border-zinc-600"
       )}
     >
       <div
-        className="w-12 h-[66px] rounded-lg relative overflow-hidden flex items-center justify-center"
+        className="w-10 h-11 rounded-md relative overflow-hidden flex items-center justify-center"
         style={{ backgroundColor: character.cap }}
       >
         <div
-          className="absolute bottom-0 inset-x-0 h-3"
+          className="absolute bottom-0 inset-x-0 h-2"
           style={{ backgroundColor: character.capAccent }}
         />
-        <span className="text-2xl relative z-10 select-none">{flag}</span>
+        <span className="text-lg relative z-10 select-none">{flag}</span>
       </div>
       <span
         className={cn(
-          "text-[9px] font-body tracking-widest uppercase",
+          "text-[7px] font-body tracking-widest uppercase truncate w-full text-center",
           isActive ? "text-zinc-200" : "text-zinc-500"
         )}
       >
@@ -287,7 +304,7 @@ interface PanelCardProps {
   onColorChange: (c: string) => void;
   onResetKey: () => void;
   entryRef: (el: HTMLDivElement | null) => void;
-  panelColW: number;
+  cardW: number;
 }
 
 function PanelCard({
@@ -298,7 +315,7 @@ function PanelCard({
   onColorChange,
   onResetKey,
   entryRef,
-  panelColW,
+  cardW,
 }: PanelCardProps) {
   const swatches = ACCESSORY_SWATCHES[accessoryKey];
   const idx = findSwatchIndex(color, swatches);
@@ -313,39 +330,39 @@ function PanelCard({
       ref={entryRef}
       onClick={onSelect}
       className={cn(
-        "flex flex-col rounded-xl border px-2.5 py-2 cursor-pointer transition-colors flex-shrink-0",
-        isActive ? "bg-zinc-800" : "bg-zinc-900 hover:bg-zinc-800/50"
+        "flex flex-col rounded-xl border px-2 py-1.5 cursor-pointer transition-colors flex-shrink-0",
+        isActive ? "bg-zinc-800 z-10" : "bg-zinc-900 hover:bg-zinc-800/50"
       )}
-      style={{ width: panelColW, borderColor: color }}
+      style={{ width: cardW, borderColor: color }}
     >
       {/* Single row: name + dot + hex + reset */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs font-body tracking-widest uppercase truncate text-zinc-300 flex-1">
+      <div className="flex items-center gap-1">
+        <span className="text-[10px] font-body tracking-widest uppercase truncate text-zinc-300 flex-1">
           {KEY_LABELS[accessoryKey]}
-        </span>
-        <span className="flex items-center gap-1 flex-shrink-0">
-          <span style={{ color }} className="text-[13px] leading-none select-none">●</span>
-          <span style={{ color }} className="text-[10px] font-mono tracking-wide">{color}</span>
         </span>
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onResetKey(); }}
-          className="text-zinc-500 hover:text-white text-sm transition-colors w-5 h-5 flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
+          className="text-zinc-500 hover:text-white text-xs transition-colors w-4 h-4 flex items-center justify-center rounded hover:bg-zinc-700 flex-shrink-0"
           title="Reset to default"
         >
           ↺
         </button>
+      </div>
+      <div className="flex items-center gap-1 mt-0.5">
+        <span style={{ color }} className="text-[11px] leading-none select-none">●</span>
+        <span style={{ color }} className="text-[9px] font-mono tracking-wide truncate">{color}</span>
       </div>
 
       {/* Hue slider + swatch row — only when active, no animation */}
       {isActive && (
         <>
           <div
-            className="relative flex items-center h-5 mt-2"
+            className="relative flex items-center h-4 mt-1.5"
             onClick={(e) => e.stopPropagation()}
           >
             <div
-              className="absolute inset-x-0 h-2 rounded-full pointer-events-none"
+              className="absolute inset-x-0 h-1.5 rounded-full pointer-events-none"
               style={{ background: `linear-gradient(to right,${sliderGradient})` }}
             />
             <input
@@ -358,29 +375,29 @@ function PanelCard({
               style={{ color }}
             />
           </div>
-          <div className="flex gap-1.5 mt-2" onClick={(e) => e.stopPropagation()}>
-          {swatches.map((swatch, i) => {
-            const isSelected = i === idx;
-            return (
-              <button
-                key={swatch}
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
-                className="flex flex-col items-center gap-px"
-                aria-label={swatch}
-              >
-                <span
-                  className="block w-0 h-0"
-                  style={{
-                    borderLeft: "4px solid transparent",
-                    borderRight: "4px solid transparent",
-                    borderBottom: `5px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
-                  }}
-                />
-                <span className="block w-4 h-4 rounded-full" style={{ backgroundColor: swatch }} />
-              </button>
-            );
-          })}
+          <div className="flex flex-wrap gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
+            {swatches.map((swatch, i) => {
+              const isSelected = i === idx;
+              return (
+                <button
+                  key={swatch}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onColorChange(swatch); }}
+                  className="flex flex-col items-center gap-px"
+                  aria-label={swatch}
+                >
+                  <span
+                    className="block w-0 h-0"
+                    style={{
+                      borderLeft: "3px solid transparent",
+                      borderRight: "3px solid transparent",
+                      borderBottom: `4px solid ${isSelected ? "#a1a1aa" : "transparent"}`,
+                    }}
+                  />
+                  <span className="block w-3.5 h-3.5 rounded-full" style={{ backgroundColor: swatch }} />
+                </button>
+              );
+            })}
           </div>
         </>
       )}
@@ -418,13 +435,18 @@ export function CharacterCustomizerDiagram({
       .catch(() => null);
   }, [activeShotType]);
 
-  // Group available keys by left/right side.
-  const panelGroups = useMemo((): Record<PanelSide, Array<keyof CharacterColors>> => {
-    const groups: Record<PanelSide, Array<keyof CharacterColors>> = { left: [], right: [] };
+  // Group available keys by side (left/right, centroid-driven when loaded)
+  // and by top/bottom pair (static layout grouping).
+  const panelGroups = useMemo((): Record<PanelSide, Record<PanelGroup, Array<keyof CharacterColors>>> => {
+    const groups: Record<PanelSide, Record<PanelGroup, Array<keyof CharacterColors>>> = {
+      left: { top: [], bottom: [] },
+      right: { top: [], bottom: [] },
+    };
     for (const key of availableKeys) {
       const centroid = centroidData?.centroids[key];
       const side = centroid ? sideFromCentroid(centroid.x) : ANATOMICAL_SIDE[key];
-      groups[side].push(key);
+      const group = ANATOMICAL_GROUP[key];
+      groups[side][group].push(key);
     }
     return groups;
   }, [availableKeys, centroidData]);
@@ -435,14 +457,12 @@ export function CharacterCustomizerDiagram({
   const charAreaRef = useRef<HTMLDivElement>(null);
   const entryRefs = useRef<Map<keyof CharacterColors, HTMLDivElement>>(new Map());
 
-  // Dynamic grid dimensions.
-  // Overhead = border(2) + padding(16) + gap-to-reset(8) + reset-btn(32) = 58px
-  // Width fixed = pose-strip(144) + connectors(12) + country-strip(144)
-  //             + center-border+padding(18) + col-gaps(16) = 334px
+  // Dynamic layout dimensions — computed from available space so the whole
+  // diagram fills the viewport with no horizontal or vertical scroll.
   const [gridDims, setGridDims] = useState({
-    charH: 400,
+    charH: 380,
     charW: MIN_CHAR_W,
-    panelColW: MIN_PANEL_COL_W,
+    cardW: MIN_CARD_W,
   });
 
   interface LineData {
@@ -512,22 +532,37 @@ export function CharacterCustomizerDiagram({
     return () => observer.disconnect();
   }, [recomputeLines]);
 
+  // Measure available space and derive charW / cardW / charH so everything —
+  // strips, cards, character, connector SVG — stays within the viewport with
+  // no overflow in either axis.
   useEffect(() => {
     const el = outerRef.current;
     if (!el) return;
     const compute = () => {
       const availH = el.clientHeight;
       const availW = el.clientWidth;
-      if (availH < 200) return;
+      if (availH < 150 || availW < 150) return;
 
-      const usableH = availH - 58;
-      const ch = Math.max(200, usableH);
+      // Height overhead: border(2) + padding(16) + gap-to-reset(8) + reset-btn(28) = 54px
+      const usableH = availH - 54;
+      const ch = Math.max(180, usableH);
 
-      const available = Math.max(0, availW - 334);
-      const pcw = Math.max(MIN_PANEL_COL_W, Math.min(MAX_PANEL_COL_W, Math.floor(available * 0.22)));
-      const cw  = Math.max(MIN_CHAR_W,      Math.min(MAX_CHAR_W,      available - 2 * pcw));
+      // Width overhead: border(2) + padding(16) + 2 strip cols(2*STRIP_W)
+      //                + 4 inter-column gaps(4*COL_GAP)
+      const overhead = 2 * STRIP_W + 4 * COL_GAP + 18;
+      const available = Math.max(0, availW - overhead);
 
-      setGridDims({ charH: ch, charW: cw, panelColW: pcw });
+      // Allocate ~34% of remaining width to the character, rest split
+      // between the two card columns (each holding a pair of cards).
+      let cw = Math.max(MIN_CHAR_W, Math.min(MAX_CHAR_W, Math.floor(available * 0.34)));
+      const sideColsW = Math.max(0, available - cw);
+      let cardW = Math.max(MIN_CARD_W, Math.min(MAX_CARD_W, Math.floor((sideColsW / 2 - PAIR_GAP) / 2)));
+      // Re-derive character width from the actual (clamped) card width so
+      // nothing overflows if cards hit their min/max clamp.
+      const actualSideColW = 2 * cardW + PAIR_GAP;
+      cw = Math.max(MIN_CHAR_W, Math.min(MAX_CHAR_W, available - 2 * actualSideColW));
+
+      setGridDims({ charH: ch, charW: cw, cardW });
     };
     const obs = new ResizeObserver(compute);
     obs.observe(el);
@@ -605,41 +640,23 @@ export function CharacterCustomizerDiagram({
           onColorChange={(c) => { updateColor(key, c); setActiveKey(key); }}
           onResetKey={() => resetKey(key)}
           entryRef={setEntryRef(key)}
-          panelColW={gridDims.panelColW}
+          cardW={gridDims.cardW}
         />
       );
     },
-    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef, gridDims.panelColW]
+    [colors, activeKey, setActiveKey, updateColor, resetKey, setEntryRef, gridDims.cardW]
   );
 
   return (
-    <div ref={outerRef} className={cn("w-full h-full", className)}>
-    <div className="flex flex-row items-center justify-center h-full">
+    <div ref={outerRef} className={cn("w-full h-full overflow-hidden", className)}>
+    <div className="flex flex-col items-center justify-center h-full overflow-hidden">
 
-      {/* ── Pose strip ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
-        <div className="grid grid-cols-2 gap-1.5">
-          {ALL_SHOTS.map(({ shotType: st, label }) => (
-            <PoseThumbnail
-              key={st}
-              shotType={st}
-              label={label}
-              isActive={activeShotType === st}
-              onClick={() => handleShotTypeSwitch(st)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* connector */}
-      <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
-
-      {/* ── Center: 3-column grid + Reset All, wrapped in one border ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2 flex flex-col gap-2">
+      {/* ── Main row: leftCards | shotStrip | character | countryStrip | rightCards ── */}
+      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2 flex flex-col gap-2 overflow-hidden">
         <div
           ref={containerRef}
-          className="relative flex flex-row gap-2"
-          style={{ height: gridDims.charH }}
+          className="relative flex flex-row overflow-hidden"
+          style={{ height: gridDims.charH, gap: COL_GAP }}
         >
           {/* ── SVG connector overlay ── */}
           <svg
@@ -659,12 +676,33 @@ export function CharacterCustomizerDiagram({
             ))}
           </svg>
 
-          {/* ── Left panel column ── */}
+          {/* ── Left cards column: top pair + bottom pair ── */}
           <div
-            className="flex flex-col justify-between gap-1.5 flex-shrink-0"
-            style={{ width: gridDims.panelColW }}
+            className="flex flex-col justify-between flex-shrink-0"
+            style={{ width: 2 * gridDims.cardW + PAIR_GAP }}
           >
-            {panelGroups.left.map(renderEntry)}
+            <div className="flex" style={{ gap: PAIR_GAP }}>
+              {panelGroups.left.top.map(renderEntry)}
+            </div>
+            <div className="flex" style={{ gap: PAIR_GAP }}>
+              {panelGroups.left.bottom.map(renderEntry)}
+            </div>
+          </div>
+
+          {/* ── Shot type strip — vertical, scrollable ── */}
+          <div
+            className="flex-shrink-0 flex flex-col gap-1 overflow-y-auto overflow-x-hidden"
+            style={{ width: STRIP_W, height: gridDims.charH }}
+          >
+            {ALL_SHOTS.map(({ shotType: st, label }) => (
+              <PoseThumbnail
+                key={st}
+                shotType={st}
+                label={label}
+                isActive={activeShotType === st}
+                onClick={() => handleShotTypeSwitch(st)}
+              />
+            ))}
           </div>
 
           {/* ── Character cell ── */}
@@ -720,16 +758,39 @@ export function CharacterCustomizerDiagram({
             })}
           </div>
 
-          {/* ── Right panel column ── */}
+          {/* ── Country strip — vertical, scrollable ── */}
           <div
-            className="flex flex-col justify-between gap-1.5 flex-shrink-0"
-            style={{ width: gridDims.panelColW }}
+            className="flex-shrink-0 flex flex-col gap-1 overflow-y-auto overflow-x-hidden"
+            style={{ width: STRIP_W, height: gridDims.charH }}
           >
-            {panelGroups.right.map(renderEntry)}
+            {COUNTRY_NAMES.map((c) => (
+              <CountryThumbnail
+                key={c}
+                country={c}
+                isActive={activeCountry === c}
+                onClick={() => {
+                  setActiveCountry(c);
+                  applyCountryPreset(c);
+                }}
+              />
+            ))}
+          </div>
+
+          {/* ── Right cards column: top pair + bottom pair ── */}
+          <div
+            className="flex flex-col justify-between flex-shrink-0"
+            style={{ width: 2 * gridDims.cardW + PAIR_GAP }}
+          >
+            <div className="flex" style={{ gap: PAIR_GAP }}>
+              {panelGroups.right.top.map(renderEntry)}
+            </div>
+            <div className="flex" style={{ gap: PAIR_GAP }}>
+              {panelGroups.right.bottom.map(renderEntry)}
+            </div>
           </div>
         </div>
 
-        {/* ── Reset All — inside the center border, below the columns ── */}
+        {/* ── Reset All — centered below the character, above bottom cards row ── */}
         <div className="flex justify-center">
           <button
             type="button"
@@ -741,27 +802,7 @@ export function CharacterCustomizerDiagram({
         </div>
       </div>
 
-      {/* connector */}
-      <div className="flex-shrink-0 w-3 h-px bg-zinc-700" />
-
-      {/* ── Country strip ── */}
-      <div className="flex-shrink-0 border border-zinc-800 rounded-2xl p-2">
-        <div className="grid grid-cols-2 gap-1.5">
-          {COUNTRY_NAMES.map((c) => (
-            <CountryThumbnail
-              key={c}
-              country={c}
-              isActive={activeCountry === c}
-              onClick={() => {
-                setActiveCountry(c);
-                applyCountryPreset(c);
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-    </div>{/* end inner flex row */}
+    </div>
     </div>
   );
 }
