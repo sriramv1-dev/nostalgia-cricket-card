@@ -8,3 +8,4 @@ export { MultiSelect } from "./MultiSelect";
 export { TabSwitch } from "./TabSwitch";
 export { BatSwitch } from "./BatSwitch";
 export { Select } from "./Select";
+export { BottomSheet } from "./BottomSheet";
