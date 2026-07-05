@@ -13,6 +13,11 @@ const ColorPopover = nextDynamic(
   { ssr: false }
 );
 
+const CustomizerMobile = nextDynamic(
+  () => import("@/components/card/CustomizerMobile").then((m) => m.CustomizerMobile),
+  { ssr: false }
+);
+
 const CharacterCustomizerDiagram = nextDynamic(
   () =>
     import("@/components/card/CharacterCustomizerDiagram").then(
@@ -97,12 +102,6 @@ const MODE_OPTIONS = [
 const ACTIVE_GLOW =
   "drop-shadow(0 0 14px #e8257a) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #e8257a)";
 
-// Idle layers get zero glow — only the actively-selected accessory lights up.
-function getLayerGlow(isDone: boolean, isActive: boolean): string {
-  if (!isDone && isActive) return ACTIVE_GLOW;
-  return "none";
-}
-
 function deriveRole(shot: string): PlayerRole {
   if (shot === "pace" || shot === "spin") return "bowler";
   if (shot === "keeping1" || shot === "keeping2") return "keeper";
@@ -119,167 +118,7 @@ function CustomizeContent() {
   const sources = getCharacterSources(deriveRole(shot), shot);
   const hitmapSrc = `${sources.base.slice(0, sources.base.lastIndexOf("/") + 1)}hitmap.png`;
 
-  const { styles, update, reset } = useCountryTheme(country);
-
-  // Tablet+ diagram — shares the same country localStorage slot as useCountryTheme above.
   const diagramCustomization = useAccessoryCustomization(shot as ShotType, country);
-
-  const [dims, setDims] = useState<{ width: number; height: number } | null>(
-    null
-  );
-  const [isDone, setIsDone] = useState(false);
-  const [areaSize, setAreaSize] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-  const [activeKey, setActiveKey] = useState<keyof CharacterColors | null>(
-    null
-  );
-
-  const characterAreaRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const hitmapRef = useRef<HTMLImageElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  // The hitmap may finish loading before React attaches onLoad (cached image,
-  // complete=true on mount) — check on mount so we don't hang on "Loading…".
-  useEffect(() => {
-    const img = hitmapRef.current;
-    if (!img) return;
-    if (img.complete && img.naturalWidth > 0) {
-      setDims({ width: img.naturalWidth, height: img.naturalHeight });
-    }
-  }, []);
-
-  function handleHitmapLoad(e: React.SyntheticEvent<HTMLImageElement>) {
-    const img = e.currentTarget;
-    setDims({ width: img.naturalWidth, height: img.naturalHeight });
-  }
-
-  // Track the character area's size so the layout responds to viewport
-  // resizes and device rotation without reading window dimensions.
-  useEffect(() => {
-    const el = characterAreaRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => {
-      setAreaSize({
-        width: entry.contentRect.width,
-        height: entry.contentRect.height,
-      });
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Fit the character in the available area while preserving the exact
-  // aspect ratio. Hit-test math is unaffected: it divides by
-  // rect.width/height, which shrink together with the container.
-  const displayScale =
-    dims && areaSize
-      ? Math.min(
-          (areaSize.width - 32) / dims.width,
-          (areaSize.height - 32) / dims.height
-        )
-      : 0;
-  const displayWidth = Math.floor((dims?.width ?? 0) * displayScale);
-  const displayHeight = Math.floor((dims?.height ?? 0) * displayScale);
-  const ready = displayWidth > 0 && displayHeight > 0;
-
-  // ColorPopover closes itself on document-level mousedown outside its own
-  // ref, which would fire on character clicks and make the popover flicker
-  // closed/open. A synthetic onMouseDown stopPropagation can't block it:
-  // in the App Router React delegates events on `document`, the same node
-  // the popover listens on, and stopPropagation doesn't affect same-node
-  // listeners. A native listener on the container stops the event below
-  // document, before the popover's listener sees it.
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const stop = (e: MouseEvent) => e.stopPropagation();
-    el.addEventListener("mousedown", stop);
-    return () => el.removeEventListener("mousedown", stop);
-  }, [ready]);
-
-  const hitTestAt = useCallback(
-    (clientX: number, clientY: number) => {
-      const container = containerRef.current;
-      const hitmap = hitmapRef.current;
-      if (isDone || !container || !hitmap || !dims) return;
-
-      if (!canvasRef.current) {
-        canvasRef.current = document.createElement("canvas");
-        canvasRef.current.width = 1;
-        canvasRef.current.height = 1;
-      }
-      const ctx = canvasRef.current.getContext("2d", {
-        willReadFrequently: true,
-      });
-      if (!ctx) return;
-
-      const rect = container.getBoundingClientRect();
-      const intrinsicX = Math.floor(
-        ((clientX - rect.left) / rect.width) * dims.width
-      );
-      const intrinsicY = Math.floor(
-        ((clientY - rect.top) / rect.height) * dims.height
-      );
-
-      ctx.clearRect(0, 0, 1, 1);
-      ctx.drawImage(hitmap, intrinsicX, intrinsicY, 1, 1, 0, 0, 1, 1);
-      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
-
-      if (a < 10) return;
-
-      const hex = [r, g, b]
-        .map((v) => v.toString(16).padStart(2, "0"))
-        .join("")
-        .toUpperCase();
-      setActiveKey(COLOR_TO_KEY[hex] ?? null);
-    },
-    [dims, isDone]
-  );
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => hitTestAt(e.clientX, e.clientY),
-    [hitTestAt]
-  );
-
-  const handleTouch = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      const touch = e.touches[0];
-      if (touch) hitTestAt(touch.clientX, touch.clientY);
-    },
-    [hitTestAt]
-  );
-
-  const handleColorChange = useCallback(
-    (color: string) => {
-      if (!activeKey) return;
-      update({ character: { ...styles.character, [activeKey]: color } });
-    },
-    [activeKey, styles.character, update]
-  );
-
-  function handleReset() {
-    reset();
-    setIsDone(false);
-    setActiveKey(null);
-  }
-
-  const coloredLayers: Array<{ key: keyof CharacterColors; src: string }> = [];
-  if (sources.cap) coloredLayers.push({ key: "cap", src: sources.cap });
-  if (sources.capAccent)
-    coloredLayers.push({ key: "capAccent", src: sources.capAccent });
-  if (sources.gloves)
-    coloredLayers.push({ key: "gloves", src: sources.gloves });
-  if (sources.pads) coloredLayers.push({ key: "pads", src: sources.pads });
-  if (sources.shoes) coloredLayers.push({ key: "shoes", src: sources.shoes });
-  if (sources.bat) coloredLayers.push({ key: "bat", src: sources.bat });
-  if (sources.batOutline)
-    coloredLayers.push({ key: "bat", src: sources.batOutline });
-  if (sources.ball) coloredLayers.push({ key: "ball", src: sources.ball });
-  if (sources.wickets)
-    coloredLayers.push({ key: "wickets", src: sources.wickets });
 
   return (
     // Mirrors the root layout chrome: 112px top padding everywhere, plus a
@@ -294,7 +133,7 @@ function CustomizeContent() {
           </span>
         }
         right={
-          <div className="h-12 w-full sm:w-40 overflow-visible">
+          <div className="hidden md:block h-12 w-full sm:w-40 overflow-visible">
             <BatSwitch
               options={MODE_OPTIONS}
               value="tap"
@@ -310,17 +149,6 @@ function CustomizeContent() {
         }
       />
 
-      {/* Hidden hitmap — drives container dimensions and canvas hit-testing */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        ref={hitmapRef}
-        src={hitmapSrc}
-        crossOrigin="anonymous"
-        alt=""
-        className="hidden"
-        onLoad={handleHitmapLoad}
-      />
-
       {/* ── Tablet+ diagram — hidden on mobile; no vertical scroll ── */}
       <div className="hidden md:flex flex-1 items-center justify-center overflow-y-hidden overflow-x-auto p-4">
         <CharacterCustomizerDiagram
@@ -329,135 +157,14 @@ function CustomizeContent() {
           className="h-full"
         />
       </div>
-
-      {/* ── Mobile: tap-to-select character — hidden on tablet+ ── */}
-      {/* Character area — fills remaining height */}
-      <div
-        ref={characterAreaRef}
-        className="md:hidden flex-1 flex items-center justify-center overflow-hidden relative"
-      >
-        {!ready ? (
-          <p className="text-zinc-500 text-sm font-body">Loading…</p>
-        ) : (
-          <div
-            ref={containerRef}
-            onClick={handleClick}
-            onTouchStart={handleTouch}
-            className="relative cursor-crosshair touch-none"
-            style={{
-              width: displayWidth,
-              height: displayHeight,
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={sources.base}
-              alt="Character base"
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
-            />
-            {coloredLayers.map(({ key, src }) => {
-              const color = styles.character[key];
-              return (
-                <div
-                  key={src}
-                  aria-hidden
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    filter: getLayerGlow(isDone, activeKey === key),
-                    transition: "filter 0.15s ease",
-                    isolation: "isolate",
-                  }}
-                >
-                  {/* Original PNG — visible, provides shape, shadow, highlight detail */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
-                  />
-                  {/* Hue overlay — shifts color while preserving luminance from original */}
-                  {color && (
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundColor: color,
-                        mixBlendMode: "hue",
-                        WebkitMaskImage: `url(${src})`,
-                        maskImage: `url(${src})`,
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                        opacity: 0.9,
-                      }}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Popover floats over character */}
-        {activeKey && !isDone && (
-          <div className="absolute inset-0 flex items-end justify-center pb-6 pointer-events-none">
-            <div className="pointer-events-auto">
-              <ColorPopover
-                label={KEY_LABELS[activeKey]}
-                value={styles.character[activeKey]}
-                onChange={handleColorChange}
-                onClose={() => setActiveKey(null)}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom action bar — mobile only */}
-      <div className="md:hidden flex-shrink-0 flex items-center justify-between px-8 py-4 border-t border-zinc-800">
-        <p className="text-zinc-500 text-xs font-body tracking-wide">
-          {isDone
-            ? "colours locked in — looking good!"
-            : "tap any part of the character to change its colour"}
-        </p>
-
-        <div className="flex items-center gap-3">
-          {isDone ? (
-            <>
-              <div className="w-24">
-                <CardButton variant="secondary" onClick={handleReset}>
-                  Reset
-                </CardButton>
-              </div>
-              <div className="w-40">
-                <CardButton
-                  variant="primary"
-                  onClick={() =>
-                    router.push(
-                      `/card-builder?country=${encodeURIComponent(country)}`
-                    )
-                  }
-                >
-                  Back to Builder
-                </CardButton>
-              </div>
-            </>
-          ) : (
-            <div className="w-28">
-              <CardButton
-                variant="primary"
-                onClick={() => {
-                  setIsDone(true);
-                  setActiveKey(null);
-                }}
-              >
-                Done
-              </CardButton>
-            </div>
-          )}
-        </div>
+      {/* ── Mobile: customizer — hidden on tablet+ ── */}
+      <div className="md:hidden flex-1 flex flex-col min-h-0">
+        <CustomizerMobile
+          shotType={shot as ShotType}
+          country={country}
+          customization={diagramCustomization}
+          onDone={() => router.push(`/card-builder?country=${encodeURIComponent(country)}`)}
+        />
       </div>
     </main>
   );

@@ -7,7 +7,6 @@ export { CustomizableLayeredCharacter } from "./CustomizableLayeredCharacter";
 export { CharacterCustomizerDiagram } from "./CharacterCustomizerDiagram";
 export { PoseThumbnail } from "./PoseThumbnail";
 export { CountryThumbnail } from "./CountryThumbnail";
-export { AccessoryColorSheet } from "./AccessoryColorSheet";
 export { CharacterCustomizationWrapper } from "./CharacterCustomizationWrapper";
 export { StatCard, type PlayerStats, type StatValue } from "./StatCard";
 export { StatCardWrapper } from "./StatCardWrapper";
