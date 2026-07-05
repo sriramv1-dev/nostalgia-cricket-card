@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { cva } from "class-variance-authority";
 import {
   ACCESSORY_LABELS,
   getCharacterSources,
@@ -14,6 +15,20 @@ import type { CharacterColors } from "@/types/card";
 import { cn } from "@/lib/utils";
 import { PoseThumbnail } from "./PoseThumbnail";
 import { CountryThumbnail } from "./CountryThumbnail";
+import { SnapStrip } from "./SnapStrip";
+import { ColorEditorPanel } from "./ColorEditorPanel";
+
+const accessoryBox = cva(
+  "absolute flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/70 border pointer-events-auto",
+  {
+    variants: {
+      selected: {
+        true: "border-pink-500",
+        false: "border-white/20",
+      },
+    },
+  }
+);
 
 export interface CustomizerMobileProps {
   shotType: ShotType;
@@ -23,18 +38,6 @@ export interface CustomizerMobileProps {
   onDone: () => void;
 }
 
-// Hitmap region colors → accessory keys (matches the hitmap PNG palette).
-const COLOR_TO_KEY: Record<string, keyof CharacterColors> = {
-  FF0000: "cap",
-  FF8800: "capAccent",
-  FFFF00: "gloves",
-  "00FF00": "pads",
-  "0000FF": "shoes",
-  FF00FF: "bat",
-  "00FFFF": "ball",
-  FFFFFF: "wickets",
-};
-
 const CANVAS_PADDING_PX = 32; // breathing room around the character
 const MIN_ALPHA = 10; // hitmap sample below this = miss
 const TOAST_DURATION_MS = 3000;
@@ -43,48 +46,6 @@ function deriveRole(shot: string): PlayerRole {
   if (shot === "pace" || shot === "spin") return "bowler";
   if (shot === "keeping1" || shot === "keeping2") return "keeper";
   return "batter";
-}
-
-function hexToHSL(hex: string): [number, number, number] {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const l = (max + min) / 2;
-  if (max === min) return [0, 0, Math.round(l * 100)];
-  const d = max - min;
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  let h = 0;
-  switch (max) {
-    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-    case g: h = ((b - r) / d + 2) / 6; break;
-    case b: h = ((r - g) / d + 4) / 6; break;
-  }
-  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
-}
-
-function hslToHex(h: number, s: number, l: number): string {
-  const hN = h / 360, sN = s / 100, lN = l / 100;
-  const hue2rgb = (p: number, q: number, t: number) => {
-    const tc = ((t % 1) + 1) % 1;
-    if (tc < 1 / 6) return p + (q - p) * 6 * tc;
-    if (tc < 1 / 2) return q;
-    if (tc < 2 / 3) return p + (q - p) * (2 / 3 - tc) * 6;
-    return p;
-  };
-  let r: number, g: number, b: number;
-  if (s === 0) {
-    r = g = b = lN;
-  } else {
-    const q = lN < 0.5 ? lN * (1 + sN) : lN + sN - lN * sN;
-    const p = 2 * lN - q;
-    r = hue2rgb(p, q, hN + 1 / 3);
-    g = hue2rgb(p, q, hN);
-    b = hue2rgb(p, q, hN - 1 / 3);
-  }
-  const hex = (x: number) => Math.round(x * 255).toString(16).padStart(2, "0");
-  return `#${hex(r)}${hex(g)}${hex(b)}`;
 }
 
 // Accessory connector boxes floating around the character (mobile hitmap
@@ -394,20 +355,22 @@ export function CustomizerMobile({
       )}
 
       {/* Country strip — above the character */}
-      <div className="flex-shrink-0 flex gap-2 overflow-x-auto snap-x snap-mandatory px-4 py-2 border-b border-zinc-800">
-        {COUNTRY_NAMES.map((c) => (
-          <div key={c} className="snap-start w-20 flex-shrink-0">
-            <CountryThumbnail
-              country={c}
-              isActive={activeCountry === c}
-              onClick={() => {
-                setActiveCountry(c);
-                applyCountryPreset(c);
-              }}
-            />
-          </div>
-        ))}
-      </div>
+      <SnapStrip
+        className="border-b border-zinc-800"
+        items={COUNTRY_NAMES}
+        keyFor={(c) => c}
+      >
+        {(c) => (
+          <CountryThumbnail
+            country={c}
+            isActive={activeCountry === c}
+            onClick={() => {
+              setActiveCountry(c);
+              applyCountryPreset(c);
+            }}
+          />
+        )}
+      </SnapStrip>
 
       {/* Hint bar */}
       <div className="flex-shrink-0 flex items-center justify-between gap-4 px-4 py-3 border-b border-zinc-800">
@@ -555,10 +518,7 @@ export function CustomizerMobile({
                   onClick={selectAccessory(key)}
                   onTouchStart={(e) => e.stopPropagation()}
                   style={{ left: boxLeft, top: boxTop, width: BOX_WIDTH_PX, height: BOX_HEIGHT_PX }}
-                  className={cn(
-                    "absolute flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/70 border pointer-events-auto",
-                    isSelected ? "border-pink-500" : "border-white/20"
-                  )}
+                  className={accessoryBox({ selected: isSelected })}
                 >
                   <span
                     className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-white/30"
@@ -583,91 +543,34 @@ export function CustomizerMobile({
         )}
       >
         {activeKey && (
-          <>
-            <div className="flex items-center gap-3">
-              <span className="text-zinc-400 text-[10px] tracking-widest uppercase flex-shrink-0">
-                {ACCESSORY_LABELS[activeKey]}
-              </span>
-              <span
-                style={{ color: colors[activeKey] }}
-                className="text-xs font-body tracking-wide uppercase"
-              >
-                {colors[activeKey]}
-              </span>
-              <button
-                type="button"
-                onClick={() => resetKey(activeKey)}
-                aria-label="Reset to default"
-                className="text-zinc-500 hover:text-white text-base leading-none flex items-center justify-center w-6 h-6"
-              >
-                ↺
-              </button>
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto">
-              {swatches[activeKey].map((swatch) => {
-                const isSelected =
-                  swatch.toLowerCase() === (colors[activeKey] ?? "").toLowerCase();
-                return (
-                  <button
-                    key={swatch}
-                    type="button"
-                    onClick={() => updateColor(activeKey, swatch)}
-                    aria-label={swatch}
-                    className={cn(
-                      "w-10 h-10 rounded-full border-2 flex-shrink-0",
-                      isSelected ? "border-zinc-300" : "border-zinc-700"
-                    )}
-                    style={{ backgroundColor: swatch }}
-                  />
-                );
-              })}
-            </div>
-
-            {(() => {
-              const hex = colors[activeKey] ?? "#888888";
-              const [h, s, l] = hexToHSL(hex);
-              return (
-                <input
-                  type="range"
-                  min={0}
-                  max={360}
-                  value={h}
-                  aria-label="Hue"
-                  onChange={(e) =>
-                    updateColor(
-                      activeKey,
-                      hslToHex(Number(e.target.value), s || 50, l || 50)
-                    )
-                  }
-                  className="w-full h-3 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-zinc-900 [&::-webkit-slider-thumb]:shadow-card [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-zinc-900"
-                  style={{
-                    background:
-                      "linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)",
-                  }}
-                />
-              );
-            })()}
-          </>
+          <ColorEditorPanel
+            activeKey={activeKey}
+            colors={colors}
+            swatches={swatches}
+            onUpdateColor={updateColor}
+            onResetKey={resetKey}
+          />
         )}
       </div>
 
       {/* Shot-type strip — below the character */}
-      <div className="flex-shrink-0 flex gap-2 overflow-x-auto snap-x snap-mandatory px-4 py-2 border-t border-zinc-800">
-        {SHOT_OPTIONS.map(({ shotType: st, label }) => (
-          <div key={st} className="snap-start w-20 flex-shrink-0">
-            <PoseThumbnail
-              shotType={st}
-              label={label}
-              isActive={activeShot === st}
-              onClick={() => {
-                setActiveShot(st);
-                setActiveKey(null);
-              }}
-            />
-          </div>
-        ))}
-      </div>
+      <SnapStrip
+        className="border-t border-zinc-800"
+        items={SHOT_OPTIONS}
+        keyFor={({ shotType: st }) => st}
+      >
+        {({ shotType: st, label }) => (
+          <PoseThumbnail
+            shotType={st}
+            label={label}
+            isActive={activeShot === st}
+            onClick={() => {
+              setActiveShot(st);
+              setActiveKey(null);
+            }}
+          />
+        )}
+      </SnapStrip>
     </div>
   );
 }

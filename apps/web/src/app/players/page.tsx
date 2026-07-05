@@ -2,7 +2,7 @@ import Link from "next/link";
 import { fetchPlayersWithFormatStats } from "@/lib/queries/players";
 import type { PlayerWithFormatFilter } from "@/lib/queries/types";
 import type { PlayerRole } from "@/types/database.types";
-import { CricketCard } from "@/components/card/CricketCard";
+import { MemoizedCricketCard } from "@/components/card/MemoizedCricketCard";
 import { CardWrapper } from "@/components/ui/CardWrapper";
 import { PageHeader } from "@/components/layout";
 import { SearchFilterBar } from "@/components/players";
@@ -88,7 +88,7 @@ export default async function PlayersPage({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
           {players.map(({ player, stats }) => (
             <CardWrapper key={player.id}>
-              <CricketCard player={player} stats={stats} variant="player" />
+              <MemoizedCricketCard player={player} stats={stats} variant="player" />
             </CardWrapper>
           ))}
         </div>
