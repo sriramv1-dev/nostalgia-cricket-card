@@ -54,7 +54,7 @@ export function Header() {
       </header>
 
       {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-nav flex items-stretch border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-nav flex items-stretch border-t border-zinc-800 bg-zinc-950/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
         {MOBILE_TABS.map(({ href, label, enabled, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
 

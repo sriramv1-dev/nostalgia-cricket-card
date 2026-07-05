@@ -349,7 +349,7 @@ function CardBuilderPageInner() {
     // Mirrors the root layout chrome: on mobile the root <main> only has a
     // 60px bottom inset (pt-0 pb-[60px]); on md+ it flips to a 112px top
     // inset with no bottom inset (md:pt-28 md:pb-0).
-    <main className="h-[calc(100dvh-60px)] md:h-[calc(100vh-112px)] flex flex-col bg-zinc-950 text-white overflow-hidden">
+    <main className="h-[calc(100dvh-60px-env(safe-area-inset-bottom))] md:h-[calc(100vh-112px)] flex flex-col bg-zinc-950 text-white overflow-hidden">
       <PageHeader
         title="Card Builder"
         back={
