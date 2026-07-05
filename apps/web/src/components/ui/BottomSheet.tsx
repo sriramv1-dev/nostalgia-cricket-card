@@ -30,7 +30,9 @@ export function BottomSheet({
 }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   // Back-gesture support: push a history entry while open so the hardware /
   // browser back action closes the sheet instead of navigating. If the sheet

@@ -198,12 +198,20 @@ export function CustomizerMobile({
   }, [activeShot]);
 
   // Context toast — shows on entry, re-shows whenever the country changes.
-  const [showToast, setShowToast] = useState(false);
-  useEffect(() => {
+  // Re-showing on country change is handled by comparing against the
+  // previous value during render (see React docs on adjusting state when
+  // props change), so the effect below only ever manages the hide timer.
+  const [showToast, setShowToast] = useState(true);
+  const [prevCountry, setPrevCountry] = useState(activeCountry);
+  if (activeCountry !== prevCountry) {
+    setPrevCountry(activeCountry);
     setShowToast(true);
+  }
+  useEffect(() => {
+    if (!showToast) return;
     const timer = setTimeout(() => setShowToast(false), TOAST_DURATION_MS);
     return () => clearTimeout(timer);
-  }, [activeCountry]);
+  }, [showToast]);
 
   const characterAreaRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
