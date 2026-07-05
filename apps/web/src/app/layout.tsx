@@ -65,7 +65,7 @@ export default function RootLayout({
           <PageHeaderProvider>
             <Header />
             <PageHeaderSlot />
-            <main className="pt-0 md:pt-28 pb-[calc(60px+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
+            <main className="pt-0 md:pt-28 pb-[60px] md:pb-0">{children}</main>
           </PageHeaderProvider>
         </PageTitleProvider>
       </body>
