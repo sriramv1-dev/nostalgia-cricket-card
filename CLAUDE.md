@@ -8,17 +8,26 @@ explicitly overrides a rule in the current session.
 
 ## Project Overview
 
-Full-stack digital cricket card collectible app. Four pillars: collect, open
-packs, trade, battle. All players are retired 1990s legends — no live API.
+Full-stack digital cricket card collectible app inspired by Big Babol
+"Pocket Cricket" physical cards from the late 1990s. Four pillars: collect,
+open packs, trade, battle. All players are retired 1990s legends — no live API.
+Live at: github.com/sriramv1-dev/nostalgia-cricket-card
 
 **Stack:** Next.js 14 (App Router), TypeScript, Tailwind CSS, Framer Motion,
-Supabase (PostgreSQL + Auth), Cloudinary, Vercel.
+Supabase (PostgreSQL + Auth + Realtime, via `@supabase/ssr` directly — NO
+Prisma), Cloudinary, Vercel (`apps/web` as Root Directory, auto-deploys from
+`main`).
+
+**Styling variants:** `class-variance-authority` (CVA) for FormatPill,
+RoleBadge, SectionLabel, CardButton, RarityBadge.
 
 **Repo structure:**
 ```
 apps/web/          ← Next.js app
 sync-job/          ← Node cron script
+scripts/           ← Python tooling (hitmap + centroid generation)
 docs/claude/       ← Claude chat instruction backups
+supabase/seeds/    ← SQL seed files
 .github/           ← CI/CD workflows, issue templates
 ```
 
@@ -31,6 +40,18 @@ hooks/             ← Custom React hooks
 lib/               ← Utilities, queries, adapters
 types/             ← TypeScript interfaces and types
 ```
+
+---
+
+## Brand identity
+- **Brand name:** Big Nostalgia
+- **Logo:** "Big Nostalgia" in glossy pink bubble lettering with
+  cricket silhouettes in letter counters
+- **Brand colors:** Pink #e8257a (primary), Navy #1a3a8a, Yellow #ffd600
+- **Aesthetic:** Big Babol bubblegum — playful, nostalgic, bold
+- **Fonts:** see [[bangers-barlow-whitelisted]] memory for the current
+  whitelisted set — do not treat any single font pairing as locked without
+  checking that memory first
 
 ---
 
@@ -119,6 +140,20 @@ types/             ← TypeScript interfaces and types
 - `variant="brand"` — animated character (`animate={true}`), links to `/brand-side`.
 - Both variants share `CardFooter` (country spine + stat box).
 - `LayeredCharacter` reads `scale` from `CharacterSources` — never pass a hardcoded scale prop.
+- **Native size:** 750×1050px (300 DPI, 2.5×3.5in print).
+- **Grid preview:** CardScaleWrapper at scale(0.333). **Detail page:** scale(0.5). **/brand-side:** native (no wrapper).
+
+---
+
+## ⚠️ Sacred components — NEVER modify directly
+- CricketCard.tsx
+- LayeredCharacter.tsx
+- CharacterCustomizerDiagram.tsx
+- ColorPopover
+- useAccessoryCustomization
+
+CricketCard.tsx has one intentional extension point:
+`characterOverride?: React.ReactNode` prop only.
 
 ---
 

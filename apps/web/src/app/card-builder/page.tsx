@@ -6,8 +6,15 @@ import type { PlayerRow, PlayerRole } from "@/types/database.types";
 import type { CharacterColors } from "@/types/card";
 import { CardScaleWrapper, CricketCard } from "@/components/card";
 import { useCountryTheme, useTitle } from "@/hooks";
+import { useAccessoryCustomization } from "@/hooks/useAccessoryCustomization";
 import { PageHeader } from "@/components/layout";
 import { CardButton, Select, BatSwitch, TabSwitch } from "@/components/ui";
+import nextDynamic from "next/dynamic";
+
+const CustomizerMobile = nextDynamic(
+  () => import("@/components/card/CustomizerMobile").then((m) => m.CustomizerMobile),
+  { ssr: false }
+);
 import {
   ROLE_SHOTS,
   DEFAULT_SHOT,
@@ -308,6 +315,7 @@ function CardBuilderPageInner() {
   );
 
   const { styles, save, reset, update } = useCountryTheme(selectedCountry);
+  const diagramCustomization = useAccessoryCustomization(selectedShot, selectedCountry);
 
   useTitle(
     countryParam
@@ -338,9 +346,10 @@ function CardBuilderPageInner() {
   };
 
   return (
-    // Mirrors the root layout chrome: 112px top padding everywhere, plus a
-    // 60px bottom inset on mobile (pb-[60px] md:pb-0) for the bottom bar.
-    <main className="h-[calc(100vh-172px)] md:h-[calc(100vh-112px)] flex flex-col bg-zinc-950 text-white overflow-hidden">
+    // Mirrors the root layout chrome: on mobile the root <main> only has a
+    // 60px bottom inset (pt-0 pb-[60px]); on md+ it flips to a 112px top
+    // inset with no bottom inset (md:pt-28 md:pb-0).
+    <main className="h-[calc(100dvh-60px-env(safe-area-inset-bottom))] md:h-[calc(100vh-112px)] flex flex-col bg-zinc-950 text-white overflow-hidden">
       <PageHeader
         title="Card Builder"
         back={
@@ -359,7 +368,7 @@ function CardBuilderPageInner() {
           </>
         }
         right={
-          <div className="h-12 w-full sm:w-40 overflow-visible">
+          <div className="hidden md:block h-12 w-full sm:w-40 overflow-visible">
             <BatSwitch
               options={MODE_OPTIONS}
               value={editMode}
@@ -377,9 +386,10 @@ function CardBuilderPageInner() {
         }
       />
 
-      {/* Body — card + form panel travel as one centred group */}
-      <div className="flex-1 min-h-0 flex items-center justify-center px-8 py-4 overflow-hidden">
-        <div className="flex flex-col md:flex-row gap-8 items-center md:items-start min-h-0 max-h-full">
+      {/* Body */}
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row md:items-center md:justify-center md:px-8 md:py-4 overflow-hidden w-full">
+        {/* Desktop Layout — card + form panel travel as one centred group */}
+        <div className="hidden md:flex flex-row gap-8 items-start min-h-0 max-h-full">
           {/* Card Preview */}
           <div className="flex-shrink-0">
             <CardScaleWrapper scale="detail">
@@ -394,7 +404,7 @@ function CardBuilderPageInner() {
 
           {/* Form Panel — fixed width on md+ so the group centres predictably */}
           {editMode === "form" && (
-            <div className="w-full md:w-[400px] min-h-0 max-h-full flex flex-col gap-2 overflow-y-auto">
+            <div className="hidden md:flex w-full md:w-[400px] min-h-0 max-h-full flex-col gap-2 overflow-y-auto">
             {/* Tabs */}
             <div className="h-14 w-full overflow-visible">
               <TabSwitch
@@ -518,6 +528,15 @@ function CardBuilderPageInner() {
             )}
             </div>
           )}
+        </div>
+        {/* Tap Mode — mobile only */}
+        <div className="md:hidden flex-1 flex flex-col min-h-0 w-full">
+          <CustomizerMobile
+            shotType={selectedShot}
+            country={selectedCountry}
+            customization={diagramCustomization}
+            onDone={() => router.push("/")}
+          />
         </div>
       </div>
     </main>

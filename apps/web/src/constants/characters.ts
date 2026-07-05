@@ -31,6 +31,32 @@ export const DEFAULT_SHOT: Record<PlayerRole, ShotType> = {
   keeper:     "keeping1",
 };
 
+/** Human-readable names for each customizable accessory layer. */
+export const ACCESSORY_LABELS = {
+  cap: "Cap",
+  capAccent: "Cap Accent",
+  gloves: "Gloves",
+  pads: "Pads",
+  shoes: "Shoes",
+  bat: "Bat",
+  ball: "Ball",
+  wickets: "Wickets",
+} as const;
+
+/** Display list of every pose, in strip order — shared by the desktop
+ *  diagram and the mobile shot strip. */
+export const SHOT_OPTIONS: Array<{ shotType: ShotType; label: string }> = [
+  { shotType: "alpha",    label: "Alpha" },
+  { shotType: "loft",     label: "Loft" },
+  { shotType: "scoop",    label: "Scoop" },
+  { shotType: "sweep",    label: "Sweep" },
+  { shotType: "uppercut", label: "Uppercut" },
+  { shotType: "keeping1", label: "Keep 1" },
+  { shotType: "keeping2", label: "Keep 2" },
+  { shotType: "pace",     label: "Pace" },
+  { shotType: "spin",     label: "Spin" },
+];
+
 export const SHOT_SOURCES: Record<ShotType, CharacterSources> = {
   pace: {
     scale: 1.0,
