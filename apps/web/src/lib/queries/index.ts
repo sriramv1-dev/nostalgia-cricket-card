@@ -3,6 +3,8 @@ export {
   fetchPlayerById,
   fetchPlayerByExternalId,
   fetchCountries,
+  fetchPendingPlayers,
+  searchActivePlayersByName,
 } from "./players";
 
 export type {

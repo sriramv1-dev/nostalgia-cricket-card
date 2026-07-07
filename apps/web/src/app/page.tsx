@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BRAND_COLORS } from "@/constants/theme";
 
 const features = [
   {
@@ -43,11 +44,9 @@ export default function HomePage() {
         <div
           className="absolute inset-0 opacity-5 pointer-events-none"
           style={{
-            backgroundImage:
-              "radial-gradient(circle at 50% 0%, #e63946 0%, transparent 60%)",
+            backgroundImage: `radial-gradient(circle at 50% 0%, ${BRAND_COLORS.pink} 0%, transparent 60%)`,
           }}
         />
-        {/* <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#e8257a] via-gold to-pitch" /> */}
 
         <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center lg:flex-row lg:items-center lg:justify-between lg:text-left gap-10">
           {/* Heading block */}

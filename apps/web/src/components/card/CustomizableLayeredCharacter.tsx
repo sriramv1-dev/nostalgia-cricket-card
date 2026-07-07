@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import type { CharacterColors } from "@/types/card";
 import type { LayeredCharacterSources } from "@/components/card/LayeredCharacter";
+import { CHARACTER_GLOW_FILTERS } from "@/constants/characters";
 
 const KEY_TO_SOURCE: Array<{
   key: keyof CharacterColors;
@@ -18,9 +19,6 @@ const KEY_TO_SOURCE: Array<{
   { key: "ball",      src: "ball" },
   { key: "wickets",   src: "wickets" },
 ];
-
-const FILTER_IDLE   = "drop-shadow(0 0 5px #e8257a) drop-shadow(0 0 2px #e8257a)";
-const FILTER_ACTIVE = "drop-shadow(0 0 14px #e8257a) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #e8257a)";
 
 export interface CustomizableLayeredCharacterProps {
   sources: LayeredCharacterSources & { scale?: number };
@@ -156,7 +154,9 @@ export function CustomizableLayeredCharacter({
               className="absolute inset-0 isolate transition-[filter] duration-150"
               style={{
                 pointerEvents: "none",
-                filter: isActive ? FILTER_ACTIVE : FILTER_IDLE,
+                filter: isActive
+                  ? CHARACTER_GLOW_FILTERS.active
+                  : CHARACTER_GLOW_FILTERS.idle,
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

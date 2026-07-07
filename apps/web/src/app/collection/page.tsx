@@ -1,22 +1,18 @@
+import { ComingSoonPage } from "@/components/layout";
+
 export default function CollectionPage() {
   return (
-    <main className="flex flex-col min-h-screen pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 md:px-8 lg:px-12 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-3xl text-cream tracking-wider">
-              YOUR COLLECTION
-            </h1>
-            <p className="text-gray-500 text-xs">0 cards collected</p>
-          </div>
-          <div className="flex items-center gap-1.5 bg-gray-900 border border-gold/20 rounded-full px-3 py-1.5">
-            <span className="text-gold text-sm">🪙</span>
-            <span className="text-gold text-sm font-bold">500</span>
-          </div>
+    <ComingSoonPage
+      title="YOUR COLLECTION"
+      subtitle="0 cards collected"
+      wide
+      right={
+        <div className="flex items-center gap-1.5 bg-gray-900 border border-gold/20 rounded-full px-3 py-1.5">
+          <span className="text-gold text-sm">🪙</span>
+          <span className="text-gold text-sm font-bold">500</span>
         </div>
-      </div>
-
+      }
+    >
       {/* Filter bar */}
       <div className="px-4 md:px-8 lg:px-12 max-w-7xl mx-auto w-full">
         <div className="flex gap-2 py-3 overflow-x-auto scrollbar-none">
@@ -69,6 +65,6 @@ export default function CollectionPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ComingSoonPage>
   );
 }

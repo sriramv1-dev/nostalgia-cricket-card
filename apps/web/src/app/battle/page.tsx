@@ -1,18 +1,11 @@
+import { ComingSoonPage } from "@/components/layout";
+
 export default function BattlePage() {
   return (
-    <main className="flex flex-col min-h-screen pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 py-4">
-        <div>
-          <h1 className="font-display text-3xl text-cream tracking-wider">
-            BATTLE ARENA
-          </h1>
-          <p className="text-gray-500 text-xs">
-            Challenge players to card battles
-          </p>
-        </div>
-      </div>
-
+    <ComingSoonPage
+      title="BATTLE ARENA"
+      subtitle="Challenge players to card battles"
+    >
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
         <div className="bg-brand/5 border border-brand/20 rounded-2xl p-8 w-full max-w-xs">
@@ -91,6 +84,6 @@ export default function BattlePage() {
           </div>
         </div>
       </div>
-    </main>
+    </ComingSoonPage>
   );
 }

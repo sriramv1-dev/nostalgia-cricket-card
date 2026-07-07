@@ -4,13 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cva } from "class-variance-authority";
 import {
   ACCESSORY_LABELS,
+  deriveRole,
   getCharacterSources,
   SHOT_OPTIONS,
-  type PlayerRole,
   type ShotType,
 } from "@/constants/characters";
 import { COUNTRY_NAMES } from "@/constants/countries";
 import type { UseAccessoryCustomizationResult } from "@/hooks/useAccessoryCustomization";
+import { useCentroids } from "@/hooks/useCentroids";
 import type { CharacterColors } from "@/types/card";
 import { cn } from "@/lib/utils";
 import { PoseThumbnail } from "./PoseThumbnail";
@@ -41,12 +42,6 @@ export interface CustomizerMobileProps {
 const CANVAS_PADDING_PX = 32; // breathing room around the character
 const MIN_ALPHA = 10; // hitmap sample below this = miss
 const TOAST_DURATION_MS = 3000;
-
-function deriveRole(shot: string): PlayerRole {
-  if (shot === "pace" || shot === "spin") return "bowler";
-  if (shot === "keeping1" || shot === "keeping2") return "keeper";
-  return "batter";
-}
 
 // Accessory connector boxes floating around the character (mobile hitmap
 // entry points, in addition to tapping the body part directly). Positions
@@ -135,28 +130,7 @@ export function CustomizerMobile({
     height: number;
   } | null>(null);
 
-  const [centroidData, setCentroidData] = useState<{
-    imageWidth: number;
-    imageHeight: number;
-    centroids: Partial<Record<keyof CharacterColors, { x: number; y: number }>>;
-  } | null>(null);
-
-  // Fetch the centroid JSON for the active shot. Deliberately does not
-  // clear the previous shot's data first — keeps connector boxes/lines
-  // (and character sizing) stable until the new centroids resolve, so
-  // switching shots never flashes or jumps.
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`/data/centroids/${activeShot}.json`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (!cancelled) setCentroidData(data);
-      })
-      .catch(() => null);
-    return () => {
-      cancelled = true;
-    };
-  }, [activeShot]);
+  const { centroids: centroidData } = useCentroids(activeShot);
 
   // Context toast — shows on entry, re-shows whenever the country changes.
   // Re-showing on country change is handled by comparing against the

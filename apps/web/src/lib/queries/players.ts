@@ -1,11 +1,14 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseServerClient,
+  createSupabaseServiceClient,
+} from "@/lib/supabase/server";
 import type {
   PlayerWithFormatStats,
   PlayerWithAllStats,
   PlayerWithFormatFilter,
   QueryResult,
 } from "./types";
-import type { CricketFormat } from "@/types/database.types";
+import type { CricketFormat, PlayerRow } from "@/types/database.types";
 
 function toQueryError(error: unknown): { message: string; code?: string } {
   if (error && typeof error === "object" && "message" in error) {
@@ -151,4 +154,40 @@ export async function fetchCountries(): Promise<QueryResult<string[]>> {
 
   const unique = [...new Set((data ?? []).map((r) => r.country))];
   return { data: unique, error: null };
+}
+
+/** Name search over active players, capped for typeahead-style results. */
+export async function searchActivePlayersByName(
+  name: string,
+  limit = 10
+): Promise<QueryResult<PlayerRow[]>> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
+    .from("players")
+    .select("*")
+    .ilike("name", `%${name}%`)
+    .eq("is_active", true)
+    .order("name", { ascending: true })
+    .limit(limit);
+
+  if (error) return { data: null, error: toQueryError(error) };
+
+  return { data: data ?? [], error: null };
+}
+
+/** Admin review queue — inactive players awaiting activation. Uses the
+ *  service client because inactive rows are hidden from anon reads. */
+export async function fetchPendingPlayers(): Promise<QueryResult<PlayerRow[]>> {
+  const supabase = createSupabaseServiceClient();
+
+  const { data, error } = await supabase
+    .from("players")
+    .select("*")
+    .eq("is_active", false)
+    .order("created_at", { ascending: false });
+
+  if (error) return { data: null, error: toQueryError(error) };
+
+  return { data: data ?? [], error: null };
 }

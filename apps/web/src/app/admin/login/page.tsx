@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { InputField } from "@/components/ui";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function AdminLoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
+          <InputField
             type="password"
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
@@ -51,7 +52,6 @@ export default function AdminLoginPage() {
             required
             disabled={loading}
             autoFocus
-            className="w-full bg-gray-900 border border-gray-700 focus:border-brand rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm outline-none transition-colors disabled:opacity-50"
           />
 
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}

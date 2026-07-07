@@ -1,42 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { BatSwitch, TabSwitch } from "@/components/ui";
-
-const CARD_ICON = (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="3" width="16" height="16" rx="2" ry="2" />
-    <line x1="3" y1="9" x2="21" y2="9" />
-    <line x1="9" y1="21" x2="9" y2="9" />
-  </svg>
-);
-
-const TABLE_ICON = (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M3 3h18v18H3z" />
-    <path d="M3 9h18" />
-    <path d="M3 15h18" />
-    <path d="M9 3v18" />
-  </svg>
-);
+import { BatSwitch } from "@/components/ui";
+import { GridIcon, TableIcon } from "@/components/icons";
 
 export interface ViewSwitcherProps {
   playerId: string;
@@ -49,8 +15,8 @@ export function ViewSwitcher({ playerId, view }: ViewSwitcherProps) {
     <div className="h-12 w-full sm:w-40 overflow-visible">
       <BatSwitch
         options={[
-          { id: "card", label: "Card", icon: CARD_ICON },
-          { id: "table", label: "Table", icon: TABLE_ICON },
+          { id: "card", label: "Card", icon: <GridIcon /> },
+          { id: "table", label: "Table", icon: <TableIcon /> },
         ]}
         value={view}
         onChange={(v) =>

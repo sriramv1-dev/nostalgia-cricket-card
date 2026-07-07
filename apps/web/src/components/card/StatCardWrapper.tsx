@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { CARD_WIDTH, CARD_HEIGHT, CARD_SCALES } from "@/constants/card";
 

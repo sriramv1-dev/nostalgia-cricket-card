@@ -1,17 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { GeminiPlayer } from "@/lib/gemini/validator";
-
-function createSupabaseServiceClient() {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
+import type { QueryResult } from "./types";
 
 export async function insertPlayerWithStats(
   geminiPlayer: GeminiPlayer
-): Promise<string> {
+): Promise<QueryResult<string>> {
   const supabase = createSupabaseServiceClient();
 
   const { data: player, error: playerError } = await supabase
@@ -29,7 +22,15 @@ export async function insertPlayerWithStats(
     .select("id")
     .single();
 
-  if (playerError) throw new Error("DB_INSERT_FAILED: " + playerError.message);
+  if (playerError) {
+    return {
+      data: null,
+      error: {
+        message: "DB_INSERT_FAILED: " + playerError.message,
+        code: playerError.code,
+      },
+    };
+  }
 
   const playerId = player.id;
 
@@ -40,6 +41,7 @@ export async function insertPlayerWithStats(
       player_id: playerId,
       format: f,
       synced_at: null,
+      // safe: nulls are filtered out on the line above
       ...geminiPlayer.stats[f]!,
     }));
 
@@ -49,10 +51,17 @@ export async function insertPlayerWithStats(
       .insert(statsRows);
 
     if (statsError) {
+      // Roll back the orphaned player row before reporting the failure.
       await supabase.from("players").delete().eq("id", playerId);
-      throw new Error("DB_INSERT_FAILED: " + statsError.message);
+      return {
+        data: null,
+        error: {
+          message: "DB_INSERT_FAILED: " + statsError.message,
+          code: statsError.code,
+        },
+      };
     }
   }
 
-  return playerId;
+  return { data: playerId, error: null };
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { searchActivePlayersByName } from "@/lib/queries";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,21 +13,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = await createSupabaseServerClient();
-
-    const { data: players, error } = await supabase
-      .from("players")
-      .select("*")
-      .ilike("name", `%${name}%`)
-      .eq("is_active", true)
-      .order("name", { ascending: true })
-      .limit(10);
+    const { data: players, error } = await searchActivePlayersByName(name);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    if (!players || players.length === 0) {
+    if (players.length === 0) {
       // Not found — tell UI to show "Get Player Info" button
       return NextResponse.json({ found: false, name });
     }

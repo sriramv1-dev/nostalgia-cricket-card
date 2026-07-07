@@ -1,14 +1,9 @@
-import { createSupabaseServiceClient } from "@/lib/supabase/server";
+import { fetchPendingPlayers } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminQueuePage() {
-  const supabase = createSupabaseServiceClient();
-  const { data: players, error } = await supabase
-    .from("players")
-    .select("*")
-    .eq("is_active", false)
-    .order("created_at", { ascending: false });
+  const { data: players, error } = await fetchPendingPlayers();
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-10">

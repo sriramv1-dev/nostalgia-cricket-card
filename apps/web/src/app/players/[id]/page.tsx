@@ -9,12 +9,6 @@ import { PageHeader } from "@/components/layout";
 import { StatCard } from "@/components/card/StatCard";
 import { PlayerStatsShowcaseLazy } from "@/components/showcase";
 import { ViewSwitcher } from "@/components/players";
-import {
-  CARD_WIDTH,
-  CARD_HEIGHT,
-  CARD_SCALES,
-  CARD_DISPLAY,
-} from "@/constants/card";
 import type { PlayerFormatStats } from "@/types/player-stats";
 import type { PlayerStatsRow } from "@/types/database.types";
 
@@ -125,26 +119,9 @@ export default async function PlayerDetailPage({
               <p className="text-zinc-600 text-[10px] tracking-widest font-body group-hover:text-pink-400 transition-colors">
                 Stat Card ↗
               </p>
-              <div
-                style={{
-                  width: CARD_DISPLAY.detail.width,
-                  height: CARD_DISPLAY.detail.height,
-                  overflow: "hidden",
-                  position: "relative",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    width: CARD_WIDTH,
-                    height: CARD_HEIGHT,
-                    transform: `scale(${CARD_SCALES.detail})`,
-                    transformOrigin: "top left",
-                  }}
-                >
-                  <StatCard stats={playerStats} />
-                </div>
-              </div>
+              <CardScaleWrapper scale="detail">
+                <StatCard stats={playerStats} />
+              </CardScaleWrapper>
             </Link>
             <Link
               href={`/card-builder?country=${encodeURIComponent(player.country)}&role=${player.role}&from=${encodeURIComponent(`/players/${player.id}`)}&fromLabel=${encodeURIComponent(player.name)}`}
