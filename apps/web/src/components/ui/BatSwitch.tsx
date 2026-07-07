@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { BRAND_COLORS } from "@/constants/theme";
 
 interface BatSwitchOption {
   id: string;
@@ -27,7 +28,7 @@ export function BatSwitch({
   value,
   onChange,
   className,
-  ballColor = "#e8257a",
+  ballColor = BRAND_COLORS.pink,
   handleColor = "#ec4899",
   handlePosition = "right",
   showHandle = true,

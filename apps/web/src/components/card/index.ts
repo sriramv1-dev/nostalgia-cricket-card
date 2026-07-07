@@ -9,6 +9,7 @@ export { PoseThumbnail } from "./PoseThumbnail";
 export { CountryThumbnail } from "./CountryThumbnail";
 export { SnapStrip } from "./SnapStrip";
 export { ColorEditorPanel } from "./ColorEditorPanel";
+export { ColorField } from "./ColorField";
 export { CharacterCustomizationWrapper } from "./CharacterCustomizationWrapper";
 export { StatCard, type PlayerStats, type StatValue } from "./StatCard";
 export { StatCardWrapper } from "./StatCardWrapper";

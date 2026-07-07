@@ -1,4 +1,17 @@
 import type { LayeredCharacterSources } from "@/components/card/LayeredCharacter";
+import type { CharacterColors } from "@/types/card";
+import { BRAND_COLORS } from "./theme";
+import {
+  AllRounderIcon,
+  BatterIcon,
+  BowlerIcon,
+  CardIcon,
+  CharacterIcon,
+  FormIcon,
+  KeeperIcon,
+  PresetsIcon,
+  TapIcon,
+} from "@/components/icons";
 
 export interface CharacterSources extends LayeredCharacterSources {
   scale: number;
@@ -149,6 +162,45 @@ export const SHOT_SOURCES: Record<ShotType, CharacterSources> = {
   },
 };
 
+/** Glow filters applied to the active/idle accessory layer during
+ *  customization — shared by the mobile customizer surfaces. */
+export const CHARACTER_GLOW_FILTERS = {
+  idle: `drop-shadow(0 0 5px ${BRAND_COLORS.pink}) drop-shadow(0 0 2px ${BRAND_COLORS.pink})`,
+  active: `drop-shadow(0 0 14px ${BRAND_COLORS.pink}) drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px ${BRAND_COLORS.pink})`,
+} as const;
+
+/** Map a shot to the player role it belongs to. */
+export function deriveRole(shot: ShotType): PlayerRole {
+  if (shot === "pace" || shot === "spin") return "bowler";
+  if (shot === "keeping1" || shot === "keeping2") return "keeper";
+  return "batter";
+}
+
+/** Colorable accessory keys available for a role (and shot, for keepers). */
+export function getActiveKeys(
+  role: PlayerRole,
+  shot: ShotType
+): Array<keyof CharacterColors> {
+  if (role === "bowler") return ["cap", "capAccent", "shoes", "ball"];
+  if (role === "batter")
+    return ["cap", "capAccent", "gloves", "pads", "shoes", "bat"];
+  if (role === "allrounder")
+    return ["cap", "capAccent", "gloves", "pads", "shoes", "bat"];
+  if (role === "keeper") {
+    const base: Array<keyof CharacterColors> = [
+      "cap",
+      "capAccent",
+      "gloves",
+      "pads",
+      "shoes",
+      "wickets",
+    ];
+    if (shot === "keeping1") return [...base, "ball"];
+    return base;
+  }
+  return ["cap", "capAccent", "shoes"];
+}
+
 export function getCharacterSources(
   role: PlayerRole | string,
   shot?: ShotType | string | null
@@ -161,3 +213,23 @@ export function getCharacterSources(
       : DEFAULT_SHOT[playerRole] ?? "alpha";
   return SHOT_SOURCES[resolvedShot];
 }
+
+// ─── Card-builder selector options ────────────────────────────────────────────
+
+export const ROLE_OPTIONS = [
+  { id: "batter" as const, label: "Batter", icon: <BatterIcon /> },
+  { id: "bowler" as const, label: "Bowler", icon: <BowlerIcon /> },
+  { id: "allrounder" as const, label: "All Rounder", icon: <AllRounderIcon /> },
+  { id: "keeper" as const, label: "Keeper", icon: <KeeperIcon /> },
+];
+
+export const MODE_OPTIONS = [
+  { id: "form" as const, label: "Form", icon: <FormIcon /> },
+  { id: "tap" as const, label: "Tap", icon: <TapIcon /> },
+];
+
+export const TAB_OPTIONS = [
+  { id: "character" as const, label: "Character", icon: <CharacterIcon /> },
+  { id: "card" as const, label: "Card", icon: <CardIcon /> },
+  { id: "presets" as const, label: "Presets", icon: <PresetsIcon /> },
+];

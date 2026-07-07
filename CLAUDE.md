@@ -19,7 +19,8 @@ Prisma), Cloudinary, Vercel (`apps/web` as Root Directory, auto-deploys from
 `main`).
 
 **Styling variants:** `class-variance-authority` (CVA) for FormatPill,
-RoleBadge, SectionLabel, CardButton, RarityBadge.
+RoleBadge, SectionLabel, CardButton, RarityBadge, InputField. SectionLabel
+lives in `components/ui/` with `label` (default) and `heading` variants.
 
 **Repo structure:**
 ```
@@ -96,7 +97,7 @@ types/             ← TypeScript interfaces and types
   export const DETAIL_CARD = { width: 375, height: 525 } as const
   ```
 - `src/constants/countries.ts` exports a single `COUNTRIES` record as source of truth. Helper functions (`getCountryStyles`, `getCountryCode`, `getCountryFlag`) derive from it — no separate switch statements.
-- `src/constants/characters.ts` exports `getCharacterSources(role)` returning `CharacterSources` with a `scale: number` per role.
+- `src/constants/characters.tsx` exports `getCharacterSources(role)` returning `CharacterSources` with a `scale: number` per role (`.tsx` because the shared option arrays contain icon JSX).
 - Never hardcode country names, card dimensions, or scale factors outside their constants files.
 
 ---
@@ -182,6 +183,26 @@ CricketCard.tsx has one intentional extension point:
 - Remove all `console.log` statements.
 - Confirm no magic numbers remain in JSX.
 - Confirm no inline styles for static values.
+
+---
+
+## Current State (post-optimization, July 2026)
+
+- **Navigation:** `BottomNav.tsx` has been deleted (it was dead code — never
+  rendered). The mobile nav lives inside `components/layout/Header.tsx`.
+  Nav height is the `nav` Tailwind spacing token (`60px`) — use `pb-nav`,
+  `top-nav`, or `theme(spacing.nav)` in calc(), never a raw `60px` literal.
+- **useMediaQuery:** deleted — it had zero call sites. Do not re-add it
+  without a concrete consumer.
+- **Optimization passes:** all 5 passes complete. The full audit lives at
+  `docs/audits/ncc-optimize-audit.md`.
+- **SectionLabel:** CVA component in `components/ui/SectionLabel.tsx`
+  (`label` and `heading` variants).
+
+## Next Planned Work
+
+- **Player stats panel:** format tabs + `PlayerStatsPanel`, all stats
+  preserved. Mobile-first, then scales to web/tablet 3-column grid.
 
 ---
 

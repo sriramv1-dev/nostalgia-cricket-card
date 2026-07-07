@@ -1,3 +1,4 @@
+export { useCentroids, type UseCentroidsResult } from "./useCentroids";
 export { useCountryTheme } from "./useCountryTheme";
 export { useTitle } from "./useTitle";
 export { usePageHeaderContent } from "./usePageHeaderContent";

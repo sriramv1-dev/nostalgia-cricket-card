@@ -1,3 +1,5 @@
+import { ComingSoonPage } from "@/components/layout";
+
 const SAMPLE_PACKS = [
   {
     id: "classic-90s",
@@ -48,25 +50,16 @@ const SAMPLE_PACKS = [
 
 export default function PacksPage() {
   return (
-    <main className="flex flex-col min-h-screen pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-3xl text-cream tracking-wider">
-              PACK SHOP
-            </h1>
-            <p className="text-gray-500 text-xs">
-              Spend coins, discover legends
-            </p>
-          </div>
-          <div className="flex items-center gap-1.5 bg-gray-900 border border-gold/20 rounded-full px-3 py-1.5">
-            <span className="text-gold text-sm">🪙</span>
-            <span className="text-gold text-sm font-bold">500</span>
-          </div>
+    <ComingSoonPage
+      title="PACK SHOP"
+      subtitle="Spend coins, discover legends"
+      right={
+        <div className="flex items-center gap-1.5 bg-gray-900 border border-gold/20 rounded-full px-3 py-1.5">
+          <span className="text-gold text-sm">🪙</span>
+          <span className="text-gold text-sm font-bold">500</span>
         </div>
-      </div>
-
+      }
+    >
       {/* Pack list */}
       <div className="px-4 py-4 flex flex-col gap-4">
         {SAMPLE_PACKS.map((pack) => (
@@ -131,6 +124,6 @@ export default function PacksPage() {
           </p>
         </div>
       </div>
-    </main>
+    </ComingSoonPage>
   );
 }

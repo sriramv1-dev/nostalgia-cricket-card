@@ -1,16 +1,8 @@
+import { ComingSoonPage } from "@/components/layout";
+
 export default function TradePage() {
   return (
-    <main className="flex flex-col min-h-screen pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 px-4 py-4">
-        <div>
-          <h1 className="font-display text-3xl text-cream tracking-wider">
-            TRADE CENTER
-          </h1>
-          <p className="text-gray-500 text-xs">Browse open trades</p>
-        </div>
-      </div>
-
+    <ComingSoonPage title="TRADE CENTER" subtitle="Browse open trades">
       {/* Tabs */}
       <div className="flex border-b border-gray-800">
         {["Browse", "My Offers", "Received"].map((tab, i) => (
@@ -76,6 +68,6 @@ export default function TradePage() {
           </div>
         </div>
       </div>
-    </main>
+    </ComingSoonPage>
   );
 }

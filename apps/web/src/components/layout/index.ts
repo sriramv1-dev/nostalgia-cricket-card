@@ -1,4 +1,4 @@
-export { BottomNav } from "./BottomNav";
+export { ComingSoonPage } from "./ComingSoonPage";
 export { Header } from "./Header";
 export { MobileContainer } from "./MobileContainer";
 export { PageHeader } from "./PageHeader";

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { InputField } from "@/components/ui";
+import { ArrowLeftIcon, SpinnerIcon } from "@/components/icons";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -42,20 +44,7 @@ export default function LoginPage() {
         href="/"
         className="absolute top-6 left-6 text-gray-500 hover:text-gray-300 text-sm flex items-center gap-1 transition-colors"
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path
-            d="M19 12H5M5 12l7-7M5 12l7 7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ArrowLeftIcon />
         Home
       </Link>
 
@@ -109,7 +98,7 @@ export default function LoginPage() {
               >
                 Email address
               </label>
-              <input
+              <InputField
                 id="email"
                 type="email"
                 value={email}
@@ -117,7 +106,6 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 required
                 disabled={loading}
-                className="w-full bg-gray-900 border border-gray-700 focus:border-brand rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm outline-none transition-colors disabled:opacity-50"
               />
             </div>
 
@@ -134,20 +122,7 @@ export default function LoginPage() {
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg
-                    className="animate-spin"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+                  <SpinnerIcon className="animate-spin" />
                   Sending...
                 </span>
               ) : (

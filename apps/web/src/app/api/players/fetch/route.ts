@@ -82,23 +82,20 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 4: Insert into DB (is_active: false, pending admin review)
-    let playerId: string;
-    try {
-      playerId = await insertPlayerWithStats(parsed);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+    const insertResult = await insertPlayerWithStats(parsed);
+    if (insertResult.error) {
       return NextResponse.json(
         {
           error: ERROR_MESSAGES.DB_INSERT_FAILED,
           code: "DB_INSERT_FAILED",
-          debug: msg,
+          debug: insertResult.error.message,
         },
         { status: 500 }
       );
     }
 
     // Step 5: Fetch back the full player with stats
-    const result = await fetchPlayerById(playerId);
+    const result = await fetchPlayerById(insertResult.data);
 
     if (result.error) {
       return NextResponse.json(
