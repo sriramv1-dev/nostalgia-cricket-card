@@ -17,40 +17,44 @@ export interface UseCentroidsResult {
  * Fetch + cache the centroid JSON for a shot. Deliberately keeps the
  * previous shot's data until the new centroids resolve, so switching shots
  * never flashes or jumps. SSR-safe: the fetch only runs in an effect.
+ *
+ * The cache is read during render (the source of truth); state exists only
+ * to keep the previous shot's data visible while a fetch is in flight and
+ * to re-render when a fetch settles.
  */
 export function useCentroids(shotType: ShotType): UseCentroidsResult {
-  const [centroids, setCentroids] = useState<CentroidData | null>(
+  const [previous, setPrevious] = useState<CentroidData | null>(
     () => centroidCache.get(shotType) ?? null
   );
-  const [loading, setLoading] = useState(!centroidCache.has(shotType));
+  const [failedShot, setFailedShot] = useState<ShotType | null>(null);
+
+  const cached = centroidCache.get(shotType) ?? null;
 
   useEffect(() => {
-    const cached = centroidCache.get(shotType);
-    if (cached) {
-      setCentroids(cached);
-      setLoading(false);
-      return;
-    }
+    if (centroidCache.has(shotType)) return;
 
     let cancelled = false;
-    setLoading(true);
-    fetch(`/data/centroids/${shotType}.json`)
-      .then((r) => r.json())
-      .then((data: CentroidData) => {
+
+    async function load() {
+      try {
+        const response = await fetch(`/data/centroids/${shotType}.json`);
+        const data = (await response.json()) as CentroidData;
         centroidCache.set(shotType, data);
-        if (!cancelled) {
-          setCentroids(data);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setLoading(false);
-      });
+        if (!cancelled) setPrevious(data);
+      } catch {
+        if (!cancelled) setFailedShot(shotType);
+      }
+    }
+
+    void load();
 
     return () => {
       cancelled = true;
     };
   }, [shotType]);
 
-  return { centroids, loading };
+  return {
+    centroids: cached ?? previous,
+    loading: cached == null && failedShot !== shotType,
+  };
 }
